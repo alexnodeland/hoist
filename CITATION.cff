@@ -25,4 +25,5 @@ preferred-citation:
       given-names: Alex
   year: 2026
   status: preprint
+  license: CC-BY-4.0
   url: "https://github.com/alexnodeland/hoist/blob/main/paper/hoist.md"
