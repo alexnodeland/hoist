@@ -1,16 +1,15 @@
-"""Build hoist's logo files in brand/logo/ from one set of constants.
+"""Build Hoist's logo files in brand/logo/ from one set of constants.
 
     python3 brand/tools/build_logo.py
 
-The mark is a hoist of three entries: the same bar (the subject) enters
-three times, each entry before the last one ends, and each sooner than the
-one before (offsets of 6, then 4, on a 32-unit grid). The first entry is ink,
-the agent's own call; the two that overlap it are petrol, the reads that run
-ahead of it.
+The mark is a read that has been hoisted: the same bar three times, on a
+32-unit grid. The two petrol bars are the reads, lifted up and left until they
+start where the work starts, 10 units before the ink bar, which is the agent's
+own call and keeps its place. Work moved earlier than where it was written.
 
 The wordmark is "hoist" in Inter Display SemiBold (Inter 4.001 at wght 600,
-opsz 32), shaped with HarfBuzz (Inter's kerning joins the crossbars of "tt"),
-tracked tighter, and converted to outlines, so no font is needed to show it.
+opsz 32), shaped with HarfBuzz, tracked tighter, and converted to outlines, so
+no font is needed to show it.
 It is read from brand/fonts/Inter-Variable.subset.woff2 (SIL OFL 1.1).
 PNG and ICO files come from brand/tools/render_icons.mjs.
 """
@@ -36,14 +35,15 @@ PETROL = "#02767b"
 PETROL_LIGHT = "#039298"
 PETROL_DARK = "#33c0c7"
 
-# The mark, on a 32-unit grid: (x, y, width, height) of each entry.
-BARS = [(1, 2.5, 20, 7), (7, 12.5, 20, 7), (11, 22.5, 20, 7)]
+# The mark, on a 32-unit grid: (x, y, width, height) of each bar. The first two are the
+# reads, hoisted to the left edge; the last is the agent's call.
+BARS = [(1, 2.5, 20, 7), (1, 12.5, 20, 7), (11, 22.5, 20, 7)]
 RADIUS = 1.5
 
 # The favicon tile, on the same grid. Every edge is on an even unit, so the
 # bars fall on whole pixels at 16 px and at 32 px.
 TILE_RADIUS = 7
-TILE_BARS = [(4, 6, 14, 4), (10, 14, 14, 4), (14, 22, 14, 4)]
+TILE_BARS = [(4, 6, 14, 4), (4, 14, 14, 4), (14, 22, 14, 4)]
 TILE_BAR_RADIUS = 1
 APP_ICON_SCALE = 0.8
 
@@ -116,8 +116,8 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
 
     # The mark.
-    (OUT / "hoist-mark.svg").write_text(svg(32, 32, bars_svg(BARS, [INK, PETROL_LIGHT, PETROL_LIGHT], RADIUS)))
-    (OUT / "hoist-mark-dark.svg").write_text(svg(32, 32, bars_svg(BARS, [PAPER, PETROL_DARK, PETROL_DARK], RADIUS)))
+    (OUT / "hoist-mark.svg").write_text(svg(32, 32, bars_svg(BARS, [PETROL_LIGHT, PETROL_LIGHT, INK], RADIUS)))
+    (OUT / "hoist-mark-dark.svg").write_text(svg(32, 32, bars_svg(BARS, [PETROL_DARK, PETROL_DARK, PAPER], RADIUS)))
 
     # The favicon: a petrol tile with paper bars, legible on light and dark tab bars.
     tile = f'<rect width="32" height="32" rx="{TILE_RADIUS}" fill="{PETROL}"/>'
@@ -152,7 +152,7 @@ def main() -> None:
     mark_y = baseline - bars_bottom * k
     mark_left = min(x for x, _, _, _ in BARS)
     mark_right = max(x + w for x, _, w, _ in BARS)
-    mark_dx = -mark_left * k  # the first entry's left edge at x = 0
+    mark_dx = -mark_left * k  # the mark's left edge at x = 0
     gap = LOCKUP_GAP * target
     word_x = (mark_right - mark_left) * k + gap - x0 * s
     top = min(mark_y + bars_top * k, y0 * s)
@@ -163,7 +163,7 @@ def main() -> None:
     def lockup(ink, accent, word):
         return svg(
             lw, lh,
-            bars_svg(BARS, [ink, accent, accent], RADIUS, dx=mark_dx, dy=mark_y - top, scale=k)
+            bars_svg(BARS, [accent, accent, ink], RADIUS, dx=mark_dx, dy=mark_y - top, scale=k)
             + f'<path fill="{word}" transform="translate({fmt(word_x)} {fmt(-top)}) scale({s:.6f})" d="{d}"/>',
         )
 

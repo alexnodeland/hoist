@@ -12,7 +12,8 @@
 # moved forward to yesterday as console/e2e/real/serve.sh does. So it needs to
 # write /home/me (run it in a container or as root on a throwaway machine).
 # Two consoles serve that copy: one as a user runs it, on 7891, and one with
-# --read-only, on 7892. Then capture.mjs drives them and writes shots/.
+# --read-only, on 7892. Then capture.mjs drives them and writes shots/, and
+# stills.mjs writes media/console/ (reduce those with tools/quantize_stills.py).
 set -eu
 
 here=$(cd "$(dirname "$0")" && pwd)
@@ -62,3 +63,5 @@ for port in 7891 7892; do
 done
 cd "$root/brand"
 node video/console/capture.mjs
+# The README's and the guide's screenshots, in both themes, from the same consoles.
+node video/console/stills.mjs

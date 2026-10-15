@@ -1,6 +1,6 @@
 {
-  "name": "hoist",
-  "short_name": "hoist",
+  "name": "Hoist",
+  "short_name": "Hoist",
   "icons": [{ "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }],
   "background_color": "#0b0f11",
   "theme_color": "#0b0f11",

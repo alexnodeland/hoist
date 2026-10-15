@@ -164,7 +164,7 @@ def main() -> None:
     header = {
         "version": 2, "width": COLS, "height": ROWS,
         "timestamp": int(time.time()),
-        "title": "hoist: the walkthrough",
+        "title": "Hoist: the walkthrough",
         "env": {"SHELL": "/bin/bash", "TERM": "xterm-256color"},
         "hoist": {
             "version": version,

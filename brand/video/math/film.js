@@ -285,8 +285,8 @@
     scene(ctx, 'safety', (layer, b) => {
       const at = ctx.at;
       const runs = [
-        { label: 'without hoist', y: 280, steps: ['r', 'r', 'r', 'w', 'r', 'w'] },
-        { label: 'with hoist', y: 450, steps: ['r', 'R', 'R', 'w', 'r', 'w'] },
+        { label: 'without Hoist', y: 280, steps: ['r', 'r', 'r', 'w', 'r', 'w'] },
+        { label: 'with Hoist', y: 450, steps: ['r', 'R', 'R', 'w', 'r', 'w'] },
       ];
       const X0 = 420, DX = 190;
       const state = ['S₀', 'S₀', 'S₀', 'S₀', 'S₁', 'S₁', 'S₂'];
@@ -973,7 +973,7 @@
         el('line', { x1: X1 - 40, x2: X2 + 40, y1: sy(v), y2: sy(v), stroke: C.border }, axis);
         el('text', { x: X1 - 60, y: sy(v) + 5, class: 'axis', 'text-anchor': 'end' }, axis, String(v));
       }
-      const colL = [label(layer, 'without', { x: X1, y: Y0 + H + 22, ax: 0.5 }), label(layer, 'with hoist', { x: X2, y: Y0 + H + 22, ax: 0.5, color: T.p })];
+      const colL = [label(layer, 'without', { x: X1, y: Y0 + H + 22, ax: 0.5 }), label(layer, 'with Hoist', { x: X2, y: Y0 + H + 22, ax: 0.5, color: T.p })];
       const yl = label(layer, 'LLM turns per task', { x: X1 - 60, y: Y0 - 40 });
       // Ties and near-ties are spread a little so every task's line shows.
       const jit = window.ST.rng(28);

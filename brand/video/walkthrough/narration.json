@@ -7,6 +7,6 @@
     "Its next steps go to stderr; the rest of this walkthrough runs them. A scripted agent starts the proxy with the same arguments.": "Its next steps go to standard error; the rest of this walkthrough runs them. A scripted agent starts the proxy with the same arguments.",
     "Use the agent as usual. Here a scripted agent stands in for the LLM: it searches the notes and reads what it finds, through the proxy, which records each session in ~/.hoist/logs/notes.": "Use the agent as usual. Here a scripted agent stands in for the LLM: it searches the notes and reads what it finds, through the proxy, which records each session in the hoist folder, under logs.",
     "With the flow, served by the proxy behind the agent's calls: --flow ~/.hoist/notes.flow.json. It has no arbiter, so the proxy decides with reach, asking no model.": "With the flow, served by the proxy behind the agent's calls. It has no arbiter, so the proxy decides with reach, asking no model.",
-    "--habit-only asks no model: hoist counts which reads followed which calls, and where their arguments came from.": "With habit only, hoist asks no model: it counts which reads followed which calls, and where their arguments came from."
+    "--habit-only asks no model: Hoist counts which reads followed which calls, and where their arguments came from.": "With habit only, Hoist asks no model: it counts which reads followed which calls, and where their arguments came from."
   }
 }

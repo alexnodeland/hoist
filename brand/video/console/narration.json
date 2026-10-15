@@ -8,7 +8,7 @@
       "lines": [
         {
           "key": "title1",
-          "text": "The console is hoist's management plane: a web app on your own machine.",
+          "text": "The console is Hoist's management plane: a web app on your own machine.",
           "em": [
             "management plane:"
           ],
@@ -16,7 +16,7 @@
         },
         {
           "key": "title2",
-          "text": "It reads the files hoist writes, through hoist's own code.",
+          "text": "It reads the files Hoist writes, through Hoist's own code.",
           "post": 0.3
         }
       ]
@@ -51,9 +51,9 @@
       "lines": [
         {
           "key": "sv1",
-          "text": "Servers lists the MCP servers hoist fronts: recording, in shadow, or serving a flow.",
+          "text": "Servers lists the MCP servers Hoist fronts: recording, in shadow, or serving a flow.",
           "em": [
-            "the MCP servers hoist fronts,"
+            "the MCP servers Hoist fronts,"
           ],
           "post": 0.45
         },
@@ -162,7 +162,7 @@
       "lines": [
         {
           "key": "jb1",
-          "text": "Jobs run the hoist CLI from the page: learn, promote, audit, and more.",
+          "text": "Jobs run the Hoist CLI from the page: learn, promote, audit, and more.",
           "em": [
             "from the page:"
           ],

@@ -5,8 +5,8 @@ from scratch with numpy (no samples, no loops, nothing to clear rights on).
     python3 brand/video/music.py --duration 96 --open 0.35,0.85,1.1 \\
         --end 88 --out brand/video/out/music/explainer-video.wav
 
-The theme is the product's name: in a fugue's hoist, entries of a motif
-overlap, each starting before the last has finished. A short 4-6 note motif
+The device is a fugue's: entries of a motif overlap, each starting before
+the last has finished. A short 4-6 note motif
 (D major: D-F#-A-B-A-F#) enters three times, each at one of the --open times,
 each a "voice" of its own (root register, a fifth up - the classic fugal
 subject/answer - and an octave up), so the entries genuinely overlap the way
@@ -255,7 +255,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--duration", type=float, required=True, help="total length in seconds")
     ap.add_argument("--open", type=str, required=True,
-                    help="comma-separated seconds for the motif's three hoist entries")
+                    help="comma-separated seconds for the motif's three entries")
     ap.add_argument("--end", type=float, required=True, help="when the closing, resolving motif begins")
     ap.add_argument("--out", type=str, required=True, help="output WAV path")
     ap.add_argument("--seed", type=int, default=20260927, help="for the pad's sparse notes (reproducible)")

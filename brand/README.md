@@ -15,14 +15,14 @@ Everything Hoist shows the world, and the sources to make it again: the logo, co
 | Walkthrough video | `media/walkthrough.mp4`, `walkthrough-poster.png`, `walkthrough.vtt` | `video/walkthrough/` (capture, then render) |
 | The math film | `media/math.mp4`, `math-poster.png`, `math.vtt` | [`video/math/`](video/math/README.md) |
 | The console film | `media/console.mp4`, `console-poster.png`, `console.vtt` | [`video/console/`](video/console/README.md) (capture, then render) |
-| Console screenshots | `media/console/`: the overview, a server, a session, a flow and a job, each `-light.png` and `-dark.png` (1440 × 900, 256 colors) | Playwright, from the real console on its test fixtures |
+| Console screenshots | `media/console/`: the overview, a server, a session, a flow and a job, each `-light.png` and `-dark.png` (1440 × 900, 256 colors) | `video/console/stills.mjs` (run by `capture.sh`), then `tools/quantize_stills.py`: Playwright, from the real console on its test fixtures |
 | Voice-over | the lines in `video/explainer/narration.json`, `video/walkthrough/narration.json` (with the walkthrough's captions) and `explainer/narration.json` | `video/narrate.py`, with Kokoro |
 
 ## Logo
 
-**The mark** is a Hoist of three entries. In a fugue's Hoist, each entry of the subject comes in before the last one has finished; here the same bar enters three times, each before the last ends and each sooner than the one before. The first bar is ink, the agent's own call; the two that overlap it are petrol, the reads Hoist makes ahead of it.
+**The mark** is a read that has been hoisted: the same bar three times. The two petrol bars are the reads Hoist makes ahead of the call; they sit flush left, at the start, where the work starts. The ink bar is the agent's own call, which keeps its place, later. To hoist is to move work earlier than where it was written.
 
-**The wordmark** is "hoist", always lowercase, in Inter Display SemiBold converted to outlines, so it needs no font. Inter's kerning joins the crossbars of the two t's into one: two entries, overlapping.
+**The wordmark** is "hoist", always lowercase, in Inter Display SemiBold converted to outlines, so it needs no font. It is the logo only: in text the name is Hoist.
 
 | File | Use |
 |---|---|
@@ -68,7 +68,7 @@ Both are under the [SIL Open Font License 1.1](fonts/LICENSE-Inter.txt) ([JetBra
 <meta property="og:image" content="https://hoist.alexnodeland.com/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="hoist: Read ahead of your agent. Live on 28 τ²-bench retail and airline tasks, Claude Sonnet 5, Claude Haiku 4.5 and GLM-5.3 took 20–28% fewer LLM turns.">
+<meta property="og:image:alt" content="Hoist: Read ahead of your agent. Live on 28 τ²-bench retail and airline tasks, Claude Sonnet 5, Claude Haiku 4.5 and GLM-5.3 took 20–28% fewer LLM turns.">
 <meta name="twitter:card" content="summary_large_image">
 ```
 
@@ -85,11 +85,11 @@ Both are under the [SIL Open Font License 1.1](fonts/LICENSE-Inter.txt) ([JetBra
 Embed it at `/explainer/`:
 
 ```html
-<iframe src="/explainer/" title="How hoist works" loading="lazy"
+<iframe src="/explainer/" title="How Hoist works" loading="lazy"
         style="width: 100%; height: 780px; border: 0;"></iframe>
 <script>
   // Optional: size the frame to its content, and pass the site's theme.
-  const frame = document.querySelector('iframe[title="How hoist works"]');
+  const frame = document.querySelector('iframe[title="How Hoist works"]');
   addEventListener('message', e => {
     if (e.source === frame.contentWindow && e.data?.type === 'hoist-explainer:height') frame.style.height = e.data.height + 'px';
   });
@@ -129,7 +129,7 @@ It is 760 px tall at 1000 px wide and 876 px at 720 px, the same for every step;
 </video>
 ```
 
-**The voice** is Kokoro-82M (hexgrad, Apache-2.0), an open text-to-speech model run locally, in its `af_heart` voice at speed 0.85: the voice of Auracle's films, one voice at one pace, every line at one loudness, for both videos and the interactive explainer. `video/narrate.py` speaks each line whole, so its commas keep their prosody, trims it and sets its level. Then it transcribes the line back with faster-whisper and speaks it again, a touch slower or faster, if a word went missing; the manifest keeps the time of every word, which the explainer video times its beats and captions by. The text is written for reading, and `SAY`, with each script's `say` fields, turns versions, acronyms and numbers into what the voice should say (`GLM-5.3`, "G L M five point three"). "hoist" is said the American way, STRED-oh, with the t flapped; `LEXICON` in `narrate.py` pins it.
+**The voice** is Kokoro-82M (hexgrad, Apache-2.0), an open text-to-speech model run locally, in its `af_heart` voice at speed 0.85: the voice of Auracle's films, one voice at one pace, every line at one loudness, for both videos and the interactive explainer. `video/narrate.py` speaks each line whole, so its commas keep their prosody, trims it and sets its level. Then it transcribes the line back with faster-whisper and speaks it again, a touch slower or faster, if a word went missing; the manifest keeps the time of every word, which the explainer video times its beats and captions by. The text is written for reading, and `SAY`, with each script's `say` fields, turns versions, acronyms and numbers into what the voice should say (`GLM-5.3`, "G L M five point three"). Hoist is said as it is spelled, to rhyme with "joist"; misaki's dictionary has the word, and `narrate.py` checks that the transcript hears it.
 
 **The music** is synthesized, not sampled. `video/music.py` writes a bed in D major whose six-note motif enters three times, each entry before the last has finished, a Hoist, landing with the mark's three bars, and returns once to close; the explainer's renderer runs it with the timeline's own times. There are no sound effects: the voice, the bed under it, and the motif in and out.
 
@@ -196,7 +196,7 @@ In the site's `<head>`:
 <meta name="theme-color" content="#0b0f11" media="(prefers-color-scheme: dark)">
 ```
 
-with `site.webmanifest`: `{"name": "hoist", "short_name": "hoist", "icons": [{"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}], "background_color": "#0b0f11", "theme_color": "#0b0f11", "display": "browser"}`.
+with `site.webmanifest`: `{"name": "Hoist", "short_name": "Hoist", "icons": [{"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}], "background_color": "#0b0f11", "theme_color": "#0b0f11", "display": "browser"}`.
 
 In the repository's `README.md`, the lockup (switching with the reader's theme) and the teaser:
 
@@ -206,7 +206,7 @@ In the repository's `README.md`, the lockup (switching with the reader's theme) 
   <img alt="hoist" src="brand/logo/hoist-lockup.svg" height="44">
 </picture>
 
-**Read ahead of your agent.** hoist learns, from your agent's recorded tool calls, which reads it makes next and where their arguments come from, and serves them through an MCP proxy in the same tool result, so the agent needs fewer LLM turns.
+**Read ahead of your agent.** Hoist learns, from your agent's recorded tool calls, which reads it makes next and where their arguments come from, and serves them through an MCP proxy in the same tool result, so the agent needs fewer LLM turns.
 
 ![After each call, the reads the agent would make next ride in the same tool result, and it skips those turns](brand/media/explainer-teaser.gif)
 ```
