@@ -8,7 +8,7 @@ How Hoist describes itself: the tagline, the one-liner, descriptions of fixed le
 2. Your agent's next reads, in the result it already asked for.
 3. Fewer LLM turns, learned from your agent's own tool calls.
 
-The first is the shortest true statement of what Hoist does: it makes the reads the agent would make next, before the agent asks for them. It also carries the name. A musician reads ahead in the score, and in a fugue's Hoist each entry comes in before the last one ends. The second says how, for a reader who already knows MCP. The third says what it buys, and suits a context that shows no number.
+The first is the shortest true statement of what Hoist does: it makes the reads the agent would make next, before the agent asks for them. It also carries the name: to hoist is to move work earlier than where it was written. The second says how, for a reader who already knows MCP. The third says what it buys, and suits a context that shows no number.
 
 Pair the tagline with the one-liner, never with a bare number.
 

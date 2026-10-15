@@ -108,7 +108,7 @@ run './agent --quiet --from recorded.txt'
 run 'ls ~/.hoist/logs/notes'
 
 step "Learn a flow, with no key" \
-  "--habit-only asks no model: hoist counts which reads followed which calls, and where their arguments came from."
+  "--habit-only asks no model: Hoist counts which reads followed which calls, and where their arguments came from."
 run 'hoist learn --sessions ~/.hoist/logs/notes --domain notes --habit-only --out ~/.hoist/notes.flow.json'
 
 step "Review it" \

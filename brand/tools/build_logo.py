@@ -1,4 +1,4 @@
-"""Build hoist's logo files in brand/logo/ from one set of constants.
+"""Build Hoist's logo files in brand/logo/ from one set of constants.
 
     python3 brand/tools/build_logo.py
 

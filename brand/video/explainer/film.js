@@ -575,7 +575,7 @@
       const at = ctx.at;
       const title = box(layer, { x: 240, y: 168, html: '<span style="font:600 46px/1.1 Inter;letter-spacing:-.025em;color:#eceff0">Fewer LLM turns, with a flow</span>' });
       const scope = box(layer, { x: 240, y: 236, cls: 'note', html: 'Live · 28 τ²-bench retail and airline tasks · the reach decider, no model of its own' });
-      const chart = bars(layer, [['Claude Sonnet 5', 20.5, '16.5–24.4%'], ['Claude Haiku 4.5', 22.4, '15.8–29.4%'], ['GLM-5.3', 27.9, '19.1–35.9%']], { x: 240, y: 380, w: 1100, max: 32, label: 'LLM turns saved, against the same agent without hoist' });
+      const chart = bars(layer, [['Claude Sonnet 5', 20.5, '16.5–24.4%'], ['Claude Haiku 4.5', 22.4, '15.8–29.4%'], ['GLM-5.3', 27.9, '19.1–35.9%']], { x: 240, y: 380, w: 1100, max: 32, label: 'LLM turns saved, against the same agent without Hoist' });
       const foot = box(layer, { x: 240, y: 742, w: 1440, cls: 'note', html: 'Claude models: pre-registered, three trials, paired by task. GLM-5.3: one trial, against its recorded baseline.<br>The savings are in retail; in airline they are not established. Pass rates are underpowered.' });
       foot.style.fontSize = '18px';
       foot.style.color = C.faint;

@@ -75,7 +75,7 @@ await go('/sessions');
 await shot('sessions', '127.0.0.1:7878/sessions', { modes: page.getByRole('radiogroup').first(), table: page.locator('.st-table'), served: page.getByRole('link', { name: '20261015T155518.625Z-67333' }) });
 const served = '/sessions/20261015T155518.625Z-67333';
 await go(served);
-await shot('session', `127.0.0.1:7878${served}`, { stats: text('Tool calls').first().locator('xpath=ancestor::*[contains(@class,"stats") or self::section][1]'), lookups: text('Read ahead by hoist: 3 lookups'), score: text('0.99 × 0.88 binding'), decisionsTab: page.getByRole('tab', { name: /Decisions/ }) });
+await shot('session', `127.0.0.1:7878${served}`, { stats: text('Tool calls').first().locator('xpath=ancestor::*[contains(@class,"stats") or self::section][1]'), lookups: text('Read ahead by Hoist: 3 lookups'), score: text('0.99 × 0.88 binding'), decisionsTab: page.getByRole('tab', { name: /Decisions/ }) });
 await go(`${served}?tab=decisions`);
 await shot('decisions', `127.0.0.1:7878${served}?tab=decisions`, { table: page.locator('table.dt'), handback: text('get_order_details at 0.05, below 0.3') });
 await go('/sessions/20261015T155522.976Z-68160');
