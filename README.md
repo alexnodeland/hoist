@@ -14,6 +14,7 @@
   <a href="https://hoist.alexnodeland.com/"><img src="https://img.shields.io/badge/docs-guide%20%C2%B7%20reference%20%C2%B7%20research-02767b" alt="Documentation"></a>
   <a href="paper/hoist.md"><img src="https://img.shields.io/badge/paper-Compile%20What%20the%20Environment%20Decides-4a5557" alt="Paper"></a>
   <a href="paper/latex/hoist.pdf"><img src="https://img.shields.io/badge/paper-PDF-4a5557" alt="The paper as a PDF"></a>
+  <a href="https://doi.org/10.5281/zenodo.23403984"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.23403984.svg" alt="DOI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-4a5557" alt="MIT license"></a>
 </p>
 
@@ -179,6 +180,7 @@ If you use Hoist or its results, please cite the paper ([PDF](paper/latex/hoist.
   author = {Nodeland, Alex},
   year   = {2026},
   note   = {Preprint},
+  doi    = {10.5281/zenodo.23403984},
   url    = {https://github.com/alexnodeland/hoist}
 }
 ```

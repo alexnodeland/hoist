@@ -395,7 +395,7 @@ The procedure is a file Hoist runs: `hoist-procedure` executes it against any MC
 
 **Simulated users.** τ²-bench's users are LLMs, and so are the users of our live runs there. BFCL's, AgentDojo's, WorkBench's, DTap-Bench's and MCPMark's requests were written by their authors, but one request per task is not a user.
 
-**Availability.** Hoist's code, the flows every replay and live run served, the rows behind every table and figure, and the live episodes are published at https://github.com/alexnodeland/hoist; each number here is recomputed from them by `scripts/bench/` and the commands on each round's results page, and `docs/results/claims.md` maps each headline number to its evidence.
+**Availability.** Hoist's code, the flows every replay and live run served, the rows behind every table and figure, and the live episodes are published at https://github.com/alexnodeland/hoist; this paper is archived at https://doi.org/10.5281/zenodo.23403984. Each number here is recomputed from them by `scripts/bench/` and the commands on each round's results page, and `docs/results/claims.md` maps each headline number to its evidence.
 
 **Use of AI tools.** The paper, the software and the scripts behind its numbers were developed with Claude Code (Anthropic); the author directed the work and is responsible for it.
 
