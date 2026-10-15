@@ -15,7 +15,7 @@ Everything Hoist shows the world, and the sources to make it again: the logo, co
 | Walkthrough video | `media/walkthrough.mp4`, `walkthrough-poster.png`, `walkthrough.vtt` | `video/walkthrough/` (capture, then render) |
 | The math film | `media/math.mp4`, `math-poster.png`, `math.vtt` | [`video/math/`](video/math/README.md) |
 | The console film | `media/console.mp4`, `console-poster.png`, `console.vtt` | [`video/console/`](video/console/README.md) (capture, then render) |
-| Console screenshots | `media/console/`: the overview, a server, a session, a flow and a job, each `-light.png` and `-dark.png` (1440 × 900, 256 colors) | Playwright, from the real console on its test fixtures |
+| Console screenshots | `media/console/`: the overview, a server, a session, a flow and a job, each `-light.png` and `-dark.png` (1440 × 900, 256 colors) | `video/console/stills.mjs` (run by `capture.sh`), then `tools/quantize_stills.py`: Playwright, from the real console on its test fixtures |
 | Voice-over | the lines in `video/explainer/narration.json`, `video/walkthrough/narration.json` (with the walkthrough's captions) and `explainer/narration.json` | `video/narrate.py`, with Kokoro |
 
 ## Logo
