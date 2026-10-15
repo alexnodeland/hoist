@@ -10,6 +10,7 @@ Everything Hoist shows the world, and the sources to make it again: the logo, co
 | Fonts | [`fonts/`](fonts/): Inter and JetBrains Mono, subset, with their licenses | `tools/subset_fonts.py` |
 | Words | [`messaging.md`](messaging.md): taglines, descriptions, key messages, terms | by hand, from `docs/results/claims.md` |
 | Social card | `social/og-card.png` (1200 × 630), from `social/og-card.html` | `tools/render_assets.mjs` |
+| The repository README's graphics | [`readme/`](readme/) (animated SVG, light and dark) | `tools/readme_svgs.py` |
 | Interactive explainer | [`explainer/index.html`](explainer/index.html), one self-contained file; its narration in `explainer/audio/` | by hand; fonts by `tools/embed_fonts.py` |
 | Explainer video | `media/explainer.mp4`, `explainer-poster.png`, `explainer.vtt`, `explainer-teaser.gif`, `explainer-teaser.webm` | [`video/explainer/`](video/explainer/README.md), with `video/music.py` |
 | Walkthrough video | `media/walkthrough.mp4`, `walkthrough-poster.png`, `walkthrough.vtt` | `video/walkthrough/` (capture, then render) |
