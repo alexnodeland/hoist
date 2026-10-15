@@ -185,4 +185,4 @@ If you use Hoist or its results, please cite the paper ([PDF](paper/latex/hoist.
 
 ## License
 
-[MIT](LICENSE)
+The code is [MIT](LICENSE). The paper (`paper/`) is [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
