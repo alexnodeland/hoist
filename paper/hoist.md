@@ -393,6 +393,8 @@ The procedure is a file Hoist runs: `hoist-procedure` executes it against any MC
 
 **Availability.** Hoist's code, the flows every replay and live run served, the rows behind every table and figure, and the live episodes are published at https://github.com/alexnodeland/hoist; each number here is recomputed from them by `scripts/bench/` and the commands on each round's results page, and `docs/results/claims.md` maps each headline number to its evidence.
 
+**Use of AI tools.** This paper, the software it describes and the scripts that produce its numbers were developed with Claude Code (Anthropic). The author directed the work and is responsible for the text, the code and the results.
+
 ## References
 
 - [τ²-bench] V. Barrès, H. Dong, S. Ray, X. Si, K. Narasimhan. *τ²-Bench: Evaluating Conversational Agents in a Dual-Control Environment.* 2025. arXiv:2506.07982.
