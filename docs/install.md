@@ -134,7 +134,7 @@ npm --prefix console ci && npm --prefix console run build
 cargo install --locked --path crates/hoist-console
 ```
 
-Hoist is not on crates.io yet ([why](releasing.md#cratesio)).
+No release of Hoist is on crates.io yet, only empty 0.0.0 placeholders that hold the crates' names ([why](releasing.md#cratesio)). `cargo install hoist` installs an unrelated tool; use `--git` as above.
 
 ## Check it: `hoist doctor`
 
