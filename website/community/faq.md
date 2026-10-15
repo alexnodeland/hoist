@@ -54,7 +54,7 @@ Yes: where the agent works through a procedure against the tools with no one to 
 
 ## Why is it not on crates.io?
 
-It depends on a feature of [fugue](https://github.com/alexnodeland/fugue) (`program`) that is not in a fugue release yet. The crate named `hoist` on crates.io is an unrelated cache library; this project's crates are named `hoist-*`. Install from source until the first release is tagged; from then on, each release also ships binaries, install scripts and a container image ([installation](/guide/installation)).
+It depends on a feature of [fugue](https://github.com/alexnodeland/fugue) (`program`) that is not in a fugue release yet. The crate named `hoist` on crates.io is an unrelated tool; this project's crates are named `hoist-*`, and exist there only as empty 0.0.0 placeholders that hold their names. Install from source until the first release is tagged; from then on, each release also ships binaries, install scripts and a container image ([installation](/guide/installation)).
 
 ## What are fugue and Jev?
 

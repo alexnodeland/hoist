@@ -142,7 +142,7 @@ Hoist is also a research project. The paper, [*Compile What the Environment Deci
 Hoist is pre-release.
 - Every piece of the first design is built, tested and measured ([implementation status](docs/design.md#implementation-status-2026-09-26)).
 - 0.1.0 is prepared ([changelog](CHANGELOG.md)) but not yet tagged. The file formats carry their own versions.
-- Hoist is not on crates.io yet, because it depends on a [fugue](https://github.com/alexnodeland/fugue) feature that is not released.
+- No release is on crates.io yet, because Hoist depends on a [fugue](https://github.com/alexnodeland/fugue) feature that is not released. The `hoist-*` crates exist there only as empty 0.0.0 placeholders that hold their names.
 - What is left is on [the roadmap](docs/roadmap.md).
 
 ## Crates

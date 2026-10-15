@@ -118,7 +118,7 @@ hoist doctor
 MCP hosts start servers without your shell, and some do not see your `PATH`. If a host cannot start `hoist-mcp`, give its absolute path in the host's configuration: `which hoist-mcp` prints it.
 
 ::: warning Not `cargo install hoist`
-The crate named `hoist` on crates.io is an unrelated cache library, and nothing of this project is on crates.io yet: it depends on a [fugue](https://github.com/alexnodeland/fugue) feature (`program`) that is not in a fugue release yet. Install with `--git` as above.
+The crate named `hoist` on crates.io is an unrelated tool, and no release of this project is on crates.io yet (its `hoist-*` crates are empty placeholders): it depends on a [fugue](https://github.com/alexnodeland/fugue) feature (`program`) that is not in a fugue release yet. Install with `--git` as above.
 :::
 
 ## Other tools you may want

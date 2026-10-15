@@ -61,10 +61,10 @@ Hoist takes the reads whose arguments an earlier tool result supplies: an order 
 
 ## Status
 
-Hoist is pre-release. 0.1.0 is prepared but not yet tagged ([changelog](/community/changelog)), and these pages follow the `main` branch. It is not on crates.io yet, because it depends on a [fugue](https://github.com/alexnodeland/fugue) feature that is not in a fugue release yet. Until the first release is tagged, install it from source: see [installation](./installation).
+Hoist is pre-release. 0.1.0 is prepared but not yet tagged ([changelog](/community/changelog)), and these pages follow the `main` branch. No release is on crates.io yet, because it depends on a [fugue](https://github.com/alexnodeland/fugue) feature that is not in a fugue release yet. Until the first release is tagged, install it from source: see [installation](./installation).
 
 ::: warning Not the `hoist` crate
-The crate named `hoist` on crates.io is an unrelated cache library. This project's binary is `hoist`, and its crates are named `hoist-*`.
+The crate named `hoist` on crates.io is an unrelated tool. This project's binary is `hoist`, and its crates are named `hoist-*`.
 :::
 
 ## Next steps

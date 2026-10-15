@@ -5,7 +5,7 @@ A version tag, `vX.Y.Z`, pushed to the commit on `main` to release, starts two w
 - [`release.yml`](../.github/workflows/release.yml) makes the GitHub release. Its notes are the version's section of [CHANGELOG.md](../CHANGELOG.md). It builds the console's UI once, then carries an archive of the five binaries (`hoist-console` with the UI built in), with `LICENSE` and `README.md`, for each of five targets, their `SHA256SUMS`, [`install.sh`](../install.sh), [`install.ps1`](../install.ps1), and `hoist.rb`, the Homebrew formula with the checksums filled in.
 - [`container.yml`](../.github/workflows/container.yml) publishes `ghcr.io/alexnodeland/hoist` and `ghcr.io/alexnodeland/hoist-console` for linux/amd64 and linux/arm64, tagged `X.Y.Z`, `X.Y` and `latest`.
 
-Nothing is published to crates.io ([below](#cratesio)). [docs/install.md](install.md) is what users read.
+No release is published to crates.io; empty placeholders hold the crates' names ([below](#cratesio)). [docs/install.md](install.md) is what users read.
 
 ## Check a release first
 
@@ -80,10 +80,10 @@ Each release carries `hoist.rb`, filled from [`packaging/homebrew/hoist.rb`](../
 
 ## crates.io
 
-Hoist is not on crates.io, for three reasons.
+No release of Hoist is on crates.io, for two reasons. The six crates, `hoist-trace`, `hoist-model`, `hoist-oracle`, `hoist-report`, `hoist-mcp` and `hoist-console`, were published on 2026-10-15 as empty 0.0.0 placeholders, to hold their names. They contain no code.
 
 1. **fugue comes from git.** crates.io takes a crate only if every dependency comes from a registry, and `fugue-ppl` is taken from a pinned git revision for its `program` feature. `cargo package -p hoist-model` fails today with *all dependencies must have a version requirement specified when packaging. dependency `fugue-ppl` does not specify a version*. crates.io has fugue-ppl 0.2.2 and earlier, none with `program`; the pinned revision is 0.2.3. A fugue-ppl release with `program` unblocks it; the workspace then takes it by version, `fugue = { package = "fugue-ppl", version = "…", features = ["program"] }`, in place of `git` and `rev`.
 2. **The crates depend on each other by path.** Each of those dependencies in `[workspace.dependencies]` also needs a version, such as `hoist-model = { path = "crates/hoist-model", version = "0.1.0" }`. They are published in order: `hoist-trace`, `hoist-oracle`, `hoist-model`, then the CLI's package, then `hoist-mcp`.
-3. **The name `hoist` is taken** on crates.io by an unrelated crate, a cache library. The binary keeps its name either way; the question is the CLI's package, now `hoist-report`. The proposal: publish it as `hoist-cli`, with `[[bin]] name = "hoist"` as now, so that `cargo install hoist-cli` installs `hoist`, and keep `hoist-mcp`, `hoist-trace`, `hoist-model` and `hoist-oracle` as they are. On 2026-09-27 the crates.io index had none of `hoist-cli`, `hoist-report`, `hoist-mcp`, `hoist-procedure`, `hoist-trace`, `hoist-model` and `hoist-oracle`. Renaming is a decision for the maintainer; nothing has been renamed.
+The name `hoist` itself is taken on crates.io by an unrelated crate, a CLI for pnpm monorepo Docker development environments. So the CLI's package is `hoist-report`, with `[[bin]] name = "hoist"`: `cargo install hoist-report` installs `hoist`, and `cargo install hoist` installs the other crate.
 
 The metadata crates.io shows is in the manifests already: each crate's description, keywords, categories, readme, homepage and documentation.

@@ -60,7 +60,7 @@ Calm and exact, as `brand/messaging.md` sets out: say what a thing does and how 
 - **Commit, print or log a secret.** Keys come from the environment (`TYPESAFE_API_KEY`, `ZAI_API_KEY`). Check one only with `[ -n "$TYPESAFE_API_KEY" ]`; never echo it or write it to a file. `.claude/settings.json` denies Claude reads of `.env` files, key files under `~/.hoist`, the pilot's key files and credential stores.
 - **Spend Z.ai or Jev credit casually.** The live pilots (`pilot/run_*.py`, `pilot/bench/run_bench_*.py`, `pilot/glm-claude.sh`, `pilot/claude-agent.sh`) and any command with `--oracle jev` or `jev-check` spend money or a plan's quota. Run them only when the owner asks, keep runs small, and prefer the replay cache and the published answer bundles. The Z.ai key is a coding-plan key, used only through Claude Code (`pilot/glm-claude.sh`). The settings ask before each of these.
 - **Commit session logs, transcripts or caches.** Recorded sessions (`~/.hoist/logs`), `pilot/runs/`, Claude Code transcripts, `.oracle-cache/` and answer caches holding third-party data stay out of git. Episodes are published only in a results page's archive, and only from benchmark environments, whose customers are synthetic; a real user's sessions are shared only through `hoist redact` (`docs/privacy.md`).
-- **Push to main, force-push, tag or publish** (`cargo publish`, `gh release`) unless the owner says to. Nothing is published to crates.io.
+- **Push to main, force-push, tag or publish** (`cargo publish`, `gh release`) unless the owner says to. Only empty 0.0.0 placeholders are published to crates.io.
 
 ## Pull requests
 
