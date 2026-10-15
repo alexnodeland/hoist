@@ -1,181 +1,181 @@
 WEBVTT
 
 1
-00:00:02.600 --> 00:00:04.622
-hoist reads ahead of your agent.
+00:00:02.600 --> 00:00:04.538
+Hoist reads ahead of your agent.
 
 2
-00:00:05.172 --> 00:00:08.635
+00:00:05.088 --> 00:00:08.551
 Here's what it reads, where its lookups come from, and what it saves.
 
 3
-00:00:10.435 --> 00:00:12.177
+00:00:10.351 --> 00:00:12.088
 An agent works in turns.
 
 4
-00:00:12.677 --> 00:00:17.856
+00:00:12.588 --> 00:00:17.767
 On each turn, a model reads the whole conversation, then picks one next step.
 
 5
-00:00:18.206 --> 00:00:20.264
+00:00:18.117 --> 00:00:20.178
 It answers, or it calls a tool.
 
 6
-00:00:20.764 --> 00:00:24.284
+00:00:20.678 --> 00:00:24.198
 Each turn costs seconds and thousands of tokens.
 
 7
-00:00:24.284 --> 00:00:26.349
+00:00:24.198 --> 00:00:26.263
 A task can take ten or twenty.
 
 8
-00:00:27.949 --> 00:00:31.689
+00:00:27.863 --> 00:00:31.601
 Look closely, and many turns are decided before they begin.
 
 9
-00:00:32.189 --> 00:00:34.660
+00:00:32.101 --> 00:00:34.571
 This customer's record lists two orders.
 
 10
-00:00:34.960 --> 00:00:37.818
+00:00:34.871 --> 00:00:37.730
 So the next two turns will read those two orders.
 
 11
-00:00:38.318 --> 00:00:40.378
+00:00:38.230 --> 00:00:40.310
 The tools made that choice.
 
 12
-00:00:40.378 --> 00:00:42.384
+00:00:40.310 --> 00:00:42.296
 The model spends a turn typing it out.
 
 13
-00:00:43.984 --> 00:00:48.823
-hoist sits between the agent and its tools, as an MCP proxy.
+00:00:43.896 --> 00:00:48.450
+Hoist sits between the agent and its tools, as an MCP proxy.
 
 14
-00:00:49.273 --> 00:00:53.677
-When a result names what comes next, hoist makes those reads at once.
+00:00:48.900 --> 00:00:53.161
+When a result names what comes next, Hoist makes those reads at once.
 
 15
-00:00:54.077 --> 00:00:57.431
+00:00:53.561 --> 00:00:56.916
 They ride back inside the result the agent asked for.
 
 16
-00:00:58.031 --> 00:01:00.311
+00:00:57.516 --> 00:00:59.796
 So the agent skips those turns.
 
 17
-00:01:00.311 --> 00:01:02.273
+00:00:59.796 --> 00:01:01.761
 No new tools, and the same prompt.
 
 18
-00:01:04.073 --> 00:01:06.013
+00:01:03.561 --> 00:01:05.501
 A flow only reads.
 
 19
-00:01:06.013 --> 00:01:08.625
+00:01:05.501 --> 00:01:08.108
 It calls no tool the server marks as a write.
 
 20
-00:01:09.175 --> 00:01:12.175
+00:01:08.658 --> 00:01:11.658
 A lookup the agent doesn't use is a detour.
 
 21
-00:01:12.175 --> 00:01:15.021
+00:01:11.658 --> 00:01:14.506
 It costs tokens, and changes no state.
 
 22
-00:01:16.721 --> 00:01:19.986
+00:01:16.206 --> 00:01:19.395
 The lookups come from your agent's own recorded sessions.
 
 23
-00:01:20.386 --> 00:01:25.167
-hoist counts which reads follow each call, and where each argument came from.
+00:01:19.795 --> 00:01:24.381
+Hoist counts which reads follow each call, and where each argument came from.
 
 24
-00:01:25.617 --> 00:01:30.153
+00:01:24.831 --> 00:01:29.367
 The result is a flow: a small file you can read, review and diff.
 
 25
-00:01:30.603 --> 00:01:35.682
+00:01:29.817 --> 00:01:34.896
 In replay, ten of an agent's own sessions give most of what all of them do.
 
 26
-00:01:37.382 --> 00:01:42.263
+00:01:36.596 --> 00:01:41.477
 The console puts your servers, sessions, flows and jobs in one place.
 
 27
-00:01:42.763 --> 00:01:46.993
+00:01:41.977 --> 00:01:46.219
 A session shows each call, the lookups the flow made after it, and why.
 
 28
-00:01:47.593 --> 00:01:51.665
+00:01:46.819 --> 00:01:50.891
 A flow shows its graph, and what would change at another threshold.
 
 29
-00:01:53.465 --> 00:01:57.595
+00:01:52.691 --> 00:01:56.821
 Each lookup weighs two costs: a turn saved, against a detour.
 
 30
-00:01:58.045 --> 00:02:02.807
-hoist makes it when the chance it's used before the next write clears the line.
+00:01:57.271 --> 00:02:01.805
+Hoist makes it when the chance it's used before the next write clears the line.
 
 31
-00:02:03.257 --> 00:02:08.007
+00:02:02.255 --> 00:02:07.005
 Measured live on τ²-bench, that line sits at about thirty percent.
 
 32
-00:02:08.557 --> 00:02:10.297
+00:02:07.555 --> 00:02:09.295
 No model is asked.
 
 33
-00:02:10.297 --> 00:02:11.696
+00:02:09.295 --> 00:02:10.693
 The reach decider counts.
 
 34
-00:02:13.496 --> 00:02:17.925
+00:02:12.493 --> 00:02:16.921
 Live, on 28 τ²-bench retail and airline tasks:
 
 35
-00:02:18.275 --> 00:02:23.027
+00:02:17.271 --> 00:02:22.023
 Claude Sonnet 5 took 20.5% fewer LLM turns.
 
 36
-00:02:23.577 --> 00:02:32.843
+00:02:22.573 --> 00:02:31.841
 Claude Haiku 4.5 took 22.4% fewer, and GLM-5.3 27.9% fewer.
 
 37
-00:02:35.443 --> 00:02:43.071
+00:02:34.441 --> 00:02:42.066
 Asking the agent to batch its calls saved 3.4 to 7.6%, not all of it established.
 
 38
-00:02:43.521 --> 00:02:46.601
+00:02:42.516 --> 00:02:45.616
 A prompt batches what the agent already knows.
 
 39
-00:02:46.601 --> 00:02:48.852
+00:02:45.616 --> 00:02:47.847
 A flow reads what results reveal.
 
 40
-00:02:49.302 --> 00:02:57.375
+00:02:48.297 --> 00:02:56.370
 With the prompt in both arms, a flow still saved the Claude models 17.2 and 22.9%.
 
 41
-00:02:59.375 --> 00:03:04.104
-hoist is open source, written in Rust, under the MIT license.
+00:02:58.370 --> 00:03:03.011
+Hoist is open source, written in Rust, under the MIT license.
 
 42
-00:03:04.504 --> 00:03:07.946
+00:03:03.411 --> 00:03:06.816
 Run hoist init in front of any MCP server.
 
 43
-00:03:08.346 --> 00:03:12.507
+00:03:07.216 --> 00:03:11.377
 It learns from your agent's own sessions, with no key and no model.
 
 44
-00:03:14.807 --> 00:03:15.627
+00:03:13.677 --> 00:03:14.377
 hoist.
 
 45
-00:03:15.627 --> 00:03:16.860
+00:03:14.377 --> 00:03:15.600
 Read ahead of your agent.

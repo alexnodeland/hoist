@@ -197,7 +197,7 @@
   // ------------------------------------------------------------- the brand
   const markSvg = (h, ink = '#eceff0', acc = C.petrolG) => {
     const w = (h * 31) / 30;
-    return `<svg width="${w}" height="${h}" viewBox="0 0 31 30" style="display:block"><rect x="0" y="0.5" width="20" height="7" rx="1.5" fill="${ink}"/><rect x="6" y="11.5" width="20" height="7" rx="1.5" fill="${acc}"/><rect x="11" y="22.5" width="20" height="7" rx="1.5" fill="${acc}"/></svg>`;
+    return `<svg width="${w}" height="${h}" viewBox="0 0 31 30" style="display:block"><rect x="0" y="0.5" width="20" height="7" rx="1.5" fill="${acc}"/><rect x="0" y="11.5" width="20" height="7" rx="1.5" fill="${acc}"/><rect x="10" y="22.5" width="20" height="7" rx="1.5" fill="${ink}"/></svg>`;
   };
   const wordmarkSvg = (h, fill = '#eceff0') => {
     const W = window.HOIST_WORDMARK;

@@ -107,10 +107,10 @@
   function sceneTitle(ctx) {
     scene(ctx, 'title', (layer, b) => {
       const T = b.t0 + 0.35;
-      // The mark: three bars, each entering before the last has finished.
+      // The mark: two reads, flush left and ahead of the call, which starts later.
       const S = 5.2; // px per mark unit
       const g = box(layer, { x: 960, y: 440, ax: 0.5, ay: 0.5, w: 31 * S + 24 + 600, h: 30 * S });
-      const bars = [[0, 0.5, '#eceff0'], [6, 11.5, C.petrolG], [11, 22.5, C.petrolG]].map(([x, y, fill]) =>
+      const bars = [[0, 0.5, C.petrolG], [0, 11.5, C.petrolG], [10, 22.5, '#eceff0']].map(([x, y, fill]) =>
         box(g, { x: x * S, y: y * S, w: 20 * S, h: 7 * S, style: { background: fill, borderRadius: `${1.5 * S}px`, transformOrigin: 'left center' } }));
       const word = box(g, { x: 31 * S + 34, y: 15 * S, ay: 0.5, html: wordmarkSvg(30 * S * 0.62) });
       const tag = box(layer, { x: 960, y: 600, ax: 0.5, ay: 0.5, text: 'Read ahead of your agent.', style: { font: '500 44px/1 Inter, sans-serif', letterSpacing: '-0.02em', color: C.text } });
