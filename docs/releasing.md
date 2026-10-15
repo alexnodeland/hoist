@@ -74,7 +74,7 @@ Pull requests that change the image's inputs build it for linux/amd64 and run ea
 
 Each release carries `hoist.rb`, filled from [`packaging/homebrew/hoist.rb`](../packaging/homebrew/hoist.rb) by [`fill.sh`](../packaging/homebrew/fill.sh). It installs the release binaries for macOS and Linux and the completions for bash, zsh and fish. For `brew install alexnodeland/tap/hoist` to work:
 
-1. Create the public repository `github.com/alexnodeland/homebrew-tap`. It does not exist yet; creating it is the repository owner's decision.
+1. The public repository `github.com/alexnodeland/homebrew-tap` exists; it holds `Formula/`.
 2. For each release, copy the release's `hoist.rb` to `Formula/hoist.rb` in the tap and push. `brew install alexnodeland/tap/hoist`, `brew test alexnodeland/tap/hoist` and `brew audit --strict --online alexnodeland/tap/hoist` check it.
 3. To do this in `release.yml` instead, add a step that pushes the formula to the tap with a token that can write to it, kept as a repository secret (a fine-grained token limited to the tap). It is not set up.
 

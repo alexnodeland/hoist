@@ -8,7 +8,7 @@ This page puts a flow behind an agent. You install Hoist, watch the whole loop r
 
 You need:
 
-- Rust 1.88 or later ([rustup](https://rustup.rs)), to install from source until the first release is tagged ([other ways to install](./installation));
+- Rust 1.88 or later ([rustup](https://rustup.rs)), to install from source ([other ways to install](./installation));
 - an MCP host, such as Claude Code, Claude Desktop, Cursor or VS Code;
 - Node 18 or later, for this page's example server (`npx`).
 

@@ -12,11 +12,11 @@ Hoist is five binaries, installed together:
 |---|---|---|
 | [Release binaries](#release-binaries) with `install.sh` | Linux x86_64 and aarch64 with glibc 2.35 or later, macOS (Apple silicon and Intel) | curl or wget |
 | [`install.ps1`](#windows) | Windows x64 | PowerShell |
-| [Homebrew](#homebrew) | macOS, Linux | the tap, which does not exist yet |
+| [Homebrew](#homebrew) | macOS, Linux | the tap, `alexnodeland/tap` |
 | [Docker](#docker) | anywhere Docker runs, linux/amd64 and linux/arm64 | Docker |
 | [From source](#from-source) | anywhere Rust 1.88 or later runs | Rust |
 
-Release archives, `install.sh`, `install.ps1` and the container image come with every release, from 0.1.0 on; until 0.1.0 is tagged, [install from source](#from-source). Then [check the installation](#check-it-hoist-doctor) and [add shell completions](#shell-completions).
+Release archives, `install.sh`, `install.ps1` and the container image come with every release, from 0.2.0 on; or [install from source](#from-source). Then [check the installation](#check-it-hoist-doctor) and [add shell completions](#shell-completions).
 
 ## Release binaries
 
@@ -145,11 +145,11 @@ hoist doctor
 In the container image, with nothing recorded yet, it prints:
 
 ```text
-hoist 0.1.0 (/usr/local/bin/hoist)
+hoist 0.2.0 (/usr/local/bin/hoist)
 
-ok       hoist-mcp 0.1.0 (/usr/local/bin/hoist-mcp)
-ok       hoist-procedure 0.1.0 (/usr/local/bin/hoist-procedure)
-ok       hoist-mcp-demo 0.1.0 (/usr/local/bin/hoist-mcp-demo)
+ok       hoist-mcp 0.2.0 (/usr/local/bin/hoist-mcp)
+ok       hoist-procedure 0.2.0 (/usr/local/bin/hoist-procedure)
+ok       hoist-mcp-demo 0.2.0 (/usr/local/bin/hoist-mcp-demo)
 note     /data/.hoist does not exist yet; `hoist-mcp --record` creates it
 note     TYPESAFE_API_KEY is not set. It is optional: recording, `learn --habit-only`, `flow-show`, `flow-diff`, `audit`, `promote` and serving with `--flow-decider habit` or `reach` need no key. With one, hoist asks TypeSafe's Jev: `learn` fits an arbiter, the proxy serves with `--flow-decider arbiter` and runs the confirmation judge, and `phase0 --oracle jev` measures Jev on τ²-bench.
 note     no flows in ~/.hoist yet (`hoist learn` writes one)

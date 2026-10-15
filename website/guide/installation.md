@@ -4,7 +4,7 @@ description: Install Hoist from source today; release binaries, install scripts 
 
 # Installation
 
-Hoist is five programs from three Rust packages. Until the first release is tagged, you build them from source. From then on, each release carries prebuilt binaries for Linux, macOS and Windows, install scripts that check each archive's checksum, and Docker images ([every way to install](../../docs/install.md)).
+Hoist is five programs from three Rust packages. Each release carries prebuilt binaries for Linux, macOS and Windows, install scripts that check each archive's checksum, and Docker images ([every way to install](../../docs/install.md)).
 
 | Package | Installs |
 |---|---|
@@ -53,10 +53,6 @@ cargo install --locked --path crates/hoist-console
 </template>
 <template #binaries>
 
-::: info From the first release
-Until the first release is tagged, install from source.
-:::
-
 Each release on [GitHub Releases](https://github.com/alexnodeland/hoist/releases) carries an archive of the binaries for Linux (x86_64 and aarch64, glibc 2.35 or later), macOS (Apple silicon and Intel) and Windows x64, with `SHA256SUMS`:
 
 ```sh
@@ -67,10 +63,6 @@ cp hoist-x86_64-unknown-linux-gnu/hoist* ~/.local/bin/
 
 </template>
 <template #script>
-
-::: info From the first release
-Until the first release is tagged, install from source.
-:::
 
 The script picks the archive for your system, checks its checksum against the release's `SHA256SUMS`, and copies the binaries into `~/.local/bin`, changing nothing else:
 
@@ -86,10 +78,6 @@ irm https://github.com/alexnodeland/hoist/releases/latest/download/install.ps1 |
 
 </template>
 <template #docker>
-
-::: info From the first release
-Until the first release is tagged, build the image from a checkout: `docker build -t hoist .`
-:::
 
 `ghcr.io/alexnodeland/hoist` is published for linux/amd64 and linux/arm64 with each release. It runs as a non-root user, with `/data` as its home: mount a volume there to keep `~/.hoist`.
 

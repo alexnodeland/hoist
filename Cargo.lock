@@ -469,7 +469,7 @@ checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 
 [[package]]
 name = "hoist-console"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "axum",
@@ -491,7 +491,7 @@ dependencies = [
 
 [[package]]
 name = "hoist-mcp"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "axum",
@@ -511,7 +511,7 @@ dependencies = [
 
 [[package]]
 name = "hoist-model"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "fugue-ppl",
  "hoist-trace",
@@ -522,7 +522,7 @@ dependencies = [
 
 [[package]]
 name = "hoist-oracle"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "hex",
@@ -534,7 +534,7 @@ dependencies = [
 
 [[package]]
 name = "hoist-report"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "clap",
@@ -552,7 +552,7 @@ dependencies = [
 
 [[package]]
 name = "hoist-trace"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "serde",

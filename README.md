@@ -56,10 +56,16 @@ Where no user speaks, `hoist-procedure` runs a whole workflow compiled once from
 
 ## Quick start
 
-Install from source until the first release is tagged ([every way to install](docs/install.md)):
+Install a release, or build from source ([every way to install](docs/install.md)):
 
 ```sh
+# macOS or Linux: the release binaries, checked against the release's SHA256SUMS
+curl -fsSL https://github.com/alexnodeland/hoist/releases/latest/download/install.sh | sh
+# or Homebrew
+brew install alexnodeland/tap/hoist
+# or from source
 cargo install --locked --git https://github.com/alexnodeland/hoist hoist-report hoist-mcp
+
 hoist doctor
 ```
 
@@ -139,9 +145,9 @@ Hoist is also a research project. The paper, [*Compile What the Environment Deci
 
 ## Status
 
-Hoist is pre-release.
+Hoist is pre-1.0.
 - Every piece of the first design is built, tested and measured ([implementation status](docs/design.md#implementation-status-2026-09-26)).
-- 0.1.0 is prepared ([changelog](CHANGELOG.md)) but not yet tagged. The file formats carry their own versions.
+- 0.2.0 is the first release ([changelog](CHANGELOG.md)). The file formats carry their own versions.
 - No release is on crates.io yet, because Hoist depends on a [fugue](https://github.com/alexnodeland/fugue) feature that is not released. The `hoist-*` crates exist there only as empty 0.0.0 placeholders that hold their names.
 - What is left is on [the roadmap](docs/roadmap.md).
 
