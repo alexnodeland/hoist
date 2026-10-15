@@ -1,6 +1,6 @@
 # Claims and their evidence
 
-Each number in [the working paper](../../paper/hoist.md)'s abstract and contributions, what kind of evidence it rests on, and where it is recomputed. *Live* means agents run with the speculator; *replay* means a speculator replayed against τ²-bench's environment; *record* means a replay or count from published trajectories alone (`pilot/check_flow.py --trace`), whose savings are exact and whose detours are lower bounds. Intervals are 95%, from bootstraps over tasks.
+Each number in [the working paper](../../paper/hoist.md)'s abstract, contributions and results, what kind of evidence it rests on, and where it is recomputed. *Live* means agents run with the speculator; *replay* means a speculator replayed against τ²-bench's environment; *record* means a replay or count from published trajectories alone (`pilot/check_flow.py --trace`), whose savings are exact and whose detours are lower bounds. Intervals are 95%, from bootstraps over tasks.
 
 | Claim | Number | Evidence | Recomputed by |
 |---|---|---|---|
