@@ -1,36 +1,36 @@
 # Walkthrough: a flow for your own MCP server
 
-Every result so far comes from τ²-bench's tools. This page runs the whole loop on a server stretto was never built around, [the official MCP filesystem server](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem), serving a folder of notes. The loop: record sessions, learn a flow with no key and review it, audit it on sessions it never saw, serve it and read what it did, then learn it again and review what changed.
+Every result so far comes from τ²-bench's tools. This page runs the whole loop on a server Hoist was never built around, [the official MCP filesystem server](https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem), serving a folder of notes. The loop: record sessions, learn a flow with no key and review it, audit it on sessions it never saw, serve it and read what it did, then learn it again and review what changed.
 
 A scripted agent stands in for an LLM: it searches the notes for what the customer asks about and reads what it finds. [`scripts/walkthrough.py`](../scripts/walkthrough.py) runs every step below and checks the outcomes. It needs Node 18 or later, Python 3 and the two binaries, and no key. CI runs it, so this page cannot drift from the code:
 
 ```sh
-cargo build -p stretto-report -p stretto-proxy
+cargo build -p hoist-report -p hoist-mcp
 python3 scripts/walkthrough.py --bin target/debug
 ```
 
 ## 1. Wrap the server
 
-In the MCP host's configuration, put `stretto-proxy` in place of the server's command and the server's command after `--`:
+In the MCP host's configuration, put `hoist-mcp` in place of the server's command and the server's command after `--`:
 
 ```json
 {
   "mcpServers": {
     "notes": {
-      "command": "stretto-proxy",
-      "args": ["--record", "~/.stretto/notes", "--domain", "notes",
-               "--context", "~/.stretto/notes-context.jsonl",
+      "command": "hoist-mcp",
+      "args": ["--record", "~/.hoist/notes", "--domain", "notes",
+               "--context", "~/.hoist/notes-context.jsonl",
                "--", "npx", "-y", "@modelcontextprotocol/server-filesystem", "/home/me/notes"]
     }
   }
 }
 ```
 
-- `--record` writes one log per session, `~/.stretto/notes/<session>.jsonl`.
+- `--record` writes one log per session, `~/.hoist/notes/<session>.jsonl`.
 - `--domain` names the flow's domain; any name will do.
 - **`--context`** is how the proxy sees the conversation, which MCP never carries. The host appends one JSON line per message: `{"role": "user" | "assistant", "content": text}`. The proxy reads the file from its start, so give each session its own file, or empty it when a session starts. Without it, a flow still works, but it cannot prefer what the customer mentioned, and the logs have no customer turns.
 
-**Check the tools' kinds.** A flow only calls tools the server marks `readOnlyHint: true`. The filesystem server marks all 14 of its tools: 10 read, such as `search_files` and `read_text_file`, and 4 write, such as `write_file` and `move_file`. The first session's log holds the server's `tools/list` response; look for `annotations`. A tool with no hint counts as `generic`, and a flow never calls it. If your server gives no hints, write a manifest and pass it to `stretto learn --manifest`:
+**Check the tools' kinds.** A flow only calls tools the server marks `readOnlyHint: true`. The filesystem server marks all 14 of its tools: 10 read, such as `search_files` and `read_text_file`, and 4 write, such as `write_file` and `move_file`. The first session's log holds the server's `tools/list` response; look for `annotations`. A tool with no hint counts as `generic`, and a flow never calls it. If your server gives no hints, write a manifest and pass it to `hoist learn --manifest`:
 
 ```json
 {"domain": "notes", "tools": {"search_files": "read", "read_text_file": "read", "write_file": "write"}}
@@ -42,24 +42,24 @@ Use the agent as usual. The walkthrough records eight sessions, such as "What's 
 
 **How many sessions.** A flow only knows what the sessions showed: which lookup followed which call, and where each lookup's arguments came from. Replayed on τ²-bench's tasks, a flow learned from five of an agent's own sessions saved 12 to 19% of retail turns with the habit alone ([the cold start](results/cold-start-2026-09-24.md)). Which sessions matter more than how many. Record the kinds of request the agent will see; a request type never recorded gets no help.
 
-**What the logs hold:** every message the proxy forwarded (`client` and `server`), the conversation (`context`), and the proxy's own requests (`proxy`), with timestamps. Here that is every file the agent read, verbatim ([the log format](../crates/stretto-proxy/README.md#log-format)). Treat the logs like the data the tools touch.
+**What the logs hold:** every message the proxy forwarded (`client` and `server`), the conversation (`context`), and the proxy's own requests (`proxy`), with timestamps. Here that is every file the agent read, verbatim ([the log format](../crates/hoist-mcp/README.md#log-format)). Treat the logs like the data the tools touch.
 
 ## 3. Learn a flow, with no key, and review it
 
 ```sh
-stretto learn --sessions ~/.stretto/notes --domain notes --habit-only --out notes.flow.json
+hoist learn --sessions ~/.hoist/notes --domain notes --habit-only --out notes.flow.json
 ```
 
 ```text
-stretto: learned the notes flow from 8 sessions (14 tools) and wrote notes.flow.json
+hoist: learned the notes flow from 8 sessions (14 tools) and wrote notes.flow.json
 ```
 
 `--habit-only` asks no System-One model. Every session trains the habit, and the flow has no arbiter, so the proxy serves it by counting, with no key: by default with `reach`, each lookup's chance of being made before the agent's next write (`--flow-decider habit` serves the habit's chance of it being made next). From a deployment's first sessions this is the steadier start: in the cold start results, the habit's counts alone saved more than an arbiter fitted on those same sessions. `--arbiter-from data/arbiters/retail.json` instead adds [a shipped arbiter](../data/arbiters/README.md), fitted on four agents' τ²-bench decisions. It asks Jev at each decision when the flow serves, so it needs `TYPESAFE_API_KEY`.
 
-The flow is a JSON file ([every field](formats.md)). Review it before serving it; `stretto flow-show` says what it will do ([reviewing flows](review.md)):
+The flow is a JSON file ([every field](formats.md)). Review it before serving it; `hoist flow-show` says what it will do ([reviewing flows](review.md)):
 
 ```sh
-stretto flow-show notes.flow.json
+hoist flow-show notes.flow.json
 ```
 
 ```markdown
@@ -96,7 +96,7 @@ stretto flow-show notes.flow.json
 Record a few more sessions without the flow, then score them under it:
 
 ```sh
-stretto audit --flow notes.flow.json --sessions ~/.stretto/notes-new
+hoist audit --flow notes.flow.json --sessions ~/.hoist/notes-new
 ```
 
 ```text
@@ -118,15 +118,15 @@ A flow with an arbiter is audited with its arbiter unless `--decider habit` says
 
 ## 5. Serve it
 
-Add `--flow` to the proxy's arguments (`stretto init --flow` prints them for your host):
+Add `--flow` to the proxy's arguments (`hoist init --flow` prints them for your host):
 
 ```json
-"args": ["--record", "~/.stretto/notes", "--domain", "notes", "--context", "~/.stretto/notes-context.jsonl",
-         "--flow", "~/.stretto/notes.flow.json", "--flow-decider", "reach",
+"args": ["--record", "~/.hoist/notes", "--domain", "notes", "--context", "~/.hoist/notes-context.jsonl",
+         "--flow", "~/.hoist/notes.flow.json", "--flow-decider", "reach",
          "--", "npx", "-y", "@modelcontextprotocol/server-filesystem", "/home/me/notes"]
 ```
 
-`--flow-decider reach` is the proxy's default for a flow without an arbiter; `stretto init` writes it out so the configuration says how the flow decides.
+`--flow-decider reach` is the proxy's default for a flow without an arbiter; `hoist init` writes it out so the configuration says how the flow decides.
 
 Asked "Summarize the October meetings.", files the agent had never read, the agent searched once. The flow read both meetings behind that one call, so the agent made 1 call where it had made 3. The agent got its own result with one more text item:
 
@@ -159,8 +159,8 @@ Each entry has the site, each option's probability, the lookup's probability (`p
 The three sessions recorded for the audit are new training data. Learn from all eleven, and compare the new flow with the one being served:
 
 ```sh
-stretto learn --sessions ~/.stretto/notes-all --domain notes --habit-only --out notes-2.flow.json
-stretto flow-diff notes.flow.json notes-2.flow.json
+hoist learn --sessions ~/.hoist/notes-all --domain notes --habit-only --out notes-2.flow.json
+hoist flow-diff notes.flow.json notes-2.flow.json
 ```
 
 ```markdown
@@ -185,14 +185,14 @@ Nothing needs review: the flow runs the same program, and calls no tool, makes n
 
 ## See it in the console
 
-[The console](console.md) shows the same loop in a browser. Start `stretto-console` on the same `~/.stretto`, and open the URL it prints:
+[The console](console.md) shows the same loop in a browser. Start `hoist-console` on the same `~/.hoist`, and open the URL it prints:
 - it finds the notes server in its sessions, ready to add to its registry with its host configuration;
 - it shows each session's calls with the lookups the flow made after them;
 - it draws the flow's graph.
 
 ## Privacy and limits
 
-- **Logs** hold every tool call and result verbatim, here every file read. Keep them where the data may live, and never commit them. A flow holds no transcript: counts, tool and argument names, JSON paths and the tools' documentation. Code features (`map.ids`) can hold values from training outputs ([the formats page](formats.md#reviewing-a-flow)). [#24](https://github.com/alexnodeland/stretto/issues/24) tracks privacy for recorded sessions.
-- **One server per proxy.** A server that speaks Streamable HTTP is wrapped with `--upstream URL` in place of a command ([the proxy's README](../crates/stretto-proxy/README.md#usage)). An agent with several servers leaves one log per wrapped server; recorded into one directory, the logs of one host session are learned as one session ([several servers](../crates/stretto-proxy/README.md#several-servers)).
+- **Logs** hold every tool call and result verbatim, here every file read. Keep them where the data may live, and never commit them. A flow holds no transcript: counts, tool and argument names, JSON paths and the tools' documentation. Code features (`map.ids`) can hold values from training outputs ([the formats page](formats.md#reviewing-a-flow)). [#24](https://github.com/alexnodeland/hoist/issues/24) tracks privacy for recorded sessions.
+- **One server per proxy.** A server that speaks Streamable HTTP is wrapped with `--upstream URL` in place of a command ([the proxy's README](../crates/hoist-mcp/README.md#usage)). An agent with several servers leaves one log per wrapped server; recorded into one directory, the logs of one host session are learned as one session ([several servers](../crates/hoist-mcp/README.md#several-servers)).
 - **What a flow can bind.** An argument's value must appear whole in an earlier result: as a JSON string, or as a line of a result that is not JSON. A value the agent composes, such as a path joined from a folder and a file name, has no source. A lookup that needs one hands back.
 - **Only reads.** A flow never writes. Guards and the confirmation judge check writes, but only for τ²-bench's retail and airline domains (`--guards`).

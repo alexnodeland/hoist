@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * A session's or a server's mode, in the brand's terms: serving is petrol
- * (stretto acts), shadow a dashed petrol outline (it decides but looks
+ * (Hoist acts), shadow a dashed petrol outline (it decides but looks
  * nothing up), recording neutral (it only records).
  */
 import { computed } from 'vue'
@@ -56,16 +56,16 @@ const view = computed(() => {
 <style scoped>
 .mode-served :deep(.badge-dot),
 .mode-serve :deep(.badge-dot) {
-  background: var(--stretto-accent-graphic);
+  background: var(--hoist-accent-graphic);
 }
 
 .mode-shadow :deep(.badge-dot) {
   background: transparent;
-  box-shadow: inset 0 0 0 1.5px var(--stretto-accent-graphic);
+  box-shadow: inset 0 0 0 1.5px var(--hoist-accent-graphic);
 }
 
 .mode-record :deep(.badge-dot),
 .mode-recorded :deep(.badge-dot) {
-  background: var(--stretto-border-strong);
+  background: var(--hoist-border-strong);
 }
 </style>

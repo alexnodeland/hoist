@@ -44,7 +44,7 @@ export function checkThreshold(value: number | null): string | null {
   return null
 }
 
-/** The domains the proxy has policy guards for (`stretto_report::guards`). */
+/** The domains the proxy has policy guards for (`hoist_report::guards`). */
 export const GUARDED_DOMAINS: readonly string[] = ['retail', 'airline']
 
 export type ServerErrors = Partial<

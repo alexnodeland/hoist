@@ -50,8 +50,8 @@ const problems = computed(
 <template>
   <div class="page">
     <UiPageHeader title="Overview">
-      What stretto has recorded and learned in
-      <span class="mono">{{ meta?.data_dir ?? '~/.stretto' }}</span
+      What Hoist has recorded and learned in
+      <span class="mono">{{ meta?.data_dir ?? '~/.hoist' }}</span
       >.
       <template #actions>
         <UiButton
@@ -145,7 +145,7 @@ const problems = computed(
 
         <UiCard
           title="Health"
-          :caption="problems ? `${problems} to look at` : 'What stretto doctor would check'"
+          :caption="problems ? `${problems} to look at` : 'What hoist doctor would check'"
         >
           <HealthList v-if="data && data.health.length" :items="data.health" />
           <p v-else-if="data" class="muted">Nothing to report.</p>
@@ -189,8 +189,8 @@ const problems = computed(
           />
           <div v-else-if="!data" class="pad"><UiSkeleton :lines="6" height="18px" /></div>
           <UiEmpty v-else :icon="ScrollText" title="No sessions yet" compact>
-            Put a server behind stretto-proxy and use your agent as usual: each session is recorded
-            and shows here.
+            Put a server behind hoist-mcp and use your agent as usual: each session is recorded and
+            shows here.
           </UiEmpty>
         </UiCard>
 
@@ -217,7 +217,7 @@ const problems = computed(
           </ul>
           <div v-else-if="!data" class="pad"><UiSkeleton :lines="5" height="18px" /></div>
           <UiEmpty v-else :icon="SquareTerminal" title="No jobs yet" compact>
-            Jobs run the stretto CLI for you: learn a flow from sessions, promote it, audit it.
+            Jobs run the Hoist CLI for you: learn a flow from sessions, promote it, audit it.
           </UiEmpty>
         </UiCard>
       </div>
@@ -297,8 +297,8 @@ const problems = computed(
   justify-content: space-between;
   gap: 12px;
   padding: 12px 20px;
-  border-bottom: 1px solid var(--stretto-border);
-  color: var(--stretto-text);
+  border-bottom: 1px solid var(--hoist-border);
+  color: var(--hoist-text);
 }
 
 .jobs li:last-child .job {
@@ -307,7 +307,7 @@ const problems = computed(
 
 .job:hover {
   background: var(--c-hover);
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .job-title {

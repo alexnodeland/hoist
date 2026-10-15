@@ -21,7 +21,7 @@
 #   ceilings  each set's read-only ceiling (ceiling.py)
 #
 # Environment: WORK (default work), TAU2 (τ²-bench's checkout, default ../tau2-bench), PY (a Python with τ²-bench
-# installed, default python3), S (the stretto binary, default target/release/stretto), JOBS (episodes at once, 3).
+# installed, default python3), S (the Hoist binary, default target/release/hoist), JOBS (episodes at once, 3).
 # A replay writes $WORK/replays/SET/c-<domain>-<agent>[-<source>]-<decider>[-<θ>]/check.json and removes its
 # episodes' folders. One whose check.json exists is skipped, so a batch picks up where it stopped.
 set -uo pipefail
@@ -31,7 +31,7 @@ mkdir -p "${WORK:=work}"
 WORK=$(cd "$WORK" && pwd)
 TAU2=$(cd "${TAU2:-../tau2-bench}" && pwd)
 PY=${PY:-python3}
-S=${S:-$ROOT/target/release/stretto}
+S=${S:-$ROOT/target/release/hoist}
 JOBS=${JOBS:-3}
 FLOWS=$WORK/flows
 POOLS=$ROOT/docs/results

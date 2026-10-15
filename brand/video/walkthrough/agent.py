@@ -3,7 +3,7 @@
 
     agent.py [--flow FILE] [--logs DIR] [--quiet] [--from FILE] [REQUEST...]
 
-Each REQUEST is one session: the agent starts `stretto-proxy` in front of the
+Each REQUEST is one session: the agent starts `hoist-mcp` in front of the
 official MCP filesystem server, as a host would, writes the conversation to the
 proxy's --context file, searches the notes for what the request asks about,
 reads what it needs and replies. With --flow, the proxy serves that flow (with
@@ -14,7 +14,7 @@ says so.
 
 It prints each call and the exact text of each result, or with --quiet one line
 per session. It mirrors scripts/walkthrough.py and docs/walkthrough.md: the
-same notes, the same requests, the same behavior. It needs stretto-proxy on
+same notes, the same requests, the same behavior. It needs hoist-mcp on
 PATH, Node 18+ (npx) and no key.
 """
 
@@ -49,7 +49,7 @@ REQUESTS = {
 
 
 class Session:
-    """One MCP session through stretto-proxy, as a host runs it."""
+    """One MCP session through hoist-mcp, as a host runs it."""
 
     def __init__(self, proxy: list[str], server: list[str], root: Path, context: Path):
         self.context = context
@@ -183,13 +183,13 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("requests", nargs="*", help="one session per request")
     ap.add_argument("--from", dest="from_file", help="read the requests from this file, one per line")
-    ap.add_argument("--flow", help="serve this flow (stretto-proxy --flow FILE)")
-    ap.add_argument("--logs", default="~/.stretto/logs/notes",
-                    help="where the proxy records sessions (default: ~/.stretto/logs/notes, where `stretto init` puts them)")
+    ap.add_argument("--flow", help="serve this flow (hoist-mcp --flow FILE)")
+    ap.add_argument("--logs", default="~/.hoist/logs/notes",
+                    help="where the proxy records sessions (default: ~/.hoist/logs/notes, where `hoist init` puts them)")
     ap.add_argument("--notes", default="notes", help="the folder the filesystem server serves (default: notes)")
     ap.add_argument("--work", default=".", help="where to keep the conversation files (default: .)")
-    ap.add_argument("--proxy", default="stretto-proxy", help="the stretto-proxy binary")
-    ap.add_argument("--server", default=os.environ.get("STRETTO_DEMO_SERVER", SERVER), help="the filesystem server's command")
+    ap.add_argument("--proxy", default="hoist-mcp", help="the hoist-mcp binary")
+    ap.add_argument("--server", default=os.environ.get("HOIST_DEMO_SERVER", SERVER), help="the filesystem server's command")
     ap.add_argument("--quiet", action="store_true", help="one line per session")
     args = ap.parse_args()
     if args.from_file:

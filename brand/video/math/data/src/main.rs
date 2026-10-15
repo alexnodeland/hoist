@@ -1,11 +1,11 @@
-//! The math film's data from stretto's own code, on the console's test
-//! fixtures: the six sessions `stretto learn` turned into `shop.flow.json`.
+//! The math film's data from Hoist's own code, on the console's test
+//! fixtures: the six sessions `hoist learn` turned into `shop.flow.json`.
 //!
-//!   cargo run --release -- ../../../../crates/stretto-console/tests/fixtures/home/logs/shop > fugue.json
+//!   cargo run --release -- ../../../../crates/hoist-console/tests/fixtures/home/logs/shop > fugue.json
 //!   python3 results.py ../../../../docs/results/reach-2026-09-26.json fugue.json > ../data.js
 //!
 //! It writes, as JSON:
-//! - `alpha`: the chain `stretto learn` runs for α (stretto-model's
+//! - `alpha`: the chain `hoist learn` runs for α (hoist-model's
 //!   `alpha_posterior`: a `Normal(0, 2)` prior on `log α`, the prequential
 //!   log-likelihood as a `factor`, 600 adaptive Metropolis–Hastings draws after
 //!   300 warm-up, seed 7), every kept draw in order; and the same posterior's
@@ -20,9 +20,9 @@ use rand::SeedableRng;
 use serde_json::{json, Value};
 use std::path::PathBuf;
 use std::sync::Arc;
-use stretto_model::abstraction::{steps, Action, Vocab};
-use stretto_model::alpha::prequential_loglik;
-use stretto_model::world::{BackoffModel, EncodedEpisode};
+use hoist_model::abstraction::{steps, Action, Vocab};
+use hoist_model::alpha::prequential_loglik;
+use hoist_model::world::{BackoffModel, EncodedEpisode};
 
 const ORDER: usize = 2;
 const SAMPLES: usize = 600;
@@ -38,12 +38,12 @@ fn name(vocab: &Vocab, id: u32) -> String {
 
 fn main() -> Result<()> {
     let dir = PathBuf::from(std::env::args().nth(1).context("usage: math-film-data SESSIONS_DIR")?);
-    let logs = stretto_trace::mcp::read_sessions(&dir)?;
-    // As `stretto learn` reads sessions: a session with no reward recorded passed.
+    let logs = hoist_trace::mcp::read_sessions(&dir)?;
+    // As `hoist learn` reads sessions: a session with no reward recorded passed.
     let episodes: Vec<_> = logs
         .iter()
         .map(|l| {
-            let mut e = stretto_trace::mcp::episode(l);
+            let mut e = hoist_trace::mcp::episode(l);
             e.reward = 1.0;
             e
         })
@@ -59,7 +59,7 @@ fn main() -> Result<()> {
     let v = vocab.len();
     let names: Vec<String> = (0..v as u32).map(|i| name(&vocab, i)).collect();
 
-    // alpha's chain, as stretto-model's alpha_posterior runs it.
+    // alpha's chain, as hoist-model's alpha_posterior runs it.
     let eps = Arc::new(encoded.clone());
     let mut rng = StdRng::seed_from_u64(SEED);
     let chain = adaptive_mcmc_chain(
@@ -126,7 +126,7 @@ fn main() -> Result<()> {
     let seqs: Vec<Vec<String>> = encoded.iter().map(|e| e.actions.iter().map(|&a| name(&vocab, a)).collect()).collect();
 
     let out = json!({
-        "about": "stretto-model on the console's fixtures (logs/shop: the quickstart's six sessions), by brand/video/math/data",
+        "about": "hoist-model on the console's fixtures (logs/shop: the quickstart's six sessions), by brand/video/math/data",
         "vocab": names,
         "episodes": seqs,
         "alpha": {"prior": "log α ~ Normal(0, 2)", "samples": SAMPLES, "warmup": SAMPLES / 2, "seed": SEED,

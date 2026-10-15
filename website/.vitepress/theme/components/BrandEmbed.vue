@@ -71,9 +71,9 @@ const label = computed(
   () =>
     props.title ??
     {
-      explainer: 'How stretto works: the explainer video',
+      explainer: 'How Hoist works: the explainer video',
       walkthrough: 'The walkthrough, recorded',
-      math: 'The math and the probabilistic programs inside stretto',
+      math: 'The math and the probabilistic programs inside Hoist',
       console: 'A tour of the console'
     }[props.kind]
 )

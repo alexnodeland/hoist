@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
-// `npm run e2e:real`: end-to-end tests against the real stretto-console, on a
-// copy of its test fixtures (crates/stretto-console/tests/fixtures/home).
+// `npm run e2e:real`: end-to-end tests against the real hoist-console, on a
+// copy of its test fixtures (crates/hoist-console/tests/fixtures/home).
 // e2e/real/serve.sh starts the server from the binaries cargo built;
 // `vite preview` serves the built UI (console/dist) under the server's
 // Content-Security-Policy and passes /api on to it. The tests share the data
@@ -37,7 +37,7 @@ export default defineConfig({
       reuseExistingServer: false,
       timeout: 60_000,
       env: {
-        STRETTO_CONSOLE_URL: `http://127.0.0.1:${API_PORT}`,
+        HOIST_CONSOLE_URL: `http://127.0.0.1:${API_PORT}`,
         VITE_CONFIG_NATIVE_IGNORE_WARNING: 'true',
       },
     },

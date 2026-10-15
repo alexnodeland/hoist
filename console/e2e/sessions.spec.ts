@@ -17,14 +17,14 @@ test('the sessions list filters by mode and text, and keeps the filters in the a
   await expect(page.getByText('42 sessions')).toBeVisible()
 })
 
-test('a served session shows each turn, and the lookups stretto read ahead under the call', async ({
+test('a served session shows each turn, and the lookups Hoist read ahead under the call', async ({
   page,
 }) => {
   const key = await sessionKey(page, 'served')
   await page.goto(`/sessions/${key}`)
   await expect(page.getByRole('heading', { name: key })).toBeVisible()
   await expect(page.getByText('Customer').first()).toBeVisible()
-  await expect(page.getByText('Read ahead by stretto: 3 lookups').first()).toBeVisible()
+  await expect(page.getByText('Read ahead by Hoist: 3 lookups').first()).toBeVisible()
   await expect(page.getByTestId('decision-made')).toHaveCount(3)
   await expect(page.getByText('get_order_details at 0.05, below 0.3').first()).toBeVisible()
   await expect(page.getByText('0.87').first()).toBeVisible()
@@ -63,7 +63,7 @@ test('the decisions tab lists every decision, and the raw log its lines', async 
   await page.getByRole('tab', { name: /Raw log/ }).click()
   await expect(page.getByText('tools/call find_user_id_by_email').first()).toBeVisible()
   await page.getByRole('radio', { name: 'JSON lines' }).click()
-  await expect(page.locator('ol.lines li').first()).toContainText('stretto_mcp_log')
+  await expect(page.locator('ol.lines li').first()).toContainText('hoist_mcp_log')
   await page.getByRole('tab', { name: /Tools/ }).click()
   await expect(page.getByRole('cell', { name: 'cancel_pending_order' })).toBeVisible()
 })

@@ -1,19 +1,19 @@
 #!/bin/sh
-# stretto's quickstart: record, learn, review and serve a flow on
-# stretto-mcp-demo's tiny shop, with no key and no network.
+# Hoist's quickstart: record, learn, review and serve a flow on
+# hoist-mcp-demo's tiny shop, with no key and no network.
 #
 #   examples/quickstart/run.sh [--bin DIR] [--work DIR]
 #
 # A scripted agent stands in for an LLM. For each customer it finds the
 # user, reads their details and both their orders, and cancels one when
-# asked. The script records six such sessions through stretto-proxy, learns
-# a flow from them (`stretto learn --habit-only`), shows it for review
-# (`stretto flow-show`), then serves it to two new customers and counts the
+# asked. The script records six such sessions through hoist-mcp, learns
+# a flow from them (`hoist learn --habit-only`), shows it for review
+# (`hoist flow-show`), then serves it to two new customers and counts the
 # calls the agent no longer makes. It exits non-zero if a step does not do
 # what examples/quickstart/README.md says. It needs only a POSIX shell and
 # the binaries, so it also runs in the container image.
 #
-# --bin DIR   where stretto, stretto-proxy and stretto-mcp-demo are
+# --bin DIR   where hoist, hoist-mcp and hoist-mcp-demo are
 #             (default: PATH, else this checkout's target/release or
 #             target/debug)
 # --work DIR  a new or empty directory for the logs and the flow
@@ -39,38 +39,38 @@ fail() {
 
 # The binaries: --bin, else PATH, else this checkout's build.
 if [ -z "$bin" ]; then
-    if command -v stretto >/dev/null 2>&1 && command -v stretto-proxy >/dev/null 2>&1 &&
-        command -v stretto-mcp-demo >/dev/null 2>&1; then
-        bin=$(dirname "$(command -v stretto)")
+    if command -v hoist >/dev/null 2>&1 && command -v hoist-mcp >/dev/null 2>&1 &&
+        command -v hoist-mcp-demo >/dev/null 2>&1; then
+        bin=$(dirname "$(command -v hoist)")
     else
         root=$(cd "$(dirname "$0")/../.." && pwd)
         for dir in "$root/target/release" "$root/target/debug"; do
-            if [ -x "$dir/stretto" ] && [ -x "$dir/stretto-proxy" ]; then
+            if [ -x "$dir/hoist" ] && [ -x "$dir/hoist-mcp" ]; then
                 bin=$dir
                 break
             fi
         done
     fi
 fi
-[ -n "$bin" ] || fail "no stretto binaries on PATH or in target/: install them (docs/install.md), or
-    cargo build --release -p stretto-report -p stretto-proxy"
-stretto=$bin/stretto
-proxy=$bin/stretto-proxy
-demo=$bin/stretto-mcp-demo
-for b in "$stretto" "$proxy" "$demo"; do
+[ -n "$bin" ] || fail "no hoist binaries on PATH or in target/: install them (docs/install.md), or
+    cargo build --release -p hoist-report -p hoist-mcp"
+hoist=$bin/hoist
+proxy=$bin/hoist-mcp
+demo=$bin/hoist-mcp-demo
+for b in "$hoist" "$proxy" "$demo"; do
     [ -x "$b" ] || fail "$b is missing (pass --bin DIR)"
 done
 
 if [ -z "$work" ]; then
-    work=$(mktemp -d "${TMPDIR:-/tmp}/stretto-quickstart.XXXXXX")
+    work=$(mktemp -d "${TMPDIR:-/tmp}/hoist-quickstart.XXXXXX")
 elif [ -d "$work" ] && [ -n "$(ls -A "$work")" ]; then
     fail "--work $work is not empty"
 fi
 mkdir -p "$work/context"
 work=$(cd "$work" && pwd)
-echo "stretto quickstart: $("$stretto" --version) from $bin, working in $work"
+echo "hoist quickstart: $("$hoist" --version) from $bin, working in $work"
 
-# One MCP session: stretto-proxy in front of the demo shop, as an MCP host
+# One MCP session: hoist-mcp in front of the demo shop, as an MCP host
 # runs it, with the agent on the other end of two FIFOs.
 start() { # start NAME [PROXY OPTIONS...]
     name=$1
@@ -104,14 +104,14 @@ rpc() { # rpc METHOD PARAMS
             ;;
         esac
     done
-    fail "stretto-proxy closed during $1 (see $work/proxy.log)"
+    fail "hoist-mcp closed during $1 (see $work/proxy.log)"
 }
 
 stop() {
     exec 3>&-
     cat <&4 >/dev/null
     exec 4<&-
-    wait "$pid" || fail "stretto-proxy exited with $? (see $work/proxy.log)"
+    wait "$pid" || fail "hoist-mcp exited with $? (see $work/proxy.log)"
     rm -f "$work/to-proxy" "$work/from-proxy"
 }
 
@@ -165,7 +165,7 @@ customer() { # customer N cancel|status
 }
 
 echo
-echo "1. Record six customers of the demo shop, served by the scripted agent through stretto-proxy"
+echo "1. Record six customers of the demo shop, served by the scripted agent through hoist-mcp"
 for spec in 1:cancel 2:status 3:cancel 4:status 5:cancel 6:cancel; do
     n=${spec%%:*}
     kind=${spec#*:}
@@ -180,15 +180,15 @@ echo "   $sessions session logs in $work/logs"
 
 echo
 echo "2. Learn a flow from them, with no key"
-echo "   \$ stretto learn --sessions logs --domain shop --habit-only --out shop.flow.json"
-"$stretto" learn --sessions "$work/logs" --domain shop --habit-only --out "$work/shop.flow.json" \
-    2>"$work/learn.log" || fail "stretto learn: $(cat "$work/learn.log")"
+echo "   \$ hoist learn --sessions logs --domain shop --habit-only --out shop.flow.json"
+"$hoist" learn --sessions "$work/logs" --domain shop --habit-only --out "$work/shop.flow.json" \
+    2>"$work/learn.log" || fail "hoist learn: $(cat "$work/learn.log")"
 echo "   $(tail -n 1 "$work/learn.log")"
 
 echo
 echo "3. Review it: the tools it may call, the lookups it may make and where their arguments come from"
-echo "   \$ stretto flow-show shop.flow.json"
-"$stretto" flow-show "$work/shop.flow.json" >"$work/shop.flow.md" || fail "stretto flow-show"
+echo "   \$ hoist flow-show shop.flow.json"
+"$hoist" flow-show "$work/shop.flow.json" >"$work/shop.flow.md" || fail "hoist flow-show"
 # Its tools, sites and bindings; shop.flow.md also has the program it runs.
 awk '/^## / { part = $2 } part ~ /^(Tools|Sites|Bindings)$/ && /^(## |- |\|)/ { print "   " $0 }' \
     "$work/shop.flow.md"
@@ -243,5 +243,5 @@ awk 'function get(key, pattern) {
 
 echo
 echo "Done. Everything is in $work: the session logs, the flow and its review (shop.flow.md)."
-echo "Next: wrap your own MCP server with \`stretto init\` (docs/install.md), and run the whole loop"
+echo "Next: wrap your own MCP server with \`hoist init\` (docs/install.md), and run the whole loop"
 echo "on a real server with docs/walkthrough.md."

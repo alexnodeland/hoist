@@ -6,7 +6,7 @@ to the episode's `trajectory.jsonl` (τ²-bench's message shape), and the
 environment's state after every call is saved to `state.pkl`, which
 `run_bench_episode.py` scores once the episode ends. A call budget guards
 against runaway episodes. `tools/list` marks each tool `readOnlyHint: true` or
-`false` from the lists the converters use, so a flow behind `stretto-proxy`
+`false` from the lists the converters use, so a flow behind `hoist-mcp`
 looks up only reads.
 
 Results are printed as the benchmark prints them to its own agents, then as the
@@ -26,7 +26,7 @@ Backends:
   BFCL is imported from `--bfcl-dir` (an unpacked `bfcl-eval` wheel or its
   site-packages).
 
-Usage (normally started by the agent's MCP host, behind `stretto-proxy`):
+Usage (normally started by the agent's MCP host, behind `hoist-mcp`):
 
     python bench_mcp.py agentdojo --suite travel --task user_task_3 --episode-dir DIR [--version v1.2.1]
     python bench_mcp.py bfcl --task multi_turn_base_12 --bfcl-dir DIR --episode-dir DIR

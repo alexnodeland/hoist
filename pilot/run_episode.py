@@ -2,7 +2,7 @@
 
 The agent is GLM in Claude Code on Z.ai's coding endpoint (`glm-claude.sh`),
 with no built-in tools: its only tools are the task's, served by
-`tau2_mcp.py` behind `stretto-proxy`, which records the session. One
+`tau2_mcp.py` behind `hoist-mcp`, which records the session. One
 Claude Code process lives for the whole episode (stream-json in and out).
 Each agent turn ends with a message to the customer; the customer, τ²-bench's
 user simulator run through `customer.py`, answers, and the answer is the
@@ -13,13 +13,13 @@ The episode is scored with τ²-bench's own evaluator on the final database
 are left out).
 
 The guards arm (`--arm guards`) is the same episode with the proxy checking
-each of the agent's calls against stretto's policy guards for the domain: a
+each of the agent's calls against Hoist's policy guards for the domain: a
 call an enforced rule refuses never reaches the tools, and the agent gets an
 error result that says why. The harness hands the proxy the conversation
 (`context.jsonl`), which MCP does not carry.
 
 The flows arm (`--arm flows`) is the same episode with a read-only flow
-behind the tools: `stretto flow-serve` is compiled before the agent starts
+behind the tools: `hoist flow-serve` is compiled before the agent starts
 (from cached System-One answers, goal free) and `tau2_mcp.py` asks it after
 every call, making the lookups it names within the same tool response.
 
@@ -47,7 +47,7 @@ assertions, and the required actions where the task asks). As in τ²-bench,
 the episode ends when the agent calls `done`, and a turn that ends with
 neither `done` nor a transfer to a human is an agent error. With `--handback
 RUNS.json` (`scripts/telecom_workflow.py --json`, or one run of
-`stretto-procedure`) the agent takes over from the compiled workflow: the
+`hoist-procedure`) the agent takes over from the compiled workflow: the
 workflow's calls on the task are made first, with their effects in place,
 and the agent is told what they returned and that the workflow's own check
 of the ticket's outcome failed (the cascade).
@@ -93,8 +93,8 @@ from tau2.user.user_simulator_base import OUT_OF_SCOPE, STOP, TRANSFER
 HERE = Path(__file__).resolve().parent
 # The wrapper each agent CLI runs through: GLM on Z.ai, or a Claude model.
 WRAPPERS = customer.WRAPPERS
-PROXY = HERE.parent / "target" / "release" / "stretto-proxy"
-STRETTO = HERE.parent / "target" / "release" / "stretto"
+PROXY = HERE.parent / "target" / "release" / "hoist-mcp"
+HOIST = HERE.parent / "target" / "release" / "hoist"
 TAU2 = Path(os.environ.get("TAU2_DIR", HERE.parent.parent / "sierra-research" / "tau2-bench"))
 GREETING = "Hi! How can I help you today?"
 STOPS = (STOP, TRANSFER, OUT_OF_SCOPE)
@@ -142,10 +142,10 @@ def start_flow(args, episode: Path) -> tuple[subprocess.Popen, str]:
     if getattr(args, "flow_surprise", None) is not None:
         serving += ["--surprise", args.flow_surprise]
     if getattr(args, "flow", None):
-        command = [str(STRETTO), "serve", "--flow", str(args.flow)] + serving
+        command = [str(HOIST), "serve", "--flow", str(args.flow)] + serving
     else:
         command = [
-            str(STRETTO), "flow-serve",
+            str(HOIST), "flow-serve",
             "--tau2", str(args.tau2),
             "--domain", args.domain,
             "--questions", "v2",
@@ -185,7 +185,7 @@ def handback(runs: Path, task, env) -> tuple[list[dict], str]:
 
     data = json.loads(runs.read_text())
     if "verdict" in data:
-        # One run of `stretto-procedure`: its calls, then its check's read.
+        # One run of `hoist-procedure`: its calls, then its check's read.
         calls = [{"name": c["tool"], "arguments": c["arguments"]} for c in data["calls"]]
         probe = data["check"][0] if data.get("check") else None
     else:
@@ -240,23 +240,23 @@ def main() -> None:
     parser.add_argument("--flow-threshold", type=float, default=0.3)
     parser.add_argument(
         "--flow-surprise", metavar="off|NATS",
-        help="serve the flow with this surprise threshold, or without its gate (`stretto serve --surprise`)",
+        help="serve the flow with this surprise threshold, or without its gate (`hoist serve --surprise`)",
     )
-    parser.add_argument("--flow", type=Path, help="a compiled flow (`stretto compile`), else compiled here")
+    parser.add_argument("--flow", type=Path, help="a compiled flow (`hoist compile`), else compiled here")
     parser.add_argument(
         "--record-context", action="store_true",
         help="hand the proxy the conversation (as the guards arm does), so its session log can "
-        "train a flow with `stretto learn`",
+        "train a flow with `hoist learn`",
     )
     parser.add_argument(
         "--confirm-judge", choices=["log", "enforce"],
         help="guards arm: put each write the guards check for a confirmation to the System-One model "
-        "too (stretto-proxy --confirm-judge); needs --oracle-cache",
+        "too (hoist-mcp --confirm-judge); needs --oracle-cache",
     )
     parser.add_argument("--confirm-second", choices=["proposed", "described"], help="and ask the second question")
     parser.add_argument(
         "--confirm-second-shadow", action="store_true",
-        help="only log the second question's answer (stretto-proxy --confirm-second-shadow)",
+        help="only log the second question's answer (hoist-mcp --confirm-second-shadow)",
     )
     parser.add_argument(
         "--judge-oracle", default="jev", choices=["jev", "replay", "mock"],
@@ -266,7 +266,7 @@ def main() -> None:
     parser.add_argument(
         "--handback", type=Path, metavar="RUNS.json",
         help="solo: take over from the compiled workflow's run on the task (scripts/telecom_workflow.py --json, "
-        "or a stretto-procedure run)",
+        "or a hoist-procedure run)",
     )
     parser.add_argument(
         "--batch-reads", action="store_true",
@@ -276,7 +276,7 @@ def main() -> None:
     parser.add_argument(
         "--read-only-hints", action="store_true",
         help="mark τ²-bench's read tools readOnlyHint: true (writes false) in tools/list, as a real "
-        "server would, so `stretto learn` needs no --manifest (off in the pilots)",
+        "server would, so `hoist learn` needs no --manifest (off in the pilots)",
     )
     parser.add_argument(
         "--judge", metavar="claude:MODEL",
@@ -373,7 +373,7 @@ def main() -> None:
         if not key:
             raise SystemExit("--confirm-judge with --judge-oracle jev needs TYPESAFE_API_KEY")
         # mkstemp makes the file 0600; it lives outside the episode directory.
-        fd, key_file = tempfile.mkstemp(prefix="stretto-jev-")
+        fd, key_file = tempfile.mkstemp(prefix="hoist-jev-")
         with os.fdopen(fd, "w") as f:
             f.write(key)
         atexit.register(lambda: Path(key_file).unlink(missing_ok=True))

@@ -24,7 +24,7 @@ duration_ms: number, mode: SessionMode,
  */
 tool_calls: number, 
 /**
- * LLM turns, inferred as `stretto_trace` infers them: calls sent while
+ * LLM turns, inferred as `hoist_trace` infers them: calls sent while
  * another of the turn awaits its answer share it, and each message of
  * the agent's own (`--context`) is one.
  */

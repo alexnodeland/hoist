@@ -1,5 +1,5 @@
 /**
- * A session, recorded as stretto-proxy records it: the header, every line on
+ * A session, recorded as hoist-mcp records it: the header, every line on
  * the wire (client, server, proxy, context), the flow's decisions and runs,
  * and the console's view of it (calls, turns, events), built from the same
  * simulation so the raw log, the timeline and the counts agree.
@@ -19,7 +19,7 @@ import type {
   UpstreamView,
 } from '../../src/api/types.ts'
 
-/** How a hand-back for surprise begins its reason (`stretto_report::surprise::SURPRISED`). */
+/** How a hand-back for surprise begins its reason (`hoist_report::surprise::SURPRISED`). */
 export const SURPRISED = 'the session surprised the flow'
 
 export interface ToolDef {
@@ -325,7 +325,7 @@ export class Recorder {
           ms: 0,
         })
         if (!shadow) {
-          const lid = `stretto-${this.lookupId++}`
+          const lid = `hoist-${this.lookupId++}`
           const t0 = this.t
           this.line(
             'proxy',
@@ -486,7 +486,7 @@ export class Recorder {
   get header() {
     const s = this.spec
     return {
-      stretto_mcp_log: 2,
+      hoist_mcp_log: 2,
       session: s.session,
       started_unix_ms: s.started,
       ...(s.upstream.kind === 'stdio'

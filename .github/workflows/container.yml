@@ -7,8 +7,8 @@ name: Container
 #   both for linux/amd64, publish nothing, run each binary and the quickstart
 #   in the CLI's image, and start the console's and use it over HTTP.
 # - A version tag (v0.2.0): build both for linux/amd64 and linux/arm64 (arm64
-#   under QEMU, which is slow) and publish ghcr.io/alexnodeland/stretto and
-#   ghcr.io/alexnodeland/stretto-console with the tags 0.2.0, 0.2 and latest
+#   under QEMU, which is slow) and publish ghcr.io/alexnodeland/hoist and
+#   ghcr.io/alexnodeland/hoist-console with the tags 0.2.0, 0.2 and latest
 #   (a pre-release tag, v0.2.0-rc.1, gets only its own). Run by hand on a
 #   tag, it publishes that tag's images: the release workflow does so when
 #   it is itself run by hand.
@@ -52,8 +52,8 @@ permissions:
   contents: read
 
 env:
-  IMAGE: ghcr.io/alexnodeland/stretto
-  CONSOLE_IMAGE: ghcr.io/alexnodeland/stretto-console
+  IMAGE: ghcr.io/alexnodeland/hoist
+  CONSOLE_IMAGE: ghcr.io/alexnodeland/hoist-console
 
 jobs:
   build:
@@ -67,37 +67,37 @@ jobs:
           context: .
           platforms: linux/amd64
           load: true
-          tags: stretto:ci
+          tags: hoist:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Each binary, doctor and the quickstart, in the image
         run: |
-          docker run --rm stretto:ci --version
-          for bin in stretto-proxy stretto-procedure stretto-mcp-demo; do
-            docker run --rm --entrypoint "$bin" stretto:ci --version
+          docker run --rm hoist:ci --version
+          for bin in hoist-mcp hoist-procedure hoist-mcp-demo; do
+            docker run --rm --entrypoint "$bin" hoist:ci --version
           done
-          docker run --rm stretto:ci doctor
-          docker run --rm --entrypoint /usr/local/share/stretto/quickstart/run.sh stretto:ci
+          docker run --rm hoist:ci doctor
+          docker run --rm --entrypoint /usr/local/share/hoist/quickstart/run.sh hoist:ci
       - uses: docker/build-push-action@v6
         with:
           context: .
           target: console
           platforms: linux/amd64
           load: true
-          tags: stretto-console:ci
+          tags: hoist-console:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
       # As compose.yaml runs it: this runner's user, a data directory mounted
       # from the host, the port on 127.0.0.1 only, and a token of its own.
       - name: The console, in its image
         env:
-          STRETTO_CONSOLE_TOKEN: ci-token
+          HOIST_CONSOLE_TOKEN: ci-token
         run: |
-          mkdir -p "$RUNNER_TEMP/stretto"
+          mkdir -p "$RUNNER_TEMP/hoist"
           docker run -d --name console --user "$(id -u):$(id -g)" \
-            -p 127.0.0.1:8080:8080 -e STRETTO_CONSOLE_TOKEN \
-            -v "$RUNNER_TEMP/stretto:/data/.stretto" stretto-console:ci
-          # The image's HEALTHCHECK runs `stretto-console healthcheck`.
+            -p 127.0.0.1:8080:8080 -e HOIST_CONSOLE_TOKEN \
+            -v "$RUNNER_TEMP/hoist:/data/.hoist" hoist-console:ci
+          # The image's HEALTHCHECK runs `hoist-console healthcheck`.
           for _ in $(seq 30); do
             [ "$(docker inspect -f '{{.State.Health.Status}}' console)" = healthy ] && break
             sleep 2
@@ -107,16 +107,16 @@ jobs:
           curl -fsS http://127.0.0.1:8080/api/health
           # The API wants the token; with it, the console reads the mounted directory.
           test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/api/meta)" = 401
-          curl -fsS -H "Authorization: Bearer $STRETTO_CONSOLE_TOKEN" http://127.0.0.1:8080/api/meta \
-            | grep -q '"data_dir":"/data/.stretto"'
-          curl -fsS -H "Authorization: Bearer $STRETTO_CONSOLE_TOKEN" http://127.0.0.1:8080/api/overview >/dev/null
+          curl -fsS -H "Authorization: Bearer $HOIST_CONSOLE_TOKEN" http://127.0.0.1:8080/api/meta \
+            | grep -q '"data_dir":"/data/.hoist"'
+          curl -fsS -H "Authorization: Bearer $HOIST_CONSOLE_TOKEN" http://127.0.0.1:8080/api/overview >/dev/null
           # The UI is built in: the app's page, not the one saying how to build it.
           page=$(curl -fsS http://127.0.0.1:8080/)
           echo "$page" | grep -q 'id="app"'
           if echo "$page" | grep -q 'has no UI in it'; then exit 1; fi
-          # A job runs the stretto CLI beside the console in the image.
-          auth="Authorization: Bearer $STRETTO_CONSOLE_TOKEN"
-          id=$(curl -fsS -H "$auth" -H 'X-Stretto-Console: 1' -H 'Content-Type: application/json' \
+          # A job runs the Hoist CLI beside the console in the image.
+          auth="Authorization: Bearer $HOIST_CONSOLE_TOKEN"
+          id=$(curl -fsS -H "$auth" -H 'X-Hoist-Console: 1' -H 'Content-Type: application/json' \
             -d '{"kind":"doctor"}' http://127.0.0.1:8080/api/jobs | jq -r .id)
           for _ in $(seq 30); do
             status=$(curl -fsS -H "$auth" "http://127.0.0.1:8080/api/jobs/$id" | jq -r .status)
@@ -181,13 +181,13 @@ jobs:
             type=raw,value=latest,enable=${{ !contains(github.ref_name, '-') }}
           # The repository's title and description would name the CLI.
           labels: |
-            org.opencontainers.image.title=stretto-console
-            org.opencontainers.image.description=stretto's web console: the MCP servers stretto fronts, their recorded sessions, the flows learned from them, and jobs, over ~/.stretto.
-            org.opencontainers.image.documentation=https://github.com/alexnodeland/stretto/blob/main/docs/console.md
+            org.opencontainers.image.title=hoist-console
+            org.opencontainers.image.description=Hoist's web console: the MCP servers Hoist fronts, their recorded sessions, the flows learned from them, and jobs, over ~/.hoist.
+            org.opencontainers.image.documentation=https://github.com/alexnodeland/hoist/blob/main/docs/console.md
           annotations: |
-            org.opencontainers.image.title=stretto-console
-            org.opencontainers.image.description=stretto's web console: the MCP servers stretto fronts, their recorded sessions, the flows learned from them, and jobs, over ~/.stretto.
-            org.opencontainers.image.documentation=https://github.com/alexnodeland/stretto/blob/main/docs/console.md
+            org.opencontainers.image.title=hoist-console
+            org.opencontainers.image.description=Hoist's web console: the MCP servers Hoist fronts, their recorded sessions, the flows learned from them, and jobs, over ~/.hoist.
+            org.opencontainers.image.documentation=https://github.com/alexnodeland/hoist/blob/main/docs/console.md
       - uses: docker/build-push-action@v6
         with:
           context: .

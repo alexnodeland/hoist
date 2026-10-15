@@ -144,7 +144,7 @@ const text = computed(() => {
 }
 
 .jn-caret {
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
   transition: transform 0.12s var(--c-ease);
   flex: none;
 }
@@ -156,7 +156,7 @@ const text = computed(() => {
 .jn-children {
   margin: 0;
   padding-left: 20px;
-  border-left: 1px solid var(--stretto-border);
+  border-left: 1px solid var(--hoist-border);
   margin-left: -11px;
   padding-left: 28px;
 }
@@ -171,38 +171,38 @@ const text = computed(() => {
 }
 
 .jn-key {
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .jn-key.index {
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .jn-punct {
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .jn-summary {
   margin: 0 4px;
-  color: var(--stretto-text-subtle);
-  font-family: var(--stretto-font-sans);
+  color: var(--hoist-text-subtle);
+  font-family: var(--hoist-font-sans);
   font-size: 11.5px;
 }
 
 .jn-string {
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
   white-space: pre-wrap;
 }
 
 .jn-number,
 .jn-bigint {
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .jn-boolean,
 .jn-null,
 .jn-undefined {
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   font-weight: 700;
 }
 </style>

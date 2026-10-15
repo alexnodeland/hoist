@@ -1,6 +1,6 @@
 ---
 name: steward
-description: Drive a stretto pull request to green and ready to merge, covering which CI jobs run and what each checks, how to reproduce and fix a failing job, answering review comments, and the repository's conventions for branches, commits and PR descriptions. Use when opening a PR, when CI fails on one, when review comments arrive, or when asked to babysit or shepherd a PR.
+description: Drive a Hoist pull request to green and ready to merge, covering which CI jobs run and what each checks, how to reproduce and fix a failing job, answering review comments, and the repository's conventions for branches, commits and PR descriptions. Use when opening a PR, when CI fails on one, when review comments arrive, or when asked to babysit or shepherd a PR.
 ---
 
 # Taking a pull request to green
@@ -15,7 +15,7 @@ description: Drive a stretto pull request to green and ready to merge, covering 
 | ci.yml `walkthrough` | every PR and push to main | the quickstart, `packaging/test-install.sh`, shellcheck, `scripts/walkthrough.py`, `scripts/http_check.py`, the scripts' doctests and the benchmark tables' fixture | the `check` skill, step 2 |
 | ci.yml `platforms` | every PR and push to main | a `--locked` build on macOS 14 and Windows, and each binary's `--version` | not locally: read the log |
 | coverage.yml | every PR and push to main | `make coverage`: line coverage at or above `COVERAGE_MIN`, and every line the PR adds run by a test. The LCOV report is the run's artifact | `make coverage` |
-| container.yml `build` | PRs and pushes to main that change the Dockerfile, `.dockerignore`, `crates/`, `console/`, the brand files the UI imports, the manifests, the quickstart or `compose.yaml` | both images build. In the CLI's, each binary, `stretto doctor` and the quickstart run. The console's starts healthy as the runner's user, refuses a request without its token, serves the built UI, and runs a `doctor` job | `make docker`, `make docker-console` |
+| container.yml `build` | PRs and pushes to main that change the Dockerfile, `.dockerignore`, `crates/`, `console/`, the brand files the UI imports, the manifests, the quickstart or `compose.yaml` | both images build. In the CLI's, each binary, `hoist doctor` and the quickstart run. The console's starts healthy as the runner's user, refuses a request without its token, serves the built UI, and runs a `doctor` job | `make docker`, `make docker-console` |
 | pages.yml | pushes to main only | the site builds with no dead link | `make site`, before merging |
 
 ## The loop
@@ -40,4 +40,4 @@ A job that fails without any change (a network error in `npx`, or a runner probl
 - **Commits:** the style of `git log`. A subject that says what changed in plain words, with no type prefix and no final period (for example "Rustdoc: no links from public docs to private items"). The body is prose saying why and how, with a list when there are several parts. One logical change per commit, formatted and passing `make ci`.
 - **The PR description** follows `.github/pull_request_template.md`: *What this changes* (one or two sentences, and the issue it closes), *How it was checked* (tests run, and any replay or live run with its numbers and scope), and the checklist, ticked only for what was done.
 - **In the same PR:** `docs/cli.md` regenerated (`make bless`) when a command or option changed; `docs/formats.md` for a file format; the guide pages in `website/`; CHANGELOG.md under *Unreleased*; and the claims ledger, if a quoted number changed (the `results` skill).
-- **Writing:** calm and exact, with every number's scope (brand/messaging.md). stretto is lowercase.
+- **Writing:** calm and exact, with every number's scope (brand/messaging.md). Hoist is always capitalised in prose; commands, crates and paths stay lowercase.

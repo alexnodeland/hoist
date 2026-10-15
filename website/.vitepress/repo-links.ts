@@ -2,7 +2,7 @@
 //
 // The site includes the repository's own Markdown (`<!--@include: ../../docs/cli.md-->`),
 // and that Markdown links to paths relative to where it lives in the repository
-// (`../crates/stretto-proxy/README.md`, `results/pilot-2026-09-24.md`). VitePress
+// (`../crates/hoist-mcp/README.md`, `results/pilot-2026-09-24.md`). VitePress
 // inlines an included file before parsing, so those links would resolve against the
 // including page and break. This plugin finds which file each link came from, then:
 //
@@ -33,16 +33,16 @@ export interface RepoLinksOptions {
   repoRoot: string
   /** The site's source directory (`website/`). */
   srcDir: string
-  /** The site's base, such as `/stretto/`. */
+  /** The site's base, such as `/hoist/`. */
   base: string
-  /** The repository on GitHub, such as `https://github.com/alexnodeland/stretto`. */
+  /** The repository on GitHub, such as `https://github.com/alexnodeland/hoist`. */
   repoUrl: string
   /** The branch the site is built from. */
   branch: string
   /** Repository files the site renders, by repository path, and the route of their page. */
   pages: Map<string, string>
   /**
-   * The site's own address, ending in a slash, such as `https://stretto.alexnodeland.com/`.
+   * The site's own address, ending in a slash, such as `https://hoist.alexnodeland.com/`.
    * A link to it, or to a page under it, stays on the site.
    */
   siteUrl?: string
@@ -68,6 +68,33 @@ export interface SiteSources {
 }
 
 const posix = (p: string) => p.split(path.sep).join('/')
+
+/**
+ * Paths that moved when the project was renamed from stretto to Hoist. Pages kept as
+ * written (the dated results, the changelog's earlier entries) still link to the old
+ * ones, so a link that no longer resolves is tried at the new path.
+ */
+const MOVED: [string, string][] = [
+  ['crates/stretto-proxy', 'crates/hoist-mcp'],
+  ['crates/stretto-', 'crates/hoist-'],
+  ['paper/latex/stretto.', 'paper/latex/hoist.'],
+  ['paper/stretto.', 'paper/hoist.'],
+  ['brand/logo/stretto-', 'brand/logo/hoist-'],
+  ['packaging/homebrew/stretto.', 'packaging/homebrew/hoist.'],
+]
+
+/** Where `abs` moved to in the rename, when the file is no longer where it was written. */
+const movedTo = (abs: string, repoRoot: string) => {
+  if (fs.existsSync(abs) || !inside(abs, repoRoot)) return abs
+  const rel = posix(path.relative(repoRoot, abs))
+  for (const [from, to] of MOVED) {
+    if (rel.startsWith(from)) {
+      const moved = path.join(repoRoot, to + rel.slice(from.length))
+      if (fs.existsSync(moved)) return moved
+    }
+  }
+  return abs
+}
 
 const inside = (file: string, dir: string) => {
   const rel = path.relative(dir, file)
@@ -189,7 +216,7 @@ export function repoLinks(md: MarkdownRenderer, options: RepoLinksOptions) {
   const { repoRoot, srcDir, base, repoUrl, branch, pages, siteUrl, staticPaths = [], strict = true, devServer = false } = options
   const shown = (file: string) => posix(path.relative(repoRoot, file))
 
-  md.core.ruler.push('stretto_repo_links', (state) => {
+  md.core.ruler.push('hoist_repo_links', (state) => {
     const env = state.env ?? {}
     const page: string | undefined = env.realPath ?? env.path
     if (!page || !page.endsWith('.md')) return
@@ -211,7 +238,7 @@ export function repoLinks(md: MarkdownRenderer, options: RepoLinksOptions) {
       } catch {
         // keep it as written
       }
-      return { abs: path.resolve(path.dirname(source), decoded), suffix }
+      return { abs: movedTo(path.resolve(path.dirname(source), decoded), repoRoot), suffix }
     }
 
     const rewriteLink = (href: string, source: string): { href: string; target?: string } | undefined => {

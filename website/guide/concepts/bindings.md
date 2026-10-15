@@ -15,7 +15,7 @@ From [a flow learned on five retail sessions](/reference/formats#a-flow-walked-t
 
 `$` is the whole result and `[*]` any element of a list. A result that is not JSON is read as one string, or, when it has several lines, as the list of its lines, so `$[*]` is one line of it: in [the walkthrough](../walkthrough), `read_text_file`'s `path` came from `search_files`' result at `$` (a search that found one file) or at `$[*]` (one line of a search that listed several).
 
-`stretto flow-show` prints every binding:
+`hoist flow-show` prints every binding:
 
 ```markdown
 | Lookup | Argument | Bound from (values found there, of the values it took) | Chance it is the agent's (right/tried): not mentioned, mentioned |
@@ -52,7 +52,7 @@ Nearly every detour in the research was the right lookup of the wrong record. Tw
 
 - **Lists** (`bindings.lists`). An argument that takes a list, such as the hotels a city's listing named passed to a lookup of their prices, is bound to every value at the path of the most recent result that held them all, in order.
 - **Searches the agent always narrows** (`bindings.bare`). A lookup with no required argument is made with none. If the agent always narrowed it with some optional filter, such a bare call is never the agent's own, and its chance says so: near 0, so the flow does not make it.
-- **Constants** (`stretto learn --constants`). An argument the agent passed with one value in every call of a lookup, at least five calls and at least half of the lookup's, and never found in an earlier result, such as a page size, is learned as a constant and passed as the agent did. A string a user wrote with a digit or an @, such as an id or an email, is never a constant, however many sessions shared it. Check each one in `flow-show` before serving.
+- **Constants** (`hoist learn --constants`). An argument the agent passed with one value in every call of a lookup, at least five calls and at least half of the lookup's, and never found in an earlier result, such as a page size, is learned as a constant and passed as the agent did. A string a user wrote with a digit or an @, such as an id or an email, is never a constant, however many sessions shared it. Check each one in `flow-show` before serving.
 
 ## What a flow cannot bind
 

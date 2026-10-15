@@ -8,7 +8,7 @@ model's run of each of its 690 tasks (`data/results/<domain>/<model>_all_<time>.
 the agent given every tool), the calls with what they returned, and whether
 the run left the right outcome (`item_level_results.csv.gz`). This writes each
 model's runs of each domain as τ²-bench's results file, and a checkout-shaped
-folder that stretto reads as τ²-bench's: the tools, marked a read or a write,
+folder that Hoist reads as τ²-bench's: the tools, marked a read or a write,
 and a train/test split by task.
 
     workbench_to_tau2.py --results WorkBench/data/results --out DIR [--run-group revisited_2026]

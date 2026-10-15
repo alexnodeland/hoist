@@ -158,7 +158,7 @@ export function writeVtt(lines, out) {
 // Each word of `text` with a time from the voice's own words ([{w, start,
 // end}], as a speech aligner heard them). The two lists are aligned by edit
 // distance on their letters and digits, so a word the aligner misheard
-// ("Strato" for "stretto", "30%" for "thirty percent") still takes its place,
+// ("Strato" for "hoist", "30%" for "thirty percent") still takes its place,
 // and a word it did not hear at all is placed between its neighbours.
 export function alignWords(text, words) {
   const norm = w => String(w).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]/g, '');

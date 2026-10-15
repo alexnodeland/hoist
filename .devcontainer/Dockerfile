@@ -1,4 +1,4 @@
-# The stretto dev container: Rust (rust-toolchain.toml pins stable, with
+# The Hoist dev container: Rust (rust-toolchain.toml pins stable, with
 # rustfmt and clippy), Python 3 for scripts/ and pilot/, and shellcheck for
 # the shell scripts CI lints. Node 22 and Claude Code come from the features
 # in devcontainer.json.

@@ -1,5 +1,5 @@
 /**
- * The mock console's data dir, as `~/.stretto` looks two weeks after the
+ * The mock console's data dir, as `~/.hoist` looks two weeks after the
  * quickstart's loop was run on a real deployment: six sessions recorded on
  * the demo shop, a flow learned from them with no key, three shadow sessions,
  * the flow promoted on them and served since; a notes server recorded
@@ -26,7 +26,7 @@ export interface World {
   dataDir: string
   sessions: SessionRecord[]
   flows: FlowRecord[]
-  /** Each deployment's staged learning (`stretto stage`), by its committed flow. */
+  /** Each deployment's staged learning (`hoist stage`), by its committed flow. */
   stages: StageRecord[]
   servers: ServerEntry[]
   jobs: Job[]
@@ -39,7 +39,7 @@ export interface World {
  * and the Markdown it writes to the report.
  */
 /**
- * `stretto drift`'s reports on `sessions` sessions, as the mock's agent
+ * `hoist drift`'s reports on `sessions` sessions, as the mock's agent
  * goes: when one of them surprised the flow, the alarm sounds, with a
  * change three sessions before the last.
  */
@@ -65,8 +65,8 @@ export function driftReports(
     unknown_tools: {},
   }
   const line = alarm
-    ? `stretto: the alarm sounds: a change ${sessions - change} sessions ago is 78% likely`
-    : `stretto: no change in the flow's ${sessions} sessions`
+    ? `hoist: the alarm sounds: a change ${sessions - change} sessions ago is 78% likely`
+    : `hoist: no change in the flow's ${sessions} sessions`
   const md = alarm
     ? `# Drift of ${flow}\n\nThe alarm sounds after the last of ${sessions} sessions: a change ${sessions - change} sessions ago is 78% likely. The flow's surprise rose most after \`get_order_details\` and \`find_user_id_by_email\`.\n`
     : `# Drift of ${flow}\n\nNo change in ${sessions} sessions.\n`
@@ -141,11 +141,11 @@ export function shopSpec(
     domain: 'shop',
     agentModel: 'claude-sonnet-5',
     client: { name: 'claude-code', version: '2.1.0' },
-    upstream: { kind: 'stdio', command: ['stretto-mcp-demo', '--world', 'retail'] },
+    upstream: { kind: 'stdio', command: ['hoist-mcp-demo', '--world', 'retail'] },
     server: {
-      name: 'stretto-mcp-demo',
+      name: 'hoist-mcp-demo',
       version: '0.1.0',
-      instructions: 'A demo server for stretto-proxy: two tools that echo their arguments.',
+      instructions: 'A demo server for hoist-mcp: two tools that echo their arguments.',
     },
     tools: SHOP_TOOLS,
     flow,
@@ -235,7 +235,7 @@ export function buildWorld(
   now: number = Date.now(),
   options: { empty?: boolean; dataDir?: string } = {},
 ): World {
-  const dataDir = options.dataDir ?? '/home/me/.stretto'
+  const dataDir = options.dataDir ?? '/home/me/.hoist'
   if (options.empty)
     return { now, dataDir, sessions: [], flows: [], stages: [], servers: [], jobs: [], reports: {} }
 
@@ -263,7 +263,7 @@ export function buildWorld(
   const shop_ = (started: number, flow: SessionSpec['flow'], dir: string) =>
     shopSpec(started, (pid += 7 + Math.floor(rand() * 40)), flow, dir)
 
-  // 1. Six customers recorded without a flow: what `stretto learn` learned from.
+  // 1. Six customers recorded without a flow: what `hoist learn` learned from.
   const training: [number, 'cancel' | 'status'][] = [
     [1, 'cancel'],
     [2, 'status'],
@@ -604,10 +604,10 @@ export function buildWorld(
   const servers: ServerEntry[] = [
     {
       name: 'shop',
-      description: 'The demo shop, stretto-mcp-demo --world retail',
-      upstream: { kind: 'stdio', command: ['stretto-mcp-demo', '--world', 'retail'], env: [] },
+      description: 'The demo shop, hoist-mcp-demo --world retail',
+      upstream: { kind: 'stdio', command: ['hoist-mcp-demo', '--world', 'retail'], env: [] },
       mode: 'serve',
-      flow: '~/.stretto/shop-promoted.flow.json',
+      flow: '~/.hoist/shop-promoted.flow.json',
       record_dir: null,
       decider: null,
       threshold: null,
@@ -654,7 +654,7 @@ export function buildWorld(
         headers: [{ name: 'Authorization', env: 'ORDERS_AUTH' }],
       },
       mode: 'shadow',
-      flow: '~/.stretto/orders.flow.json',
+      flow: '~/.hoist/orders.flow.json',
       record_dir: null,
       decider: null,
       threshold: null,
@@ -796,7 +796,7 @@ export function buildWorld(
       },
       created_unix_ms: learnedAt,
       finished_unix_ms: learnedAt + 1100,
-      output: `stretto: learned the shop flow from 6 sessions (4 tools) and wrote ${dataDir}/shop.flow.json\n`,
+      output: `hoist: learned the shop flow from 6 sessions (4 tools) and wrote ${dataDir}/shop.flow.json\n`,
       artifacts: [{ kind: 'flow', path: 'shop.flow.json', key: 'shop' }],
     }),
     job({

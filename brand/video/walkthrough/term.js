@@ -112,7 +112,7 @@
     segs.push({ kind: 'outro', t0: t, t1: t + outro });
     say('outro', null, t + SAY_AT, V && V.outro);
     t += outro;
-    $('intro-meta').innerHTML = `${escapeHtml(header.stretto?.version || 'stretto')} · recorded ${new Date(header.timestamp * 1000).toISOString().slice(0, 10)} · the commands are in <code>brand/video/walkthrough/script.sh</code>`;
+    $('intro-meta').innerHTML = `${escapeHtml(header.hoist?.version || 'hoist')} · recorded ${new Date(header.timestamp * 1000).toISOString().slice(0, 10)} · the commands are in <code>brand/video/walkthrough/script.sh</code>`;
     $('tb-right').textContent = `${header.width}×${header.height}`;
     plan = { header, steps, segs, duration: t, poster: poster ?? t / 2, spoken };
     window.__duration = plan.duration;

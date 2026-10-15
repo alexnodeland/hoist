@@ -76,7 +76,7 @@ def main() -> None:
     parser.add_argument("--limit", type=int, help="the first N tasks only")
     parser.add_argument("--split", default="test", choices=["test", "train"],
                         help="the held-out tasks (default), or the training tasks the flows learned from, such as "
-                             "to record an agent's own sessions for `stretto promote`")
+                             "to record an agent's own sessions for `hoist promote`")
     args = parser.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
     ledger = args.out / "credits.jsonl"

@@ -128,12 +128,12 @@ function open(session: SessionSummary, event: MouseEvent) {
 <style scoped>
 .st-id {
   font-size: 12.5px;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   white-space: nowrap;
 }
 
 a.st-id:hover {
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
 }
 
 .st-domain {
@@ -170,7 +170,7 @@ a.st-id:hover {
   flex-direction: column;
   gap: 6px;
   padding: 12px 16px;
-  border-bottom: 1px solid var(--stretto-border);
+  border-bottom: 1px solid var(--hoist-border);
   color: inherit;
 }
 
@@ -201,7 +201,7 @@ a.st-id:hover {
   flex-wrap: wrap;
   gap: 4px 12px;
   font-size: 12.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .st-card-meta .mono {

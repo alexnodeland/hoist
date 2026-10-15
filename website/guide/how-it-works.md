@@ -1,20 +1,20 @@
 ---
-description: What stretto-proxy does after each of the agent's tool calls, how a flow decides which reads to make, and why a wrong guess costs only a lookup.
+description: What hoist-mcp does after each of the agent's tool calls, how a flow decides which reads to make, and why a wrong guess costs only a lookup.
 ---
 
 # How it works
 
 <!-- BRAND SLOT: the explainer video (website/public/media/explainer.mp4). Embedded once; renders nothing until the file is there. -->
-<BrandEmbed kind="explainer" caption="stretto, explained: what it reads, how it learns, and what it saves." />
+<BrandEmbed kind="explainer" caption="Hoist, explained: what it reads, how it learns, and what it saves." />
 
-stretto sits where MCP already puts a server: between the agent's host and the server. The host starts `stretto-proxy` as if it were the server, and the proxy starts the real one. Everything the two send each other passes through the proxy unchanged unless you ask for more: when the proxy serves a flow, it adds the results of the lookups the flow made to the result of the agent's call.
+Hoist sits where MCP already puts a server: between the agent's host and the server. The host starts `hoist-mcp` as if it were the server, and the proxy starts the real one. Everything the two send each other passes through the proxy unchanged unless you ask for more: when the proxy serves a flow, it adds the results of the lookups the flow made to the result of the agent's call.
 
 ## One call, step by step
 
 ```mermaid
 sequenceDiagram
   participant H as Agent host (LLM)
-  participant P as stretto-proxy
+  participant P as hoist-mcp
   participant S as MCP server
   H->>P: search_files
   P->>S: search_files
@@ -29,7 +29,7 @@ sequenceDiagram
 ```
 
 1. The agent calls a tool. The proxy forwards the call and holds the server's response.
-2. The flow looks at the call that just returned and decides whether to make a lookup. If one clears the threshold, the proxy makes it itself, as a request with an id of its own (`stretto-<n>`), and the flow decides again after it.
+2. The flow looks at the call that just returned and decides whether to make a lookup. If one clears the threshold, the proxy makes it itself, as a request with an id of its own (`hoist-<n>`), and the flow decides again after it.
 3. When no lookup clears the threshold, or a cap is reached (`--flow-per-call`, 8 lookups by default, and `--flow-per-session`, 40), the flow *hands back*.
 4. The agent gets its own result with one more text item: each lookup, its arguments and its result, under `--- Also looked up automatically (current results; no need to repeat these calls) ---`.
 
@@ -54,12 +54,12 @@ A flow only makes reads: it calls only tools it learned as lookups and that the 
 
 <HowItWorks />
 
-With `--record`, the proxy logs sessions whether or not it serves a flow. So the sessions a flow serves are new training data, and learning again is cheap. `stretto flow-diff` then says whether the new flow can do anything the old one could not, and exits with 1 if so, which fits a pull request ([audit and review](./concepts/audit-and-review)).
+With `--record`, the proxy logs sessions whether or not it serves a flow. So the sessions a flow serves are new training data, and learning again is cheap. `hoist flow-diff` then says whether the new flow can do anything the old one could not, and exits with 1 if so, which fits a pull request ([audit and review](./concepts/audit-and-review)).
 
-A new flow can start in [shadow mode](./concepts/shadow-and-promotion): it decides and logs what it would look up, but makes nothing, and `stretto promote` then keeps it to the sites where its lookups were the agent's own.
+A new flow can start in [shadow mode](./concepts/shadow-and-promotion): it decides and logs what it would look up, but makes nothing, and `hoist promote` then keeps it to the sites where its lookups were the agent's own.
 
 [The console](./console) shows the loop as it runs: each session's calls with the lookups the flow made after them, each flow's graph, and the jobs that learn, audit and promote.
 
 ## Where no user speaks
 
-Some work has no user in the loop: a ticket comes in, and the agent works through a procedure against the tools. There every branch follows a tool result, so a whole procedure, writes included, can be compiled once from traces and run with no model. `stretto-procedure` runs one, checks the outcome the ticket states, and hands back to a model only what that check cannot confirm. See [procedures](./concepts/procedures).
+Some work has no user in the loop: a ticket comes in, and the agent works through a procedure against the tools. There every branch follows a tool result, so a whole procedure, writes included, can be compiled once from traces and run with no model. `hoist-procedure` runs one, checks the outcome the ticket states, and hands back to a model only what that check cannot confirm. See [procedures](./concepts/procedures).

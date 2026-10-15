@@ -1,5 +1,5 @@
 /**
- * The mock's staged learning, for the shop flow: `stretto stage` learned
+ * The mock's staged learning, for the shop flow: `hoist stage` learned
  * shop.staged.flow.json from the six recorded sessions and the five that
  * came after them, and scored each of those five with both flows before it
  * learned from it. Nothing has been committed yet, so the committed flow has
@@ -22,7 +22,7 @@ export interface StageRecord {
   staged: string
   /** Whether the staged flow differs from the committed one. */
   pending: boolean
-  /** The last run of stretto stage. */
+  /** The last run of hoist stage. */
   last: ComparisonView | null
   /** Every committed version, the oldest first, with the flow it was. */
   versions: { view: VersionView; flow: FlowRecord }[]
@@ -38,7 +38,7 @@ function wilsonLower(k: number, n: number): number {
   return Math.max(0, (centre - spread) / d)
 }
 
-/** A flow's counts, with the share `stretto stage` reports. */
+/** A flow's counts, with the share `hoist stage` reports. */
 export function counts(decisions: number, lookups: number, used: number, served = 0): Counts {
   const known = lookups - served
   return {
@@ -135,7 +135,7 @@ export function stageLink(
   return null
 }
 
-/** `stretto stage`'s report of `last`, as the CLI writes it (`stage::Comparison::markdown`). */
+/** `hoist stage`'s report of `last`, as the CLI writes it (`stage::Comparison::markdown`). */
 export function stageReport(path: string, domain: string, last: ComparisonView): string {
   const cell = (c: Counts) =>
     c.used_share
@@ -150,14 +150,14 @@ export function stageReport(path: string, domain: string, last: ComparisonView):
     '',
     `## The last ${last.compared} sessions`,
     '',
-    "Each session was scored by both flows as it arrived, before the staged flow learned from it: the lookups each would have made there as served, and how many of them the agent made in a later LLM turn (used), with a 90% interval on the share; the rest are detours. A lookup counts after each of the agent's calls, as `stretto promote` counts it: one a flow would make after several of the agent's calls counts after each.",
+    "Each session was scored by both flows as it arrived, before the staged flow learned from it: the lookups each would have made there as served, and how many of them the agent made in a later LLM turn (used), with a 90% interval on the share; the rest are detours. A lookup counts after each of the agent's calls, as `hoist promote` counts it: one a flow would make after several of the agent's calls counts after each.",
     '',
     '| After | Committed: lookups | used | detours | Staged: lookups | used | detours |',
     '|---|---|---|---|---|---|---|',
     ...last.sites.map(row),
     row(last.total),
     '',
-    `Commit it with \`stretto flow-commit --flow ${path}\`; the committed flow's versions are kept for \`stretto flow-rollback\`.`,
+    `Commit it with \`hoist flow-commit --flow ${path}\`; the committed flow's versions are kept for \`hoist flow-rollback\`.`,
     '',
   ].join('\n')
 }
@@ -172,7 +172,7 @@ export function stageView(
 ): StageView {
   const versions = [...(record?.versions ?? [])].reverse().map((v) => v.view)
   const refused = !staged
-    ? `there is no staged flow at ${paths.dataDir}/${paths.staged}: stretto stage learns it`
+    ? `there is no staged flow at ${paths.dataDir}/${paths.staged}: hoist stage learns it`
     : record?.pending
       ? null
       : 'the staged flow is the committed one: nothing to commit'

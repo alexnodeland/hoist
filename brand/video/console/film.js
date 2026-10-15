@@ -1,4 +1,4 @@
-// The console film's chapters: stretto-console as a user drives it, in one
+// The console film's chapters: hoist-console as a user drives it, in one
 // browser window. Every picture is a shot of the real console over its test
 // fixtures (capture.sh, capture.mjs: shots/*.png, and in shots/shots.js the
 // boxes of what each line points at). The film moves in on those boxes, rings
@@ -210,7 +210,7 @@
     ctx.scene({ key: 'end', t0: b.t0, t1: b.t1, fout: 0, build: layer => {
       const g = box(layer, { x: 960, y: 400, ax: 0.5, ay: 0.5, html: `<div style="display:flex;align-items:center;gap:30px">${markSvg(132)}${wordmarkSvg(82)}</div>` });
       const cmds = box(layer, { x: 960, y: 560, ax: 0.5, ay: 0.5, cls: 'code', html: `<span style="color:${C.petrol}">$</span> make console&nbsp;&nbsp;&nbsp;<span style="color:${C.faint}">·</span>&nbsp;&nbsp;&nbsp;<span style="color:${C.petrol}">$</span> docker compose up -d --build`, style: { fontSize: '26px', color: C.text, whiteSpace: 'nowrap' } });
-      const link = box(layer, { x: 960, y: 630, ax: 0.5, ay: 0.5, cls: 'code', html: `<span style="color:${C.petrol}">stretto.alexnodeland.com/guide/console</span>`, style: { fontSize: '22px', whiteSpace: 'nowrap' } });
+      const link = box(layer, { x: 960, y: 630, ax: 0.5, ay: 0.5, cls: 'code', html: `<span style="color:${C.petrol}">hoist.alexnodeland.com/guide/console</span>`, style: { fontSize: '22px', whiteSpace: 'nowrap' } });
       const L = ctx.L.end1;
       ctx.music.end = +(L.t1 + 0.4).toFixed(3);
       return t => {

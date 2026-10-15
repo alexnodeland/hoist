@@ -50,9 +50,9 @@ function expandAll() {
 
 <style scoped>
 .json {
-  border: 1px solid var(--stretto-border);
+  border: 1px solid var(--hoist-border);
   border-radius: var(--c-radius-control);
-  background: var(--stretto-surface-2);
+  background: var(--hoist-surface-2);
   min-width: 0;
   overflow: hidden;
 }
@@ -63,14 +63,14 @@ function expandAll() {
   gap: 4px;
   min-height: 38px;
   padding: 4px 6px 4px 12px;
-  border-bottom: 1px solid var(--stretto-border);
-  background: color-mix(in oklab, var(--stretto-surface-2) 55%, var(--stretto-surface));
+  border-bottom: 1px solid var(--hoist-border);
+  background: color-mix(in oklab, var(--hoist-surface-2) 55%, var(--hoist-surface));
 }
 
 .json-label {
   font-size: 12px;
   font-weight: 500;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .json-tool {
@@ -82,21 +82,21 @@ function expandAll() {
   border: 1px solid transparent;
   border-radius: 7px;
   background: transparent;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
   font-size: 12px;
   font-weight: 500;
 }
 
 .json-tool:hover {
-  background: var(--stretto-surface);
-  border-color: var(--stretto-border);
-  color: var(--stretto-text);
+  background: var(--hoist-surface);
+  border-color: var(--hoist-border);
+  color: var(--hoist-text);
 }
 
 .json-tree {
   margin: 0;
   padding: 10px 14px 12px 30px;
-  font-family: var(--stretto-font-mono);
+  font-family: var(--hoist-font-mono);
   font-size: 12.5px;
   overflow: auto;
 }

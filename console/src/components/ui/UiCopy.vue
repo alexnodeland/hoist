@@ -49,9 +49,9 @@ async function copy() {
   min-width: 28px;
   padding: 0 7px;
   border-radius: 7px;
-  border: 1px solid var(--stretto-border);
-  background: var(--stretto-surface);
-  color: var(--stretto-text-muted);
+  border: 1px solid var(--hoist-border);
+  background: var(--hoist-surface);
+  color: var(--hoist-text-muted);
   font-size: 12.5px;
   font-weight: 500;
   transition:
@@ -65,11 +65,11 @@ async function copy() {
 }
 
 .copy:hover {
-  background: var(--stretto-surface-2);
-  color: var(--stretto-text);
+  background: var(--hoist-surface-2);
+  color: var(--hoist-text);
 }
 
 .copy.done {
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
 }
 </style>

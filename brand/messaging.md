@@ -1,6 +1,6 @@
 # Messaging
 
-How stretto describes itself: the tagline, the one-liner, descriptions of fixed lengths, the key messages and the numbers behind them, and the words to leave out. Every number here is from [the claims ledger](../docs/results/claims.md) or [the paper](../paper/stretto.md), with its scope. When a number changes there, change it here.
+How Hoist describes itself: the tagline, the one-liner, descriptions of fixed lengths, the key messages and the numbers behind them, and the words to leave out. Every number here is from [the claims ledger](../docs/results/claims.md) or [the paper](../paper/hoist.md), with its scope. When a number changes there, change it here.
 
 ## Tagline
 
@@ -8,25 +8,25 @@ How stretto describes itself: the tagline, the one-liner, descriptions of fixed 
 2. Your agent's next reads, in the result it already asked for.
 3. Fewer LLM turns, learned from your agent's own tool calls.
 
-The first is the shortest true statement of what stretto does: it makes the reads the agent would make next, before the agent asks for them. It also carries the name. A musician reads ahead in the score, and in a fugue's stretto each entry comes in before the last one ends. The second says how, for a reader who already knows MCP. The third says what it buys, and suits a context that shows no number.
+The first is the shortest true statement of what Hoist does: it makes the reads the agent would make next, before the agent asks for them. It also carries the name. A musician reads ahead in the score, and in a fugue's Hoist each entry comes in before the last one ends. The second says how, for a reader who already knows MCP. The third says what it buys, and suits a context that shows no number.
 
 Pair the tagline with the one-liner, never with a bare number.
 
 ## One-liner
 
-stretto learns, from your agent's recorded tool calls, which reads it makes next and where their arguments come from, and serves them through an MCP proxy in the same tool result, so the agent needs fewer LLM turns.
+Hoist learns, from your agent's recorded tool calls, which reads it makes next and where their arguments come from, and serves them through an MCP proxy in the same tool result, so the agent needs fewer LLM turns.
 
 ## 50 words
 
-stretto is an open-source MCP proxy, written in Rust. It records an agent's tool calls, learns which reads follow which and where their arguments come from, and makes those reads: after each call, the lookups ride in the same result, so the agent needs fewer LLM turns. It only reads.
+Hoist is an open-source MCP proxy, written in Rust. It records an agent's tool calls, learns which reads follow which and where their arguments come from, and makes those reads: after each call, the lookups ride in the same result, so the agent needs fewer LLM turns. It only reads.
 
 ## 150 words
 
-stretto is an open-source MCP proxy for LLM agents, written in Rust and MIT-licensed. `stretto-proxy` wraps any MCP server and records the agent's sessions. From them, `stretto learn` writes a flow: which reads follow which calls, and where each argument comes from. Served, the flow makes the lookups the agent will likely need, and they ride in the same tool result, with no new tool and no change to the prompt.
+Hoist is an open-source MCP proxy for LLM agents, written in Rust and MIT-licensed. `hoist-mcp` wraps any MCP server and records the agent's sessions. From them, `hoist learn` writes a flow: which reads follow which calls, and where each argument comes from. Served, the flow makes the lookups the agent will likely need, and they ride in the same tool result, with no new tool and no change to the prompt.
 
 The flow only reads, so a wrong lookup, a detour, costs tokens and changes no state. The reach decider asks no model: it makes a lookup when its chance of being used before the agent's next write clears a threshold set by costs. Live, on 28 τ²-bench retail and airline tasks, Claude Sonnet 5 took 20.5% fewer LLM turns (95% CI 16.5–24.4%) and Claude Haiku 4.5 22.4% fewer (15.8–29.4%), in three trials paired by task; GLM-5.3 took 27.9% fewer (19.1–35.9%) against its recorded baseline.
 
-Where no user speaks, `stretto-procedure` runs a workflow compiled once from traces, with no model.
+Where no user speaks, `hoist-procedure` runs a workflow compiled once from traces, with no model.
 
 ## Key messages
 
@@ -53,22 +53,22 @@ Supporting facts, from the paper, for longer copy:
 What the evidence does not show, and copy must not imply (claims ledger, "What the evidence does not show"):
 
 - Live with the reach decider: GLM-5.3 (one run), Claude Sonnet 5 and Claude Haiku 4.5 (three trials) on τ²-bench, and GLM-5.3 and Claude Haiku 4.5 on AgentDojo and BFCL, one run per arm. Every other agent is replayed. In τ²-bench's airline domain the savings are not established; in BFCL the live run shows no effect.
-- Pass rates are underpowered; τ²-bench's users are LLMs. Do not claim stretto keeps or raises task success.
+- Pass rates are underpowered; τ²-bench's users are LLMs. Do not claim Hoist keeps or raises task success.
 - Replayed savings assume the agent skips what a lookup already answered.
 
 ## Terms
 
 | Say | Not | Why |
 |---|---|---|
-| stretto, always lowercase, also at the start of a sentence | Stretto, STRETTO | The name is a lowercase word. |
+| Hoist, always capitalised in prose | hoist, HOIST | The name is a proper noun. Commands, crates and paths stay lowercase, in code type. |
 | LLM turns | steps, API calls, requests | The measured unit. |
-| reads, lookups | prefetches, cache hits | stretto makes a real call with bound arguments; nothing is cached. |
+| reads, lookups | prefetches, cache hits | Hoist makes a real call with bound arguments; nothing is cached. |
 | a flow | a model, an agent | A flow is a JSON file of counts and bindings that a person can review. |
 | a detour | a miss, an error | A lookup the agent did not use. It costs tokens and changes no state. |
 | the next write | the next step | The event the decision is about. |
 | the reach decider | the AI, the predictor | It counts; it asks no model. |
 | live; replay; record | tested, proven | The three kinds of evidence, as the claims ledger defines them. |
-| a procedure (`stretto-procedure`) | an autopilot, an agent | A compiled workflow that hands back what its check cannot confirm. |
+| a procedure (`hoist-procedure`) | an autopilot, an agent | A compiled workflow that hands back what its check cannot confirm. |
 
 ## Words to avoid
 

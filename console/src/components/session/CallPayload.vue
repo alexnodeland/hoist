@@ -50,9 +50,9 @@ const hasJsonResult = computed(
 }
 
 .text-result {
-  border: 1px solid var(--stretto-border);
+  border: 1px solid var(--hoist-border);
   border-radius: var(--c-radius-control);
-  background: var(--stretto-surface-2);
+  background: var(--hoist-surface-2);
   overflow: hidden;
 }
 
@@ -61,14 +61,14 @@ const hasJsonResult = computed(
   align-items: center;
   min-height: 38px;
   padding: 4px 6px 4px 12px;
-  border-bottom: 1px solid var(--stretto-border);
-  background: color-mix(in oklab, var(--stretto-surface-2) 55%, var(--stretto-surface));
+  border-bottom: 1px solid var(--hoist-border);
+  background: color-mix(in oklab, var(--hoist-surface-2) 55%, var(--hoist-surface));
 }
 
 .text-label {
   font-size: 12px;
   font-weight: 500;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .text-body {
@@ -76,7 +76,7 @@ const hasJsonResult = computed(
   padding: 10px 14px 12px;
   max-height: 420px;
   overflow: auto;
-  font-family: var(--stretto-font-mono);
+  font-family: var(--hoist-font-mono);
   font-size: 12.5px;
   line-height: 1.6;
   white-space: pre-wrap;

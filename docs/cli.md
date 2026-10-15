@@ -1,54 +1,54 @@
 # CLI reference
 
-Every command and option of the three binaries: `stretto`, which measures agents' traces and compiles, learns, serves and audits flows; `stretto-proxy`, which records an MCP server's sessions and runs flows, guards and the confirmation judge on them; and `stretto-procedure`, which runs a compiled procedure against an MCP server with no model. `--help` prints the same text.
+Every command and option of the three binaries: `hoist`, which measures agents' traces and compiles, learns, serves and audits flows; `hoist-mcp`, which records an MCP server's sessions and runs flows, guards and the confirmation judge on them; and `hoist-procedure`, which runs a compiled procedure against an MCP server with no model. `--help` prints the same text.
 
-The sections below are generated from the code. After changing an option, run `STRETTO_BLESS=1 cargo test --bins` to rewrite them; CI fails while they are out of date.
+The sections below are generated from the code. After changing an option, run `HOIST_BLESS=1 cargo test --bins` to rewrite them; CI fails while they are out of date.
 
-<!-- begin stretto -->
+<!-- begin hoist -->
 
-## `stretto`
+## `hoist`
 
 Compile an agent's recorded behavior into flows, serve them, and measure them against published τ²-bench trajectories.
 
 | Command | What it does |
 |---|---|
-| [`phase0`](#stretto-phase0) | Measure how compressible an agent's behavior is (no API keys needed), and with --oracle, how well a System-One model takes the decisions flows would hand it (Phase 0b). |
-| [`flow-serve`](#stretto-flow-serve) | Serve a live read-only flow (RFC-001 §3.13). |
-| [`compile`](#stretto-compile) | Compile a live read-only flow and write its IR (JSON) to a file. |
-| [`learn`](#stretto-learn) | Learn a live flow from sessions recorded by `stretto-proxy` (JSONL logs in a directory) and write its IR, as `compile` does from τ²-bench results. |
-| [`serve`](#stretto-serve) | Serve a compiled flow (from `compile`), as `flow-serve` does. |
-| [`guards`](#stretto-guards) | Test the policy guards (typed checks a proxy runs before a write) against recorded τ²-bench trajectories. |
-| [`confirm`](#stretto-confirm) | Judge the customer's confirmation before each write with a System-One model, next to the guards' word list, on τ²-bench's published trajectories. |
-| [`match`](#stretto-match) | Match descriptions to records (RFC-001). |
-| [`audit`](#stretto-audit) | Audit a flow against recorded episodes. |
-| [`drift`](#stretto-drift) | Watch for the agent changing under a flow. |
-| [`flow-show`](#stretto-flow-show) | Show a flow as a reviewer reads it (Markdown). |
-| [`flow-diff`](#stretto-flow-diff) | What changed from one flow to another, as a change list for a pull request (Markdown). |
-| [`stage`](#stretto-stage) | Learn a deployment's staged flow. |
-| [`flow-commit`](#stretto-flow-commit) | Commit the staged flow that `stage` learned. |
-| [`flow-rollback`](#stretto-flow-rollback) | Roll the committed flow back to an earlier version. |
-| [`flow-log`](#stretto-flow-log) | List the committed flow's versions, the latest first (Markdown). |
-| [`evaluate`](#stretto-evaluate) | Estimate what another rule would have done on a flow's logged decisions (RFC-001 §3.7). |
-| [`refine`](#stretto-refine) | Refine the arbiter's predicates (RFC-001 §3.4). |
-| [`search`](#stretto-search) | Search a flow's settings (RFC-001 §3.10). |
-| [`promote`](#stretto-promote) | Promote a flow's sites (RFC-001 §3.7). |
-| [`redact`](#stretto-redact) | Pseudonymize recorded sessions. |
-| [`jev-check`](#stretto-jev-check) | Check that Jev is reachable with TYPESAFE_API_KEY. |
-| [`export-arbiter`](#stretto-export-arbiter) | Write a flow's arbiter to its own file, to ship. |
-| [`fit-arbiter`](#stretto-fit-arbiter) | Fit one arbiter, to ship, on the held-out decisions of one or more compiles. |
-| [`export-answers`](#stretto-export-answers) | Write every cached oracle answer to stdout as JSON lines (`{"key", "response"}`). |
-| [`ask`](#stretto-ask) | Ask a System-One model questions of your own. |
-| [`import-answers`](#stretto-import-answers) | Read JSON lines from `export-answers` on stdin into a replay cache. |
-| [`init`](#stretto-init) | Print the configuration that runs an MCP server behind `stretto-proxy` in an MCP host, recording its sessions, and the steps from there to a served flow. |
-| [`doctor`](#stretto-doctor) | Check the installation. |
-| [`completions`](#stretto-completions) | Print the completion script for `stretto` in `bash`, `zsh`, `fish`, `powershell` or `elvish` to stdout. |
+| [`phase0`](#hoist-phase0) | Measure how compressible an agent's behavior is (no API keys needed), and with --oracle, how well a System-One model takes the decisions flows would hand it (Phase 0b). |
+| [`flow-serve`](#hoist-flow-serve) | Serve a live read-only flow (RFC-001 §3.13). |
+| [`compile`](#hoist-compile) | Compile a live read-only flow and write its IR (JSON) to a file. |
+| [`learn`](#hoist-learn) | Learn a live flow from sessions recorded by `hoist-mcp` (JSONL logs in a directory) and write its IR, as `compile` does from τ²-bench results. |
+| [`serve`](#hoist-serve) | Serve a compiled flow (from `compile`), as `flow-serve` does. |
+| [`guards`](#hoist-guards) | Test the policy guards (typed checks a proxy runs before a write) against recorded τ²-bench trajectories. |
+| [`confirm`](#hoist-confirm) | Judge the customer's confirmation before each write with a System-One model, next to the guards' word list, on τ²-bench's published trajectories. |
+| [`match`](#hoist-match) | Match descriptions to records (RFC-001). |
+| [`audit`](#hoist-audit) | Audit a flow against recorded episodes. |
+| [`drift`](#hoist-drift) | Watch for the agent changing under a flow. |
+| [`flow-show`](#hoist-flow-show) | Show a flow as a reviewer reads it (Markdown). |
+| [`flow-diff`](#hoist-flow-diff) | What changed from one flow to another, as a change list for a pull request (Markdown). |
+| [`stage`](#hoist-stage) | Learn a deployment's staged flow. |
+| [`flow-commit`](#hoist-flow-commit) | Commit the staged flow that `stage` learned. |
+| [`flow-rollback`](#hoist-flow-rollback) | Roll the committed flow back to an earlier version. |
+| [`flow-log`](#hoist-flow-log) | List the committed flow's versions, the latest first (Markdown). |
+| [`evaluate`](#hoist-evaluate) | Estimate what another rule would have done on a flow's logged decisions (RFC-001 §3.7). |
+| [`refine`](#hoist-refine) | Refine the arbiter's predicates (RFC-001 §3.4). |
+| [`search`](#hoist-search) | Search a flow's settings (RFC-001 §3.10). |
+| [`promote`](#hoist-promote) | Promote a flow's sites (RFC-001 §3.7). |
+| [`redact`](#hoist-redact) | Pseudonymize recorded sessions. |
+| [`jev-check`](#hoist-jev-check) | Check that Jev is reachable with TYPESAFE_API_KEY. |
+| [`export-arbiter`](#hoist-export-arbiter) | Write a flow's arbiter to its own file, to ship. |
+| [`fit-arbiter`](#hoist-fit-arbiter) | Fit one arbiter, to ship, on the held-out decisions of one or more compiles. |
+| [`export-answers`](#hoist-export-answers) | Write every cached oracle answer to stdout as JSON lines (`{"key", "response"}`). |
+| [`ask`](#hoist-ask) | Ask a System-One model questions of your own. |
+| [`import-answers`](#hoist-import-answers) | Read JSON lines from `export-answers` on stdin into a replay cache. |
+| [`init`](#hoist-init) | Print the configuration that runs an MCP server behind `hoist-mcp` in an MCP host, recording its sessions, and the steps from there to a served flow. |
+| [`doctor`](#hoist-doctor) | Check the installation. |
+| [`completions`](#hoist-completions) | Print the completion script for `hoist` in `bash`, `zsh`, `fish`, `powershell` or `elvish` to stdout. |
 
-### `stretto phase0`
+### `hoist phase0`
 
 Measure how compressible an agent's behavior is (no API keys needed), and with --oracle, how well a System-One model takes the decisions flows would hand it (Phase 0b).
 
 ```text
-Usage: stretto phase0 [OPTIONS] --tau2 <DIR>
+Usage: hoist phase0 [OPTIONS] --tau2 <DIR>
 ```
 
 **Inputs**
@@ -78,7 +78,7 @@ Usage: stretto phase0 [OPTIONS] --tau2 <DIR>
 - `--dataflow-hints`: v2: also describe each lookup by what its results supply, learned from argument dataflow in training.
 - `--predicates <FILE>`: v2: a JSON file of yes/no predicates about the state (see `data/predicates-v2.json`) to ask with every next-step question and weigh in the arbiter.
 - `--no-predicate-features`: v2: ask the predicates but leave them out of the arbiter, to measure what they add.
-- `--candidates <FILE>`: v2, `phase0`: candidate predicates (same format as --predicates), each asked alone at every asked next-step decision with the same state, so the other answers keep their cache keys. Their answers go to --oracle-log, for `stretto refine`.
+- `--candidates <FILE>`: v2, `phase0`: candidate predicates (same format as --predicates), each asked alone at every asked next-step decision with the same state, so the other answers keep their cache keys. Their answers go to --oracle-log, for `hoist refine`.
 - `--weigh <ID>` (repeatable): v2, `phase0`: also weigh this candidate in the arbiter (repeatable).
 - `--manifest-options`: v2: offer every read-only tool at every site, not only the lookups seen there in training, for the System-One model to choose from. A lookup training never made is bound by argument name.
 - `--pooled-arbiter`: v2, `compile`: give the flow one arbiter, fitted on every held-out decision, in place of one per fold, so that `export-arbiter` can ship it. Replayed on the same test tasks it has seen other agents' decisions on them, so compare flows without it.
@@ -95,12 +95,12 @@ Usage: stretto phase0 [OPTIONS] --tau2 <DIR>
 - `--out <FILE>`: Write the Markdown report here (default: stdout).
 - `--json <FILE>`: Also write the full report as JSON here.
 
-### `stretto flow-serve`
+### `hoist flow-serve`
 
 Serve a live read-only flow (RFC-001 §3.13): compile it from the same data and questions as `phase0 --questions v2`, goal free, then answer one query per connection on a local TCP port. A query is a JSON line `{"task_id", "messages"}` (τ²-bench messages so far, ending with a tool result); the answer is a JSON line with `"action": "lookup"` (and `tool`, `arguments`) or `"action": "hand_back"` (and `reason`).
 
 ```text
-Usage: stretto flow-serve [OPTIONS] --tau2 <DIR>
+Usage: hoist flow-serve [OPTIONS] --tau2 <DIR>
 ```
 
 **Inputs**
@@ -130,7 +130,7 @@ Usage: stretto flow-serve [OPTIONS] --tau2 <DIR>
 - `--dataflow-hints`: v2: also describe each lookup by what its results supply, learned from argument dataflow in training.
 - `--predicates <FILE>`: v2: a JSON file of yes/no predicates about the state (see `data/predicates-v2.json`) to ask with every next-step question and weigh in the arbiter.
 - `--no-predicate-features`: v2: ask the predicates but leave them out of the arbiter, to measure what they add.
-- `--candidates <FILE>`: v2, `phase0`: candidate predicates (same format as --predicates), each asked alone at every asked next-step decision with the same state, so the other answers keep their cache keys. Their answers go to --oracle-log, for `stretto refine`.
+- `--candidates <FILE>`: v2, `phase0`: candidate predicates (same format as --predicates), each asked alone at every asked next-step decision with the same state, so the other answers keep their cache keys. Their answers go to --oracle-log, for `hoist refine`.
 - `--weigh <ID>` (repeatable): v2, `phase0`: also weigh this candidate in the arbiter (repeatable).
 - `--manifest-options`: v2: offer every read-only tool at every site, not only the lookups seen there in training, for the System-One model to choose from. A lookup training never made is bound by argument name.
 - `--pooled-arbiter`: v2, `compile`: give the flow one arbiter, fitted on every held-out decision, in place of one per fold, so that `export-arbiter` can ship it. Replayed on the same test tasks it has seen other agents' decisions on them, so compare flows without it.
@@ -153,12 +153,12 @@ Usage: stretto flow-serve [OPTIONS] --tau2 <DIR>
 - `--explore <EPSILON>`: Explore: with this probability, take a lookup other than the rule's choice, drawn by the decider's probabilities among those that bind. Each answer then carries its `policy`: every option and the chance that the flow took what it took, for `evaluate`. 0 explores nothing but still logs it.
 - `--explore-seed <N>` (default `0`): Seed for the exploration draws.
 
-### `stretto compile`
+### `hoist compile`
 
-Compile a live read-only flow and write its IR (JSON) to a file: the same data and questions as `phase0 --questions v2`, goal free, from cached System-One answers only. `serve` and `stretto-proxy --flow` load the file.
+Compile a live read-only flow and write its IR (JSON) to a file: the same data and questions as `phase0 --questions v2`, goal free, from cached System-One answers only. `serve` and `hoist-mcp --flow` load the file.
 
 ```text
-Usage: stretto compile [OPTIONS] --tau2 <DIR> --out <FILE>
+Usage: hoist compile [OPTIONS] --tau2 <DIR> --out <FILE>
 ```
 
 **Inputs**
@@ -188,7 +188,7 @@ Usage: stretto compile [OPTIONS] --tau2 <DIR> --out <FILE>
 - `--dataflow-hints`: v2: also describe each lookup by what its results supply, learned from argument dataflow in training.
 - `--predicates <FILE>`: v2: a JSON file of yes/no predicates about the state (see `data/predicates-v2.json`) to ask with every next-step question and weigh in the arbiter.
 - `--no-predicate-features`: v2: ask the predicates but leave them out of the arbiter, to measure what they add.
-- `--candidates <FILE>`: v2, `phase0`: candidate predicates (same format as --predicates), each asked alone at every asked next-step decision with the same state, so the other answers keep their cache keys. Their answers go to --oracle-log, for `stretto refine`.
+- `--candidates <FILE>`: v2, `phase0`: candidate predicates (same format as --predicates), each asked alone at every asked next-step decision with the same state, so the other answers keep their cache keys. Their answers go to --oracle-log, for `hoist refine`.
 - `--weigh <ID>` (repeatable): v2, `phase0`: also weigh this candidate in the arbiter (repeatable).
 - `--manifest-options`: v2: offer every read-only tool at every site, not only the lookups seen there in training, for the System-One model to choose from. A lookup training never made is bound by argument name.
 - `--pooled-arbiter`: v2, `compile`: give the flow one arbiter, fitted on every held-out decision, in place of one per fold, so that `export-arbiter` can ship it. Replayed on the same test tasks it has seen other agents' decisions on them, so compare flows without it.
@@ -204,12 +204,12 @@ Usage: stretto compile [OPTIONS] --tau2 <DIR> --out <FILE>
 
 - `--out <FILE>` (required): Where to write the flow.
 
-### `stretto learn`
+### `hoist learn`
 
-Learn a live flow from sessions recorded by `stretto-proxy` (JSONL logs in a directory) and write its IR, as `compile` does from τ²-bench results. The tools come from the sessions' `tools/list` responses (their `readOnlyHint` annotations), or from `--manifest`. The logs one host session left with several servers are one session, each tool named after its server (`server::tool`). With `--results`, the sessions are τ²-bench episodes on a checkout's training tasks instead, as if a deployment had recorded them; with `--otel`, the traces of an agent framework's OpenTelemetry spans.
+Learn a live flow from sessions recorded by `hoist-mcp` (JSONL logs in a directory) and write its IR, as `compile` does from τ²-bench results. The tools come from the sessions' `tools/list` responses (their `readOnlyHint` annotations), or from `--manifest`. The logs one host session left with several servers are one session, each tool named after its server (`server::tool`). With `--results`, the sessions are τ²-bench episodes on a checkout's training tasks instead, as if a deployment had recorded them; with `--otel`, the traces of an agent framework's OpenTelemetry spans.
 
 ```text
-Usage: stretto learn [OPTIONS] --domain <NAME> --out <FILE>
+Usage: hoist learn [OPTIONS] --domain <NAME> --out <FILE>
 ```
 
 **Inputs**
@@ -222,12 +222,12 @@ Usage: stretto learn [OPTIONS] --domain <NAME> --out <FILE>
 - `--train-tasks <IDS>` (repeatable; not with `--train-fraction`): With `--results`, learn from these training tasks only (comma-separated), in place of `--train-fraction`.
 - `--trials <N>...` (repeatable): With `--results`, only these trials of each task (default: all).
 - `--domain <NAME>` (required): The domain to name the flow for.
-- `--manifest <FILE>` (not with `--results`): A tool manifest (JSON, as stretto-trace writes it) instead of the sessions' own `tools/list`.
+- `--manifest <FILE>` (not with `--results`): A tool manifest (JSON, as hoist-trace writes it) instead of the sessions' own `tools/list`.
 - `--rewards <FILE>` (not with `--results`): Rewards by session id (JSON object): a log's session, or, for the logs a host session left with several servers, the host session. Sessions without one count as successful.
 
 **The arbiter**
 
-- `--habit-only` (not with `--refit-habit`, `--arbiter-from`, `--manifest-options`, `--oracle`, `--oracle-cache`, `--oracle-budget`, `--predicates`): Ask no System-One model: every session trains the habit, and the flow has no arbiter (serve it with `--flow-decider reach`, as `stretto init` does).
+- `--habit-only` (not with `--refit-habit`, `--arbiter-from`, `--manifest-options`, `--oracle`, `--oracle-cache`, `--oracle-budget`, `--predicates`): Ask no System-One model: every session trains the habit, and the flow has no arbiter (serve it with `--flow-decider reach`, as `hoist init` does).
 - `--refit-habit` (not with `--habit-only`, `--arbiter-from`): Once the arbiter is fitted on the held-out sessions, learn the habit, the sites and the bindings again from every session.
 - `--arbiter-from <FILE>` (not with `--habit-only`, `--refit-habit`, `--manifest-options`, `--oracle`, `--oracle-cache`, `--oracle-budget`, `--predicates`): Ask no System-One model while learning: every session trains the habit, and the flow serves this arbiter instead. It is an arbiter file (`export-arbiter`; `data/arbiters/` ships two), or a flow whose arbiter to take, such as one `compile` fitted on other agents' traces.
 - `--manifest-options` (not with `--habit-only`, `--arbiter-from`): Offer every read-only tool at every site (see `compile`). Only the arbiter a flow fits here weighs such options.
@@ -242,7 +242,7 @@ Usage: stretto learn [OPTIONS] --domain <NAME> --out <FILE>
 
 **The habit**
 
-- `--half-life <SESSIONS>`: Forget old sessions: one this many sessions older than the newest counts half in the habit, one twice as old a quarter. Sessions are taken in the order they started (with `--results`, as listed). Relearn with it once `stretto drift` says the agent changed, to follow the change without discarding every earlier session.
+- `--half-life <SESSIONS>`: Forget old sessions: one this many sessions older than the newest counts half in the habit, one twice as old a quarter. Sessions are taken in the order they started (with `--results`, as listed). Relearn with it once `hoist drift` says the agent changed, to follow the change without discarding every earlier session.
 
 **Surprise**
 
@@ -253,12 +253,12 @@ Usage: stretto learn [OPTIONS] --domain <NAME> --out <FILE>
 
 - `--out <FILE>` (required): Where to write the flow.
 
-### `stretto serve`
+### `hoist serve`
 
 Serve a compiled flow (from `compile`), as `flow-serve` does.
 
 ```text
-Usage: stretto serve [OPTIONS] --flow <FILE>
+Usage: hoist serve [OPTIONS] --flow <FILE>
 ```
 
 **Inputs**
@@ -281,12 +281,12 @@ Usage: stretto serve [OPTIONS] --flow <FILE>
 - `--explore <EPSILON>`: Explore: with this probability, take a lookup other than the rule's choice, drawn by the decider's probabilities among those that bind. Each answer then carries its `policy`: every option and the chance that the flow took what it took, for `evaluate`. 0 explores nothing but still logs it.
 - `--explore-seed <N>` (default `0`): Seed for the exploration draws.
 
-### `stretto guards`
+### `hoist guards`
 
-Test the policy guards (typed checks a proxy runs before a write) against recorded τ²-bench trajectories: every write is checked against what came before it, as `stretto-proxy --guards` checks it. A rule that fails the writes of successful episodes is too strict, or wrong.
+Test the policy guards (typed checks a proxy runs before a write) against recorded τ²-bench trajectories: every write is checked against what came before it, as `hoist-mcp --guards` checks it. A rule that fails the writes of successful episodes is too strict, or wrong.
 
 ```text
-Usage: stretto guards [OPTIONS] --tau2 <DIR>
+Usage: hoist guards [OPTIONS] --tau2 <DIR>
 ```
 
 **Inputs**
@@ -300,12 +300,12 @@ Usage: stretto guards [OPTIONS] --tau2 <DIR>
 - `--out <FILE>`: Write the Markdown report here (default: stdout).
 - `--json <FILE>`: Also write the audit as JSON here.
 
-### `stretto confirm`
+### `hoist confirm`
 
 Judge the customer's confirmation before each write with a System-One model, next to the guards' word list, on τ²-bench's published trajectories: one yes/no question per write, sorted by whether the tool accepted it and the episode passed.
 
 ```text
-Usage: stretto confirm [OPTIONS] --tau2 <DIR>
+Usage: hoist confirm [OPTIONS] --tau2 <DIR>
 ```
 
 **Inputs**
@@ -329,12 +329,12 @@ Usage: stretto confirm [OPTIONS] --tau2 <DIR>
 - `--out <FILE>`: Write the Markdown report here (default: stdout).
 - `--json <FILE>`: Also write every judged write, and the audits, as JSON here.
 
-### `stretto match`
+### `hoist match`
 
 Match descriptions to records (RFC-001): at each write in τ²-bench's published trajectories that picks records out of earlier results (items of an order, a new variant, a payment method, a reservation), ask the System-One model which one the customer means, without the agent's pick, and score both against the task's expected actions.
 
 ```text
-Usage: stretto match [OPTIONS] --tau2 <DIR>
+Usage: hoist match [OPTIONS] --tau2 <DIR>
 ```
 
 **Inputs**
@@ -356,18 +356,18 @@ Usage: stretto match [OPTIONS] --tau2 <DIR>
 - `--out <FILE>`: Write the Markdown report here (default: stdout).
 - `--json <FILE>`: Also write every choice, and the audits, as JSON here.
 
-### `stretto audit`
+### `hoist audit`
 
 Audit a flow against recorded episodes: score the agent's own steps under the flow's decisions, run as a fugue program, for agreement, calibration and surprise per site and per episode. Run it on new sessions before trusting a flow compiled from older ones.
 
 ```text
-Usage: stretto audit [OPTIONS] --flow <FILE>
+Usage: hoist audit [OPTIONS] --flow <FILE>
 ```
 
 **Inputs**
 
 - `--flow <FILE>` (required): The flow IR to audit.
-- `--sessions <DIR>` (not with `--otel`): Sessions recorded by stretto-proxy (a directory of `*.jsonl`).
+- `--sessions <DIR>` (not with `--otel`): Sessions recorded by hoist-mcp (a directory of `*.jsonl`).
 - `--otel <FILE>` (not with `--sessions`): OpenTelemetry GenAI spans in place of --sessions: an OTLP JSON export, each trace a session (`learn --otel`).
 - `--results <FILE>` (repeatable): τ²-bench results files (repeatable); files for other domains are skipped.
 - `--tau2 <DIR>`: With --results: keep only the test split of this τ²-bench checkout, the tasks a flow compiled from it never trained on.
@@ -383,18 +383,18 @@ Usage: stretto audit [OPTIONS] --flow <FILE>
 - `--out <FILE>`: Write the Markdown report here (default: stdout).
 - `--json <FILE>`: Also write the audit as JSON here.
 
-### `stretto drift`
+### `hoist drift`
 
 Watch for the agent changing under a flow: score recorded sessions in the order they ran, as `audit` does, for surprise, disagreement and the share of steps at sites the flow does not know, and sound an alarm when Bayesian online change-point detection puts a change on a recent session, naming the sites that moved. Exits with 1 while the alarm sounds after the last session, 2 on an error.
 
 ```text
-Usage: stretto drift [OPTIONS] --flow <FILE>
+Usage: hoist drift [OPTIONS] --flow <FILE>
 ```
 
 **Inputs**
 
 - `--flow <FILE>` (required): The flow IR the sessions were served with.
-- `--sessions <DIR>` (not with `--otel`): Sessions recorded by stretto-proxy (a directory of `*.jsonl`), taken in the order they started.
+- `--sessions <DIR>` (not with `--otel`): Sessions recorded by hoist-mcp (a directory of `*.jsonl`), taken in the order they started.
 - `--otel <FILE>` (not with `--sessions`): OpenTelemetry GenAI spans in place of --sessions: an OTLP JSON export, each trace a session (taken in the order they started).
 - `--results <FILE>` (repeatable): τ²-bench results files, their episodes taken in the order listed and before any --sessions, as a flow compiled from benchmark runs serves a deployment later; files for other domains are skipped.
 - `--tau2 <DIR>`: With --results: keep only the test split of this τ²-bench checkout, the tasks a flow compiled from it never trained on.
@@ -416,12 +416,12 @@ Usage: stretto drift [OPTIONS] --flow <FILE>
 - `--out <FILE>`: Write the Markdown report here (default: stdout).
 - `--json <FILE>`: Also write every session's scores and the alarms as JSON here.
 
-### `stretto flow-show`
+### `hoist flow-show`
 
 Show a flow as a reviewer reads it (Markdown): the tools it may call, the lookups it may make after each call and where their arguments come from, what it does there with the habit alone, and how its arbiter weighs the System-One model's answers.
 
 ```text
-Usage: stretto flow-show [OPTIONS] <FILE>
+Usage: hoist flow-show [OPTIONS] <FILE>
 ```
 
 **Arguments**
@@ -430,15 +430,15 @@ Usage: stretto flow-show [OPTIONS] <FILE>
 
 **Options**
 
-- `--threshold <P>` (default `0.3`): The threshold the flow will be served with (`stretto-proxy --flow-threshold`).
+- `--threshold <P>` (default `0.3`): The threshold the flow will be served with (`hoist-mcp --flow-threshold`).
 - `--out <FILE>`: Write the Markdown here (default: stdout).
 
-### `stretto flow-diff`
+### `hoist flow-diff`
 
 What changed from one flow to another, as a change list for a pull request (Markdown). Exits with 1 when a change needs review (the flow may call a tool, make a lookup, bind an argument from a source, or ask a model or a question it did not before), 2 on an error, and 0 otherwise.
 
 ```text
-Usage: stretto flow-diff [OPTIONS] <OLD> <NEW>
+Usage: hoist flow-diff [OPTIONS] <OLD> <NEW>
 ```
 
 **Arguments**
@@ -449,26 +449,26 @@ Usage: stretto flow-diff [OPTIONS] <OLD> <NEW>
 **Options**
 
 - `--tolerance <X>` (default `0.05`): Leave out shares, chances and weights that moved by less than this.
-- `--threshold <P>` (default `0.3`): The threshold the flow will be served with (`stretto-proxy --flow-threshold`).
+- `--threshold <P>` (default `0.3`): The threshold the flow will be served with (`hoist-mcp --flow-threshold`).
 - `--out <FILE>`: Write the Markdown here (default: stdout).
 
-### `stretto stage`
+### `hoist stage`
 
 Learn a deployment's staged flow: the next version of the flow the proxy serves (`--flow`, the committed flow), from every session recorded so far, as `learn --habit-only` learns one, keeping the committed flow's arbiter, promotion and thresholds. Each session that is new since the last run is first scored by the committed flow and by the staged flow as it was, as each is served; the report compares the two on the last sessions, out of sample for both, and lists what committing the staged flow would change. Run it as sessions arrive. Nothing reaches the proxy until `flow-commit`.
 
 ```text
-Usage: stretto stage [OPTIONS] --flow <FILE>
+Usage: hoist stage [OPTIONS] --flow <FILE>
 ```
 
 **Inputs**
 
 - `--flow <FILE>` (required): The committed flow, `NAME.flow.json`. The staged flow is `NAME.staged.flow.json` beside it, and the staged learner's state `NAME.stage.json`. It need not exist yet: then give --domain.
-- `--sessions <DIR>` (not with `--otel`, `--results`): Sessions recorded by stretto-proxy (a directory of `*.jsonl`), taken in the order they started.
+- `--sessions <DIR>` (not with `--otel`, `--results`): Sessions recorded by hoist-mcp (a directory of `*.jsonl`), taken in the order they started.
 - `--otel <FILE>` (not with `--sessions`, `--results`): OpenTelemetry GenAI spans in place of --sessions: an OTLP JSON export, each trace a session (`learn --otel`).
 - `--results <FILE>` (repeatable; not with `--sessions`, `--otel`, `--rewards`): τ²-bench results in place of --sessions (repeatable): their episodes, in the order listed, with their rewards. The tools come from --tau2's checkout, or --manifest.
 - `--tau2 <DIR>`: The τ²-bench checkout whose tools `--results` call.
 - `--domain <NAME>`: The domain to name the flow for; needed only before there is a committed flow.
-- `--manifest <FILE>`: A tool manifest (JSON, as stretto-trace writes it) instead of the sessions' own `tools/list`.
+- `--manifest <FILE>`: A tool manifest (JSON, as hoist-trace writes it) instead of the sessions' own `tools/list`.
 - `--rewards <FILE>` (not with `--results`): Rewards by session id (JSON object), as for `learn`. Sessions without one count as successful.
 
 **The staged flow**
@@ -480,8 +480,8 @@ Usage: stretto stage [OPTIONS] --flow <FILE>
 
 - `--window <N>` (default `50`): Compare the flows on the last this many sessions that both were scored on.
 - `--decider <DECIDER>` (one of `arbiter`, `habit`, `reach`): How both flows decide as they are scored: `arbiter`, `habit` or `reach`. Default: each as the proxy serves it by default.
-- `--threshold <P>` (default `0.3`): The threshold the flows are served with (`stretto-proxy --flow-threshold`).
-- `--per-call <N>` (default `8`): Lookups the proxy makes after one call, at most (`stretto-proxy --flow-per-call`).
+- `--threshold <P>` (default `0.3`): The threshold the flows are served with (`hoist-mcp --flow-threshold`).
+- `--per-call <N>` (default `8`): Lookups the proxy makes after one call, at most (`hoist-mcp --flow-per-call`).
 - `--oracle <ORACLE>` (one of `jev`, `replay`, `mock`; default `replay`): Who answers an arbiter's questions: `replay` (the cache only; decisions it cannot answer are left out), `jev` (needs TYPESAFE_API_KEY) or `mock`.
 - `--oracle-cache <DIR>` (default `.oracle-cache`): Replay cache for oracle answers.
 
@@ -490,12 +490,12 @@ Usage: stretto stage [OPTIONS] --flow <FILE>
 - `--out <FILE>`: Write the report here (Markdown; default: stdout).
 - `--json <FILE>`: Also write the comparison as JSON here.
 
-### `stretto flow-commit`
+### `hoist flow-commit`
 
 Commit the staged flow that `stage` learned: make it the flow the proxy serves (`--flow`, replaced whole, so a proxy that starts reads the old flow or the new one). Every version of the committed flow is kept in `NAME.history/`, with what changed and, for a commit, the comparison `stage` last reported, for `flow-log` and `flow-rollback`. A committed flow changed by other means is kept as a version of its own first.
 
 ```text
-Usage: stretto flow-commit [OPTIONS] --flow <FILE>
+Usage: hoist flow-commit [OPTIONS] --flow <FILE>
 ```
 
 **Options**
@@ -503,12 +503,12 @@ Usage: stretto flow-commit [OPTIONS] --flow <FILE>
 - `--flow <FILE>` (required): The committed flow, `NAME.flow.json`.
 - `--note <TEXT>`: Why, kept with the version.
 
-### `stretto flow-rollback`
+### `hoist flow-rollback`
 
 Roll the committed flow back to an earlier version: the one before the current version, or `--to N`. The rollback is a version of its own, so it can be rolled back too.
 
 ```text
-Usage: stretto flow-rollback [OPTIONS] --flow <FILE>
+Usage: hoist flow-rollback [OPTIONS] --flow <FILE>
 ```
 
 **Options**
@@ -517,24 +517,24 @@ Usage: stretto flow-rollback [OPTIONS] --flow <FILE>
 - `--to <N>`: The version to restore (see `flow-log`).
 - `--note <TEXT>`: Why, kept with the version.
 
-### `stretto flow-log`
+### `hoist flow-log`
 
 List the committed flow's versions, the latest first (Markdown): how and when each became the committed flow, why, what changed, and for a commit, the comparison it rested on.
 
 ```text
-Usage: stretto flow-log --flow <FILE>
+Usage: hoist flow-log --flow <FILE>
 ```
 
 **Options**
 
 - `--flow <FILE>` (required): The committed flow, `NAME.flow.json`.
 
-### `stretto evaluate`
+### `hoist evaluate`
 
-Estimate what another rule would have done on a flow's logged decisions (RFC-001 §3.7). The decisions are JSON lines, each a flow answer logged with its `policy` (`serve --explore`, `stretto-proxy --flow-explore`) and a `labels` list: each option's outcome (`used`, `detour`, `turn`), as `pilot/check_flow.py --explore` writes them. For each target, per site and in total: the lookups, used lookups, detours and turns spared, estimated directly from every option's label, and by IPS, self-normalized IPS and doubly robust estimates from the taken option's label alone.
+Estimate what another rule would have done on a flow's logged decisions (RFC-001 §3.7). The decisions are JSON lines, each a flow answer logged with its `policy` (`serve --explore`, `hoist-mcp --flow-explore`) and a `labels` list: each option's outcome (`used`, `detour`, `turn`), as `pilot/check_flow.py --explore` writes them. For each target, per site and in total: the lookups, used lookups, detours and turns spared, estimated directly from every option's label, and by IPS, self-normalized IPS and doubly robust estimates from the taken option's label alone.
 
 ```text
-Usage: stretto evaluate [OPTIONS] --decisions <FILE> --target <RULE>
+Usage: hoist evaluate [OPTIONS] --decisions <FILE> --target <RULE>
 ```
 
 **Inputs**
@@ -551,12 +551,12 @@ Usage: stretto evaluate [OPTIONS] --decisions <FILE> --target <RULE>
 - `--out <FILE>`: Write the Markdown here (default: stdout).
 - `--json <FILE>`: Also write every estimate as JSON here.
 
-### `stretto refine`
+### `hoist refine`
 
 Refine the arbiter's predicates (RFC-001 §3.4). From one domain's decision log (`phase0 --questions v2 --oracle-log`, with the candidates asked by `--candidates`), fit the arbiter by cross-validation over tasks with each candidate added, and keep candidates greedily while one raises the held-out log-likelihood of the agents' steps by more than a penalty. With --examples, first write examples from the sites where the arbiter is weakest, for whoever proposes the candidates: a person or a model.
 
 ```text
-Usage: stretto refine [OPTIONS] --log <FILE>
+Usage: hoist refine [OPTIONS] --log <FILE>
 ```
 
 **Inputs**
@@ -581,12 +581,12 @@ Usage: stretto refine [OPTIONS] --log <FILE>
 - `--out <FILE>`: Write the Markdown here (default: stdout).
 - `--json <FILE>`: Also write the search as JSON here.
 
-### `stretto search`
+### `hoist search`
 
 Search a flow's settings (RFC-001 §3.10): NSGA-II, from fugue-evo, over each site's threshold (0.10 to 0.95, or off) and the decider, to save the most turns for the fewest detours. Each setting is scored by the replay command after `--`, run with `--flow FILE --flow-decider NAME --out DIR` added; it must print a `CHECK {…}` line of totals, as `pilot/check_flow.py` does. A decision the replay cannot answer, such as a question missing from a replay cache, hands back and makes a setting look safer than it is. The report counts them (unanswered), so let the replay ask what its cache lacks. The hand-set flows start the search: every site at 0.3 with the arbiter (D0), and with the habit alone at 0.3 and at 0.9 (arm C). With --rescore, replay an earlier search's hand-set settings and front on the command's episodes instead.
 
 ```text
-Usage: stretto search [OPTIONS] --flow <FILE> --dir <DIR> -- <COMMAND>...
+Usage: hoist search [OPTIONS] --flow <FILE> --dir <DIR> -- <COMMAND>...
 ```
 
 **Inputs**
@@ -611,18 +611,18 @@ Usage: stretto search [OPTIONS] --flow <FILE> --dir <DIR> -- <COMMAND>...
 
 - `<COMMAND>...` (required): The replay command and its arguments, after `--`.
 
-### `stretto promote`
+### `hoist promote`
 
-Promote a flow's sites (RFC-001 §3.7). Wherever the flow would decide in recorded sessions or τ²-bench results, score the lookup it would make: used if the agent made it in a later LLM turn, a detour if it never did. The promoted flow acts only after the calls whose record meets the bar, and hands back after the rest. Sessions recorded with `stretto-proxy --flow-shadow` have the flow's questions answered in the proxy's cache: pass it as --oracle-cache.
+Promote a flow's sites (RFC-001 §3.7). Wherever the flow would decide in recorded sessions or τ²-bench results, score the lookup it would make: used if the agent made it in a later LLM turn, a detour if it never did. The promoted flow acts only after the calls whose record meets the bar, and hands back after the rest. Sessions recorded with `hoist-mcp --flow-shadow` have the flow's questions answered in the proxy's cache: pass it as --oracle-cache.
 
 ```text
-Usage: stretto promote [OPTIONS] --flow <FILE> --out <FILE>
+Usage: hoist promote [OPTIONS] --flow <FILE> --out <FILE>
 ```
 
 **Inputs**
 
 - `--flow <FILE>` (required): The flow to promote.
-- `--sessions <DIR>` (not with `--otel`): Sessions recorded by stretto-proxy (a directory of `*.jsonl`); each counts as its own task.
+- `--sessions <DIR>` (not with `--otel`): Sessions recorded by hoist-mcp (a directory of `*.jsonl`); each counts as its own task.
 - `--otel <FILE>` (not with `--sessions`): OpenTelemetry GenAI spans in place of --sessions: an OTLP JSON export, each trace a session (each its own task).
 - `--results <FILE>` (repeatable): τ²-bench results files (repeatable); files for other domains are skipped.
 - `--tau2 <DIR>`: With --results: keep only the test split of this τ²-bench checkout, the tasks a flow compiled from it never trained on.
@@ -632,51 +632,51 @@ Usage: stretto promote [OPTIONS] --flow <FILE> --out <FILE>
 
 - `--oracle <ORACLE>` (one of `jev`, `replay`, `mock`; default `replay`): Who answers the flow's questions: `replay` (the cache only; decisions it cannot answer are left out), `jev` (needs TYPESAFE_API_KEY) or `mock`.
 - `--oracle-cache <DIR>` (default `.oracle-cache`): Replay cache for oracle answers.
-- `--decider <DECIDER>` (one of `arbiter`, `habit`, `reach`): How the flow decides: `arbiter`, `habit` or `reach`, as it will be served (`stretto-proxy --flow-decider`). Default: as the proxy serves it by default, with its arbiter, else `reach`, else, for a flow learned before flows held reach's counts, `habit`.
+- `--decider <DECIDER>` (one of `arbiter`, `habit`, `reach`): How the flow decides: `arbiter`, `habit` or `reach`, as it will be served (`hoist-mcp --flow-decider`). Default: as the proxy serves it by default, with its arbiter, else `reach`, else, for a flow learned before flows held reach's counts, `habit`.
 
 **The bar**
 
-- `--threshold <P>` (default `0.3`): The threshold the flow will be served with (`stretto-proxy --flow-threshold`).
+- `--threshold <P>` (default `0.3`): The threshold the flow will be served with (`hoist-mcp --flow-threshold`).
 - `--min-used <X>` (default `0.7`): The least share of the flow's lookups at a site that the agent made in a later LLM turn.
 - `--min-lower <X>` (default `0.5`): The least lower bound on that share (Wilson, 90% two-sided).
 - `--min-tasks <N>` (default `3`): The fewest distinct tasks (or sessions) the lookups came from.
-- `--per-call <N>` (default `8`): Lookups the proxy will make after one call, at most, as it will be served (`stretto-proxy --flow-per-call`): the flow decides again after each lookup the agent made later.
+- `--per-call <N>` (default `8`): Lookups the proxy will make after one call, at most, as it will be served (`hoist-mcp --flow-per-call`): the flow decides again after each lookup the agent made later.
 
 **Output**
 
 - `--out <FILE>` (required): Write the promoted flow here.
 - `--report <FILE>`: Write each site's record here, as Markdown (default: stdout).
 
-### `stretto redact`
+### `hoist redact`
 
 Pseudonymize recorded sessions. A value that fewer than --keep-shared sessions contain becomes a salted hash, the same wherever it appears; a value more sessions share is kept, unless its field is named with --hash-field. A flow learned from the redacted logs matches one learned from the originals (docs/privacy.md).
 
 ```text
-Usage: stretto redact [OPTIONS] --sessions <DIR> --out <DIR>
+Usage: hoist redact [OPTIONS] --sessions <DIR> --out <DIR>
 ```
 
 **Options**
 
-- `--sessions <DIR>` (required): Sessions recorded by stretto-proxy (a directory of `*.jsonl`).
+- `--sessions <DIR>` (required): Sessions recorded by hoist-mcp (a directory of `*.jsonl`).
 - `--out <DIR>` (required): Write the redacted logs here, one per session.
-- `--salt-env <VAR>` (default `STRETTO_REDACT_SALT`): The environment variable holding the salt. Keep the salt secret, and the same for logs whose hashes should match.
+- `--salt-env <VAR>` (default `HOIST_REDACT_SALT`): The environment variable holding the salt. Keep the salt secret, and the same for logs whose hashes should match.
 - `--keep-shared <N>` (default `3`): Keep a value that at least this many sessions share.
 - `--hash-field <NAME>` (repeatable): Hash every value of this field (a JSON key, at any depth of the arguments and results), and each word of it, wherever it appears, however many sessions share it: for the ids and names that a returning customer shares among their own sessions. Repeatable, or comma-separated.
 
-### `stretto jev-check`
+### `hoist jev-check`
 
 Check that Jev is reachable with TYPESAFE_API_KEY: ask one small question (uncached) and print the answer, model version and latency.
 
 ```text
-Usage: stretto jev-check
+Usage: hoist jev-check
 ```
 
-### `stretto export-arbiter`
+### `hoist export-arbiter`
 
 Write a flow's arbiter to its own file, to ship: the predicates it weighs, the model it asks, and one fit of its weights. `learn --arbiter-from` serves it with a habit learned from new sessions. The flow's folds must share one fit (`compile --pooled-arbiter`, or a flow from `learn`).
 
 ```text
-Usage: stretto export-arbiter --flow <FILE> --out <FILE>
+Usage: hoist export-arbiter --flow <FILE> --out <FILE>
 ```
 
 **Options**
@@ -684,12 +684,12 @@ Usage: stretto export-arbiter --flow <FILE> --out <FILE>
 - `--flow <FILE>` (required): The flow whose arbiter to write.
 - `--out <FILE>` (required): Where to write it.
 
-### `stretto fit-arbiter`
+### `hoist fit-arbiter`
 
 Fit one arbiter, to ship, on the held-out decisions of one or more compiles: each `--log` is a decision log from `compile --oracle-log` asked with the same predicates. With logs of several domains, the arbiter is fitted on all of them at once.
 
 ```text
-Usage: stretto fit-arbiter [OPTIONS] --log <FILE> --predicates <FILE> --domain <NAME> --out <FILE>
+Usage: hoist fit-arbiter [OPTIONS] --log <FILE> --predicates <FILE> --domain <NAME> --out <FILE>
 ```
 
 **Options**
@@ -700,24 +700,24 @@ Usage: stretto fit-arbiter [OPTIONS] --log <FILE> --predicates <FILE> --domain <
 - `--model <MODEL>` (default `jev-latest`): The System-One model id it asks.
 - `--out <FILE>` (required): Where to write it.
 
-### `stretto export-answers`
+### `hoist export-answers`
 
 Write every cached oracle answer to stdout as JSON lines (`{"key", "response"}`). Answers carry no benchmark text, so the bundle can be shared to replay Phase 0b without a key.
 
 ```text
-Usage: stretto export-answers [OPTIONS]
+Usage: hoist export-answers [OPTIONS]
 ```
 
 **Options**
 
 - `--oracle-cache <DIR>` (default `.oracle-cache`): Replay cache to read.
 
-### `stretto ask`
+### `hoist ask`
 
 Ask a System-One model questions of your own: JSON lines of requests (bare, or `{"key", "request"}` as `--oracle-dump` writes them), answered through the replay cache and written as `{"key", "response"}` lines, as `export-answers` writes them. For experiments that change the questions, such as text injected into their state.
 
 ```text
-Usage: stretto ask [OPTIONS] --requests <FILE> --out <FILE>
+Usage: hoist ask [OPTIONS] --requests <FILE> --out <FILE>
 ```
 
 **Options**
@@ -729,84 +729,84 @@ Usage: stretto ask [OPTIONS] --requests <FILE> --out <FILE>
 - `--oracle-concurrency <N>` (default `8`): Requests in flight at once.
 - `--out <FILE>` (required): Where to write the answers (JSON lines; a request that failed gets `"error"` in place of `"response"`).
 
-### `stretto import-answers`
+### `hoist import-answers`
 
 Read JSON lines from `export-answers` on stdin into a replay cache.
 
 ```text
-Usage: stretto import-answers [OPTIONS]
+Usage: hoist import-answers [OPTIONS]
 ```
 
 **Options**
 
 - `--oracle-cache <DIR>` (default `.oracle-cache`): Replay cache to fill.
 
-### `stretto init`
+### `hoist init`
 
-Print the configuration that runs an MCP server behind `stretto-proxy` in an MCP host, recording its sessions, and the steps from there to a served flow: for Claude Code a `claude mcp add` command, for the other hosts their JSON. The configuration goes to stdout and the steps to stderr. Nothing is written without --write.
+Print the configuration that runs an MCP server behind `hoist-mcp` in an MCP host, recording its sessions, and the steps from there to a served flow: for Claude Code a `claude mcp add` command, for the other hosts their JSON. The configuration goes to stdout and the steps to stderr. Nothing is written without --write.
 
 ```text
-Usage: stretto init [OPTIONS] --host <HOST> [-- <SERVER_COMMAND>...]
+Usage: hoist init [OPTIONS] --host <HOST> [-- <SERVER_COMMAND>...]
 ```
 
 **Options**
 
 - `--host <HOST>` (required; one of `claude-code`, `claude-desktop`, `cursor`, `vscode`): The MCP host to configure.
 - `--domain <NAME>`: The server's name in the host, which is also the domain of its sessions and flows (default, with --flow: the flow's).
-- `--flow <FILE>`: Run this flow (from `stretto learn` or `stretto promote`) after the agent's calls. A flow without an arbiter is served on the chance of each lookup before the agent's next write (`--flow-decider reach`), or on its habit alone (`habit`) if it was learned before flows held those counts.
-- `--shadow`: Run the flow in shadow: it decides and logs, but looks nothing up, for `stretto promote`.
-- `--record <DIR>`: Where the proxy records sessions (default: ~/.stretto/logs/NAME, or ~/.stretto/shadow/NAME with --shadow).
+- `--flow <FILE>`: Run this flow (from `hoist learn` or `hoist promote`) after the agent's calls. A flow without an arbiter is served on the chance of each lookup before the agent's next write (`--flow-decider reach`), or on its habit alone (`habit`) if it was learned before flows held those counts.
+- `--shadow`: Run the flow in shadow: it decides and logs, but looks nothing up, for `hoist promote`.
+- `--record <DIR>`: Where the proxy records sessions (default: ~/.hoist/logs/NAME, or ~/.hoist/shadow/NAME with --shadow).
 - `--write <PATH>`: Write the host's configuration file here instead of printing it (for Claude Code, a project's .mcp.json). An existing file is left as it is, unless --force is given.
 - `--force`: With --write, replace an existing file, with any other servers in it.
-- `--guards`: Check each of the agent's calls against the domain's policy guards, and refuse the ones they fail (`stretto-proxy --guards`). `retail` and `airline` have guards.
-- `--confirm-judge <MODE>` (one of `log`, `enforce`): Also put each write the guards check for a confirmation to the System-One model: `log` records its judgments, `enforce` refuses the writes it fails (`stretto-proxy --confirm-judge`). The proxy needs TYPESAFE_API_KEY, and the conversation in --context.
-- `--context <FILE>`: The file the host appends the conversation to, as JSON lines, which the confirmation judge reads (`stretto-proxy --context`).
-- `--commit`: Offer `stretto_commit`: several calls in one, in order, each checked by the guards (`stretto-proxy --commit`).
-- `--retain-days <DAYS>`: When the proxy starts, delete what is older than this many days: the sessions it recorded, with the logs beside them, and its cached answers (`stretto-proxy --retain-days`).
-- `--listen <ADDR>`: Serve every host from one proxy that listens at this address, such as `127.0.0.1:8931`, and that hosts connect to by URL (`stretto-proxy --listen`), rather than each starting its own over stdio. The configuration names the URL, and the next steps start the proxy. Claude Desktop, which starts its servers as commands, still starts its own.
-- `--listen-token-file <FILE>`: With --listen: the file that holds the token hosts send (`stretto-proxy --listen-token-file`). Needed to listen beyond loopback.
-- `--upstream <URL>`: A Streamable HTTP server, such as `https://example.com/mcp`, in place of a server command: the proxy connects to it (`stretto-proxy --upstream`).
-- `--upstream-header <NAME=VAR>` (repeatable): With --upstream: send header NAME with the value of environment variable VAR, which the host gives the proxy in its `env` (`stretto-proxy --upstream-header`). The value is not written.
+- `--guards`: Check each of the agent's calls against the domain's policy guards, and refuse the ones they fail (`hoist-mcp --guards`). `retail` and `airline` have guards.
+- `--confirm-judge <MODE>` (one of `log`, `enforce`): Also put each write the guards check for a confirmation to the System-One model: `log` records its judgments, `enforce` refuses the writes it fails (`hoist-mcp --confirm-judge`). The proxy needs TYPESAFE_API_KEY, and the conversation in --context.
+- `--context <FILE>`: The file the host appends the conversation to, as JSON lines, which the confirmation judge reads (`hoist-mcp --context`).
+- `--commit`: Offer `hoist_commit`: several calls in one, in order, each checked by the guards (`hoist-mcp --commit`).
+- `--retain-days <DAYS>`: When the proxy starts, delete what is older than this many days: the sessions it recorded, with the logs beside them, and its cached answers (`hoist-mcp --retain-days`).
+- `--listen <ADDR>`: Serve every host from one proxy that listens at this address, such as `127.0.0.1:8931`, and that hosts connect to by URL (`hoist-mcp --listen`), rather than each starting its own over stdio. The configuration names the URL, and the next steps start the proxy. Claude Desktop, which starts its servers as commands, still starts its own.
+- `--listen-token-file <FILE>`: With --listen: the file that holds the token hosts send (`hoist-mcp --listen-token-file`). Needed to listen beyond loopback.
+- `--upstream <URL>`: A Streamable HTTP server, such as `https://example.com/mcp`, in place of a server command: the proxy connects to it (`hoist-mcp --upstream`).
+- `--upstream-header <NAME=VAR>` (repeatable): With --upstream: send header NAME with the value of environment variable VAR, which the host gives the proxy in its `env` (`hoist-mcp --upstream-header`). The value is not written.
 
 **Arguments**
 
 - `<SERVER_COMMAND>...` (not with `--upstream`): The MCP server's command and its arguments, after `--`.
 
-### `stretto doctor`
+### `hoist doctor`
 
-Check the installation: the versions of `stretto-proxy`, `stretto-procedure` and `stretto-mcp-demo` on PATH, whether the data directory (~/.stretto) is writable, whether TYPESAFE_API_KEY is set (never its value), and the flows and recorded sessions in the data directory. Exits with 1 when something needs fixing.
+Check the installation: the versions of `hoist-mcp`, `hoist-procedure` and `hoist-mcp-demo` on PATH, whether the data directory (~/.hoist) is writable, whether TYPESAFE_API_KEY is set (never its value), and the flows and recorded sessions in the data directory. Exits with 1 when something needs fixing.
 
 ```text
-Usage: stretto doctor [OPTIONS]
+Usage: hoist doctor [OPTIONS]
 ```
 
 **Options**
 
 - `--network`: Also ask Jev one question (uncached) if a key is set, as `jev-check` does. Without it, doctor makes no network request.
-- `--data <DIR>`: The data directory to check, instead of ~/.stretto, as `stretto-console --data` serves it.
+- `--data <DIR>`: The data directory to check, instead of ~/.hoist, as `hoist-console --data` serves it.
 
-### `stretto completions`
+### `hoist completions`
 
-Print the completion script for `stretto` in `bash`, `zsh`, `fish`, `powershell` or `elvish` to stdout. docs/install.md says where each shell reads it.
+Print the completion script for `hoist` in `bash`, `zsh`, `fish`, `powershell` or `elvish` to stdout. docs/install.md says where each shell reads it.
 
 ```text
-Usage: stretto completions <SHELL>
+Usage: hoist completions <SHELL>
 ```
 
 **Arguments**
 
 - `<SHELL>` (required; one of `bash`, `elvish`, `fish`, `powershell`, `zsh`): The shell.
 
-<!-- end stretto -->
+<!-- end hoist -->
 
-<!-- begin stretto-proxy -->
+<!-- begin hoist-mcp -->
 
-## `stretto-proxy`
+## `hoist-mcp`
 
-Forward a stdio MCP server's traffic, record it for stretto, and optionally run a flow, policy guards and a commit tool on it. Put this in an MCP host's configuration in place of the server's command, with the real command after `--`. stdout carries only the protocol; the proxy's own messages go to stderr. The exit status is the server's, or 125 if the proxy itself fails. With --listen, hosts connect to it over Streamable HTTP instead. Without --flow, --guards, --commit, --context or --confirm-judge, every line is forwarded byte for byte and nothing is parsed.
+Forward a stdio MCP server's traffic, record it for Hoist, and optionally run a flow, policy guards and a commit tool on it. Put this in an MCP host's configuration in place of the server's command, with the real command after `--`. stdout carries only the protocol; the proxy's own messages go to stderr. The exit status is the server's, or 125 if the proxy itself fails. With --listen, hosts connect to it over Streamable HTTP instead. Without --flow, --guards, --commit, --context or --confirm-judge, every line is forwarded byte for byte and nothing is parsed.
 
 ```text
-Usage: stretto-proxy [OPTIONS] [-- <SERVER_COMMAND>...]
+Usage: hoist-mcp [OPTIONS] [-- <SERVER_COMMAND>...]
 ```
 
 **Recording**
@@ -814,40 +814,40 @@ Usage: stretto-proxy [OPTIONS] [-- <SERVER_COMMAND>...]
 - `--record <DIR>`: Write a session log (JSONL) into this directory, created if missing. A leading `~` is expanded, since hosts start servers without a shell.
 - `--domain <NAME>`: Domain for the log header, e.g. `retail`; --guards uses its rules.
 - `--agent-model <MODEL>`: Model that drives the agent, for the log header.
-- `--server-name <NAME>`: The server's name, for the log header. `stretto learn` merges the logs of one host session's servers into one session, naming each tool after its server (`NAME::tool`), and a flow learned so looks up only this server's tools here. Default: --domain, else the name the server gives itself. The host session is STRETTO_SESSION when set, else the host's process.
+- `--server-name <NAME>`: The server's name, for the log header. `hoist learn` merges the logs of one host session's servers into one session, naming each tool after its server (`NAME::tool`), and a flow learned so looks up only this server's tools here. Default: --domain, else the name the server gives itself. The host session is HOIST_SESSION when set, else the host's process.
 - `--retain-days <DAYS>`: On start, delete what is older than this many days: the session logs in --record with the flow and confirmation logs beside them, and the answers in --oracle-cache.
 
 **Flows**
 
-- `--flow <FILE>`: Run this flow (from `stretto compile` or `stretto learn`) after each of the agent's calls, and append its lookups to the result.
+- `--flow <FILE>`: Run this flow (from `hoist compile` or `hoist learn`) after each of the agent's calls, and append its lookups to the result.
 - `--flow-threshold <P>` (default `0.3`): Take a lookup when the tool's probability times its arguments' agreement is at least this.
 - `--flow-decider <FLOW_DECIDER>` (one of `arbiter`, `habit`, `reach`): Where the tool's probability comes from: `arbiter` (the habit, the System-One model's answers and the predicates, combined), `habit` (the habit alone, which never asks a System-One model and needs no key), or `reach` (the habit's counts for whether the agent makes the lookup before its next write; no key either). Default: the flow's arbiter, else `reach`, else, for a flow learned before flows held reach's counts, `habit`.
-- `--flow-surprise <off|NATS>`: Hand back for the rest of a session once the agent's steps in a row surprise the flow by more than this many nats on average, over the flow's surprise gate's steps (5, if it has none); `off` serves the flow without the gate it stores (`stretto learn --surprise`).
+- `--flow-surprise <off|NATS>`: Hand back for the rest of a session once the agent's steps in a row surprise the flow by more than this many nats on average, over the flow's surprise gate's steps (5, if it has none); `off` serves the flow without the gate it stores (`hoist learn --surprise`).
 - `--flow-per-call <N>` (default `8`): Lookups appended to one result, at most.
 - `--flow-per-session <N>` (default `40`): Lookups per session, at most.
 - `--flow-questions <N>` (default `300`): Questions to the System-One model per session, at most.
 - `--flow-log <FILE>`: Append the flow's decisions here (default: next to the session log). `{session}` in the path stands for the host session, else the session's own id.
 - `--flow-tools <TOOLS>` (repeatable): The only tools the flow may call on its own (comma-separated, or the option repeated). A server's `readOnlyHint` says a call changes nothing, not that it is free, unlogged or fine to make unasked: a read can be metered, rate-limited, or recorded as an access. Without this, the flow may call every tool it reads as a lookup.
-- `--flow-shadow`: Shadow mode: the flow decides after each call and logs what it would look up (`"shadow": true`), but makes no lookups, so the agent gets the server's results unchanged. `stretto promote --sessions` then makes the same decisions again from the answers cached in --oracle-cache, and scores them against what the agent did.
-- `--flow-explore <EPSILON>`: Explore: with this probability, take a lookup other than the rule's choice, drawn by the decider's probabilities among those that bind. Each decision in the flow log then carries its `policy`: every option and the chance that the flow took what it took, for `stretto evaluate`. 0 explores nothing but still logs it.
+- `--flow-shadow`: Shadow mode: the flow decides after each call and logs what it would look up (`"shadow": true`), but makes no lookups, so the agent gets the server's results unchanged. `hoist promote --sessions` then makes the same decisions again from the answers cached in --oracle-cache, and scores them against what the agent did.
+- `--flow-explore <EPSILON>`: Explore: with this probability, take a lookup other than the rule's choice, drawn by the decider's probabilities among those that bind. Each decision in the flow log then carries its `policy`: every option and the chance that the flow took what it took, for `hoist evaluate`. 0 explores nothing but still logs it.
 - `--flow-explore-seed <N>` (default `0`): Seed for the exploration draws.
 - `--task-id <ID>`: Task id, which picks the flow's fold (default: the session).
 
 **The System-One model**
 
 - `--oracle <ORACLE>` (one of `jev`, `replay`, `mock`; default `jev`): Who answers the flow's and the confirmation judge's questions: `jev` (needs TYPESAFE_API_KEY), `replay` (the cache only) or `mock`.
-- `--oracle-cache <DIR>` (default `~/.stretto/oracle-cache`): Replay cache for the System-One model's answers.
+- `--oracle-cache <DIR>` (default `~/.hoist/oracle-cache`): Replay cache for the System-One model's answers.
 
 **Writes**
 
 - `--guards`: Check each of the agent's calls against the policy guards of --domain (`retail` or `airline`), and refuse the ones they fail.
-- `--confirm-judge <MODE>` (one of `log`, `enforce`): Put each write the guards check for a confirmation to the System-One model too, with the questions `stretto confirm` asks: `log` records each judgment; `enforce` also refuses a write the judge fails. Needs --guards and --context. A judge that cannot answer refuses nothing.
+- `--confirm-judge <MODE>` (one of `log`, `enforce`): Put each write the guards check for a confirmation to the System-One model too, with the questions `hoist confirm` asks: `log` records each judgment; `enforce` also refuses a write the judge fails. Needs --guards and --context. A judge that cannot answer refuses nothing.
 - `--confirm-second <QUESTION>` (one of `proposed`, `described`): Also ask the second question (`proposed`: had the agent proposed the change?); a write then fails unless both answers are yes.
 - `--confirm-second-shadow`: Ask the second question but only log its answer (shadow mode): a write then fails on the first answer alone.
 - `--confirm-threshold <P>` (default `0.5`): A write fails when an answer's probability of a yes is below this.
 - `--confirm-questions <N>` (default `100`): The judge's questions per session, at most.
 - `--confirm-log <FILE>`: Append the judgments here (default: next to the session log). `{session}` in the path stands for the host session, else the session's own id.
-- `--commit`: Add `stretto_commit`, which makes several calls in one, in order, each checked by the guards, and a sentence on when to use it to the server's instructions.
+- `--commit`: Add `hoist_commit`, which makes several calls in one, in order, each checked by the guards, and a sentence on when to use it to the server's instructions.
 
 **The conversation**
 
@@ -860,7 +860,7 @@ Usage: stretto-proxy [OPTIONS] [-- <SERVER_COMMAND>...]
 
 **Hosts over HTTP**
 
-- `--listen <ADDR>`: Serve hosts over MCP's Streamable HTTP transport at this address, such as `127.0.0.1:8931`, in place of stdio. The endpoint is `/mcp`, and its URL goes to stdout. Each MCP session gets a server of its own, with its own recording, flow, guards and judge, as each stdio proxy has; the `Stretto-Session` header on `initialize` names its host session, as STRETTO_SESSION does. Only a loopback address without --listen-token-file.
+- `--listen <ADDR>`: Serve hosts over MCP's Streamable HTTP transport at this address, such as `127.0.0.1:8931`, in place of stdio. The endpoint is `/mcp`, and its URL goes to stdout. Each MCP session gets a server of its own, with its own recording, flow, guards and judge, as each stdio proxy has; the `Hoist-Session` header on `initialize` names its host session, as HOIST_SESSION does. Only a loopback address without --listen-token-file.
 - `--listen-token-file <FILE>`: With --listen: every request must carry `Authorization: Bearer <token>`, with the token in this file (at least 16 printable characters, no spaces).
 - `--listen-idle <MINUTES>` (default `240`): With --listen: end a session after this many minutes with no request and no open stream. Its host then starts another.
 
@@ -868,16 +868,16 @@ Usage: stretto-proxy [OPTIONS] [-- <SERVER_COMMAND>...]
 
 - `<SERVER_COMMAND>...` (not with `--upstream`): The MCP server to run, and its arguments.
 
-<!-- end stretto-proxy -->
+<!-- end hoist-mcp -->
 
-<!-- begin stretto-procedure -->
+<!-- begin hoist-procedure -->
 
-## `stretto-procedure`
+## `hoist-procedure`
 
 Run a compiled procedure on a ticket against an MCP server (stdio), with no model. The run goes to stdout as JSON: its calls, its check of the outcome the ticket states, and its verdict (`resolved`, `transferred`, or `hand_back` when the check failed and the ticket should go to a model).
 
 ```text
-Usage: stretto-procedure [OPTIONS] --procedure <FILE> -- <SERVER>...
+Usage: hoist-procedure [OPTIONS] --procedure <FILE> -- <SERVER>...
 ```
 
 **Options**
@@ -891,4 +891,4 @@ Usage: stretto-procedure [OPTIONS] --procedure <FILE> -- <SERVER>...
 
 - `<SERVER>...` (required): The MCP server to run against, and its arguments (after `--`).
 
-<!-- end stretto-procedure -->
+<!-- end hoist-procedure -->

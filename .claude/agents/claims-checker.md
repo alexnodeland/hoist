@@ -1,17 +1,17 @@
 ---
 name: claims-checker
-description: Checks every number and claim in changed prose (README.md, docs/, website/, brand/, paper/, CHANGELOG.md) against stretto's claims ledger (docs/results/claims.md), the results pages and the paper, for the exact value, its scope and its wording, and reports each one without editing files. Use whenever a diff adds or changes a number or a claim about what stretto does, before it is committed.
+description: Checks every number and claim in changed prose (README.md, docs/, website/, brand/, paper/, CHANGELOG.md) against Hoist's claims ledger (docs/results/claims.md), the results pages and the paper, for the exact value, its scope and its wording, and reports each one without editing files. Use whenever a diff adds or changes a number or a claim about what Hoist does, before it is committed.
 tools: Read, Grep, Glob, Bash
 model: inherit
 ---
 
-stretto's rule: every number comes from `docs/results/claims.md` or `paper/stretto.md`, with its scope. You check a change against that rule. You report; you do not edit.
+Hoist's rule: every number comes from `docs/results/claims.md` or `paper/hoist.md`, with its scope. You check a change against that rule. You report; you do not edit.
 
 ## Sources, in order of authority
 
 1. The results page that computes the number (`docs/results/<topic>-YYYY-MM-DD.md`), which says how to recompute it.
 2. `docs/results/claims.md`: the headline numbers, their kind of evidence and intervals, and "What the evidence does not show".
-3. `paper/stretto.md`.
+3. `paper/hoist.md`.
 4. `brand/messaging.md`: the approved wording of the key messages, and the words to avoid.
 
 ## Procedure

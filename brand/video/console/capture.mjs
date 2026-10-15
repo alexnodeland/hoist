@@ -1,4 +1,4 @@
-// Capture the console film's shots from the real stretto-console, driven as a
+// Capture the console film's shots from the real hoist-console, driven as a
 // user drives it: each shot is a page or a state after a click, saved at twice
 // the size it is drawn (1440 x 900, device scale 2) in the dark theme, with
 // the boxes (in page pixels) of what its narration points at, for the film's
@@ -23,7 +23,7 @@ fs.mkdirSync(out, { recursive: true });
 
 const browser = await launchBrowser();
 const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2, colorScheme: 'dark', reducedMotion: 'reduce' });
-await context.addInitScript(() => { try { localStorage.setItem('stretto-console:theme', 'dark'); localStorage.removeItem('stretto-console:domain'); } catch {} });
+await context.addInitScript(() => { try { localStorage.setItem('hoist-console:theme', 'dark'); localStorage.removeItem('hoist-console:domain'); } catch {} });
 const page = await context.newPage();
 page.on('pageerror', e => { console.error(e); process.exitCode = 1; });
 
@@ -72,17 +72,17 @@ await shot('probe', '127.0.0.1:7878/servers/shop', { ok: page.getByTestId('probe
 
 // Sessions: the list, a served session's timeline, its decisions, a shadow session.
 await go('/sessions');
-await shot('sessions', '127.0.0.1:7878/sessions', { modes: page.getByRole('radiogroup').first(), table: page.locator('.st-table'), served: page.getByRole('link', { name: '20260928T020401.195Z-14715' }) });
-const served = '/sessions/20260928T020401.195Z-14715';
+await shot('sessions', '127.0.0.1:7878/sessions', { modes: page.getByRole('radiogroup').first(), table: page.locator('.st-table'), served: page.getByRole('link', { name: '20261015T155518.625Z-67333' }) });
+const served = '/sessions/20261015T155518.625Z-67333';
 await go(served);
-await shot('session', `127.0.0.1:7878${served}`, { stats: text('Tool calls').first().locator('xpath=ancestor::*[contains(@class,"stats") or self::section][1]'), lookups: text('Read ahead by stretto: 3 lookups'), score: text('0.99 × 0.88 binding'), decisionsTab: page.getByRole('tab', { name: /Decisions/ }) });
+await shot('session', `127.0.0.1:7878${served}`, { stats: text('Tool calls').first().locator('xpath=ancestor::*[contains(@class,"stats") or self::section][1]'), lookups: text('Read ahead by hoist: 3 lookups'), score: text('0.99 × 0.88 binding'), decisionsTab: page.getByRole('tab', { name: /Decisions/ }) });
 await go(`${served}?tab=decisions`);
 await shot('decisions', `127.0.0.1:7878${served}?tab=decisions`, { table: page.locator('table.dt'), handback: text('get_order_details at 0.05, below 0.3') });
-await go('/sessions/20260928T020401.278Z-14768');
+await go('/sessions/20261015T155522.976Z-68160');
 const shadow = text('In shadow').nth(1);
 await shadow.scrollIntoViewIfNeeded().catch(() => {});
 await page.waitForTimeout(300);
-await shot('shadow', '127.0.0.1:7878/sessions/20260928T020401.278Z-14768', { badge: text('Shadow').first(), would: page.getByTestId('decision-shadow') });
+await shot('shadow', '127.0.0.1:7878/sessions/20261015T155522.976Z-68160', { badge: text('Shadow').first(), would: page.getByTestId('decision-shadow') });
 
 // Flows: the graph, the threshold moved, the review, the comparison.
 await go('/flows/shop');
@@ -99,7 +99,7 @@ await shot('compare', '127.0.0.1:7878/flows/shop?tab=compare&compare=shop.promot
 await go('/jobs/new?kind=audit&flow=shop');
 await page.getByPlaceholder('logs/shop').fill('served/shop');
 await page.waitForTimeout(300);
-await shot('jobnew', '127.0.0.1:7878/jobs/new?kind=audit', { kinds: text('Learn a flow from recorded sessions').locator('xpath=ancestor::*[@role="radiogroup" or contains(@class,"kinds")][1]'), start: page.getByTestId('job-start'), command: text('stretto audit --flow').first() });
+await shot('jobnew', '127.0.0.1:7878/jobs/new?kind=audit', { kinds: text('Learn a flow from recorded sessions').locator('xpath=ancestor::*[@role="radiogroup" or contains(@class,"kinds")][1]'), start: page.getByTestId('job-start'), command: text('hoist audit --flow').first() });
 await page.getByTestId('job-start').click();
 await page.getByText('Succeeded').first().waitFor({ timeout: 60_000 });
 await page.getByRole('heading', { name: 'Flow audit: shop' }).waitFor();

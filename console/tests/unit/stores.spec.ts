@@ -85,10 +85,10 @@ describe('the theme', () => {
     expect(document.documentElement.getAttribute('data-theme')).toBe('light')
     expect(cycleTheme()).toBe('dark')
     expect(document.documentElement.getAttribute('data-theme')).toBe('dark')
-    expect(localStorage.getItem('stretto-console:theme')).toBe('dark')
+    expect(localStorage.getItem('hoist-console:theme')).toBe('dark')
     expect(cycleTheme()).toBe('system')
     expect(theme.value).toBe('system')
-    expect(localStorage.getItem('stretto-console:theme')).toBeNull()
+    expect(localStorage.getItem('hoist-console:theme')).toBeNull()
   })
 })
 

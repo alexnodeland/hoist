@@ -1,14 +1,14 @@
-// The math film's chapters. Each formula is the paper's (paper/stretto.md:
+// The math film's chapters. Each formula is the paper's (paper/hoist.md:
 // the event §2.3, Proposition 1, Propositions 3 and 4, the habit §2.4) or the
-// code's (alpha's posterior in crates/stretto-model/src/alpha.rs, the
-// binding's chance in crates/stretto-report/src/flow.rs, the audit's program
-// in crates/stretto-report/src/audit.rs), typeset with KaTeX, each symbol in
+// code's (alpha's posterior in crates/hoist-model/src/alpha.rs, the
+// binding's chance in crates/hoist-report/src/flow.rs, the audit's program
+// in crates/hoist-report/src/audit.rs), typeset with KaTeX, each symbol in
 // its own color and its terms named where they sit.
 //
 // What the charts draw is data, not drawing: window.MATH (data.js, written by
 // data/results.py) holds the reach round's published rows (the paper's
 // Figures 6, 7 and 9 and Table 5) and fugue's own run of alpha's posterior on
-// the quickstart's six sessions (data/, stretto-model's code). The numbers
+// the quickstart's six sessions (data/, hoist-model's code). The numbers
 // typed into the frame are the paper's and the claims ledger's, each with its
 // scope. Times are words of the voice-over, never hand-typed seconds.
 (() => {
@@ -285,8 +285,8 @@
     scene(ctx, 'safety', (layer, b) => {
       const at = ctx.at;
       const runs = [
-        { label: 'without stretto', y: 280, steps: ['r', 'r', 'r', 'w', 'r', 'w'] },
-        { label: 'with stretto', y: 450, steps: ['r', 'R', 'R', 'w', 'r', 'w'] },
+        { label: 'without hoist', y: 280, steps: ['r', 'r', 'r', 'w', 'r', 'w'] },
+        { label: 'with hoist', y: 450, steps: ['r', 'R', 'R', 'w', 'r', 'w'] },
       ];
       const X0 = 420, DX = 190;
       const state = ['S₀', 'S₀', 'S₀', 'S₀', 'S₁', 'S₁', 'S₂'];
@@ -307,7 +307,7 @@
       const svg = svgOf(layer);
       const as = annotate(layer, svg, prop, 's', 'the lookups after state x', { pos: 'below', dist: 40, color: T.p, align: 0, dx: -30 });
       const aR = annotate(layer, svg, prop, 'R', 'the read tools', { pos: 'above', dist: 40, align: 0, dx: 20 });
-      const src = note(layer, 'Proposition 1 (safety), if the agent’s calls are those it would make without σ, less the ones answered. paper/stretto.md §2.2; the proof is in Appendix A.', { x: 120, y: 800, w: 1500, size: 18 });
+      const src = note(layer, 'Proposition 1 (safety), if the agent’s calls are those it would make without σ, less the ones answered. paper/hoist.md §2.2; the proof is in Appendix A.', { x: 120, y: 800, w: 1500, size: 18 });
       const tState = at('safety1', 'state'), tWrite = at('safety2', 'same calls'), tSame = at('safety2', 'same state'), tWrong = at('safety3', 'wrong'), tDet = at('safety3', 'detour');
       return t => {
         els.forEach((e, ri) => {
@@ -504,7 +504,7 @@
       const knob = el('circle', { cy: AX.y, r: 11, fill: T.a, stroke: C.bg, 'stroke-width': 3 }, svg);
       const aVal = box(layer, { x: AX.x, y: AX.y - 52, cls: 'code', html: '', style: { fontSize: '24px', color: T.a } });
       const sumLive = box(layer, { x: 160, y: 400, ay: 0.5, style: { fontSize: '32px', whiteSpace: 'nowrap' } });
-      const lnote = note(layer, `The quickstart’s six sessions (the console’s test fixtures), counted by stretto-model’s BackoffModel; α = ${fmt(a0)} unless turned.`, { x: 960, y: 872, ax: 0.5, size: 16 });
+      const lnote = note(layer, `The quickstart’s six sessions (the console’s test fixtures), counted by hoist-model’s BackoffModel; α = ${fmt(a0)} unless turned.`, { x: 960, y: 872, ax: 0.5, size: 16 });
 
       // Use before the write: after find_user_id_by_email, at j = 2, the
       // next step sums to one and the probability of use does not.
@@ -599,7 +599,7 @@
       const at = ctx.at;
       const svg = svgOf(layer);
       const A = M.fugue.alpha;
-      const src = card(layer, { x: 120, y: 160, w: 860, h: 560, title: 'crates/stretto-model/src/alpha.rs', tag: 'fugue' });
+      const src = card(layer, { x: 120, y: 160, w: 860, h: 560, title: 'crates/hoist-model/src/alpha.rs', tag: 'fugue' });
       const c = code(src.body, [
         `<span class="k">let</span> draws = ${P('adaptive_mcmc_chain')}(`,
         `    &amp;mut rng,`,
@@ -661,7 +661,7 @@
       const mLine = el('line', { x1: pl.sx(med), x2: pl.sx(med), y1: 280, y2: 570, stroke: T.p, 'stroke-width': 2.5 }, svg);
       const mLab = box(layer, { x: pl.sx(med) + 120, y: 300, cls: 'code', html: `median α = ${P(fmt(A.median))}<br>${D(`5th–95th: ${fmt(A.lo)} – ${fmt(A.hi)}`)}`, style: { fontSize: '19px', color: C.muted, lineHeight: '1.5' } });
       const flow = box(layer, { x: 120, y: 760, cls: 'code', html: `shop.flow.json  ${D('·')}  "alpha": ${P('0.6973960072663901')}`, style: { fontSize: '19px', color: C.muted } });
-      const scope = note(layer, 'fugue’s own run, on the quickstart’s six sessions (the console’s test fixtures): the chain stretto learn ran for the shop flow, seed 7, and the same posterior on a grid, prior times likelihood (data/).', { x: 120, y: 810, w: 1700, size: 16 });
+      const scope = note(layer, 'fugue’s own run, on the quickstart’s six sessions (the console’s test fixtures): the chain hoist learn ran for the shop flow, seed 7, and the same posterior on a grid, prior times likelihood (data/).', { x: 120, y: 810, w: 1700, size: 16 });
 
       const tTuned = at('fugue1', 'by hand'), tFugue = at('fugue2', 'fugue'), tPrior = at('fugue3', 'normal prior'), tScore = at('fugue3', 'scores'), tPost = at('fugue4', 'prior'), tIs = at('fugue4', 'posterior');
       const tWalk = at('fugue5', 'walks'), tPile = at('fugue5', 'pile'), tSix = at('fugue6', 'six sessions'), tMed = at('fugue6', 'median'), tLearned = at('fugue6', 'learned with');
@@ -712,7 +712,7 @@
     scene(ctx, 'bindings', (layer, b) => {
       const at = ctx.at;
       const svg = svgOf(layer);
-      const tbl = card(layer, { x: 120, y: 160, w: 1680, h: 150, title: '$ stretto flow-show notes.flow.json', tag: 'the walkthrough’s flow' });
+      const tbl = card(layer, { x: 120, y: 160, w: 1680, h: 150, title: '$ hoist flow-show notes.flow.json', tag: 'the walkthrough’s flow' });
       code(tbl.body, [
         `${D('Lookup')}            ${D('Argument')}   ${D('Bound from')}                                       ${D('Chance it is the agent\'s')}`,
         `read_text_file    path       search_files at ${P('$')} (3 of 14); at ${P('$[*]')} (11 of 14)    ${P('0.81')} (12/14)`,
@@ -741,7 +741,7 @@
       const dec = tex(layer, String.raw`\htmlClass{tp k-q}{q} \;\approx\; \htmlClass{tp k-r}{r(t \mid h)} \cdot \htmlClass{tp k-rho2}{\rho} \;=\; 1.00 \times 0.81 \;=\; \htmlClass{tp}{0.81} \;\ge\; \htmlClass{tp}{\theta}=0.3`, { x: 120, y: 800, size: 42 });
       const aR2 = annotate(layer, svg, dec, 'r', 'the read’s chance', { pos: 'above', dist: 22, color: T.p, dx: -50 });
       const aRho2 = annotate(layer, svg, dec, 'rho2', 'its arguments’', { pos: 'above', dist: 22, color: T.p, dx: 50, align: 0 });
-      const decN = note(layer, 'flow-show’s own line for the walkthrough’s flow, on the official MCP filesystem server: after search_files, it looks up read_text_file (docs/walkthrough.md). The binding’s chance is crates/stretto-report/src/flow.rs.', { x: 120, y: 880, w: 1680, size: 16 });
+      const decN = note(layer, 'flow-show’s own line for the walkthrough’s flow, on the official MCP filesystem server: after search_files, it looks up read_text_file (docs/walkthrough.md). The binding’s chance is crates/hoist-report/src/flow.rs.', { x: 120, y: 880, w: 1680, size: 16 });
       const tWhere = at('bind1', 'where'), tRight = at('bind2', 'right over tried'), tOne = at('bind2', 'one added'), tUni = at('bind2', 'uniform'), tEach = at('bind3', 'each binding'), tTwelve = at('bind3', 'twelve'), tGives = at('bind3', 'gives'), tMult = at('bind4', 'multiplies'), tArgs = at('bind4', 'arguments');
       return t => {
         show(tbl, t, tWhere - 0.3, { d: 0.6, dy: 10 });
@@ -973,7 +973,7 @@
         el('line', { x1: X1 - 40, x2: X2 + 40, y1: sy(v), y2: sy(v), stroke: C.border }, axis);
         el('text', { x: X1 - 60, y: sy(v) + 5, class: 'axis', 'text-anchor': 'end' }, axis, String(v));
       }
-      const colL = [label(layer, 'without', { x: X1, y: Y0 + H + 22, ax: 0.5 }), label(layer, 'with stretto', { x: X2, y: Y0 + H + 22, ax: 0.5, color: T.p })];
+      const colL = [label(layer, 'without', { x: X1, y: Y0 + H + 22, ax: 0.5 }), label(layer, 'with hoist', { x: X2, y: Y0 + H + 22, ax: 0.5, color: T.p })];
       const yl = label(layer, 'LLM turns per task', { x: X1 - 60, y: Y0 - 40 });
       // Ties and near-ties are spread a little so every task's line shows.
       const jit = window.ST.rng(28);
@@ -1040,7 +1040,7 @@
   function sceneAudit(ctx) {
     scene(ctx, 'audit', (layer, b) => {
       const at = ctx.at;
-      const src = card(layer, { x: 120, y: 160, w: 980, h: 540, title: 'crates/stretto-report/src/audit.rs', tag: 'fugue' });
+      const src = card(layer, { x: 120, y: 160, w: 980, h: 540, title: 'crates/hoist-report/src/audit.rs', tag: 'fugue' });
       const c = code(src.body, [
         `${D('/// The flow\'s decisions as one fugue program: a categorical choice per')}`,
         `${D('/// decision, at `decision#i`, returning the options picked.')}`,
@@ -1056,7 +1056,7 @@
         `${D('// the agent\'s own steps, scored under the flow')}`,
         `run(${P('ScoreGivenTrace')} { base, trace }, model(decisions))`,
       ], { x: 22, y: 10, size: 18, lh: 1.65 });
-      const out = card(layer, { x: 1160, y: 160, w: 640, h: 540, title: '$ stretto audit', tag: 'notes flow', accent: 'petrol' });
+      const out = card(layer, { x: 1160, y: 160, w: 640, h: 540, title: '$ hoist audit', tag: 'notes flow', accent: 'petrol' });
       const o = code(out.body, [
         `${D('3 episodes, 8 decisions scored')}`,
         ``,
@@ -1094,7 +1094,7 @@
   function sceneEnd(ctx) {
     scene(ctx, 'end', (layer, b) => {
       const g = box(layer, { x: 960, y: 430, ax: 0.5, ay: 0.5, html: `<div style="display:flex;align-items:center;gap:30px">${markSvg(132)}${wordmarkSvg(82)}</div>` });
-      const links = box(layer, { x: 960, y: 600, ax: 0.5, ay: 0.5, cls: 'code', html: `<span style="color:${C.petrol}">stretto.alexnodeland.com/research/paper</span>  <span style="color:${C.faint}">·</span>  <span style="color:${C.subtle}">github.com/alexnodeland/fugue</span>`, style: { fontSize: '22px' } });
+      const links = box(layer, { x: 960, y: 600, ax: 0.5, ay: 0.5, cls: 'code', html: `<span style="color:${C.petrol}">hoist.alexnodeland.com/research/paper</span>  <span style="color:${C.faint}">·</span>  <span style="color:${C.subtle}">github.com/alexnodeland/fugue</span>`, style: { fontSize: '22px' } });
       const L = ctx.L.end1;
       ctx.music.end = +(L.t1 + 0.4).toFixed(3);
       ctx.poster = ctx.at('fugue6', 'learned with') + 1.0;

@@ -1,5 +1,5 @@
 ---
-description: stretto's web console, on your machine. It shows the MCP servers stretto fronts, their recorded sessions call by call, the flows learned from them, and the CLI's jobs, over the files in ~/.stretto.
+description: Hoist's web console, on your machine. It shows the MCP servers Hoist fronts, their recorded sessions call by call, the flows learned from them, and the CLI's jobs, over the files in ~/.hoist.
 ---
 
 <!-- BRAND SLOT: the console film (website/public/media/console.mp4). Renders nothing until the file is there. -->

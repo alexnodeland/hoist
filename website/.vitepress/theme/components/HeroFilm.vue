@@ -22,7 +22,7 @@ const page = computed(() => (assets.value?.explainerPage ? withBase('/explainer/
 /** The deep dives, under the film: each once its file is in public/. */
 const deeper = computed(() =>
   [
-    { key: 'math', title: 'The math, and the probabilistic programs', text: 'The event stretto estimates, the rule that acts on it, the counts and alpha’s posterior in fugue, and how the estimate held up in replay and live.', href: '/research/paper', more: 'The paper' },
+    { key: 'math', title: 'The math, and the probabilistic programs', text: 'The event Hoist estimates, the rule that acts on it, the counts and alpha’s posterior in fugue, and how the estimate held up in replay and live.', href: '/research/paper', more: 'The paper' },
     { key: 'console', title: 'The console', text: 'Servers, sessions, flows and jobs, driven on the real console: a connection test, a session’s decisions, a threshold moved, an audit run from the page.', href: '/guide/console', more: 'The console guide' }
   ].flatMap(d => {
     const a = assets.value as Record<string, string | false> | undefined
@@ -72,7 +72,7 @@ function captionsOff(e: Event) {
         playsinline
         @loadedmetadata="captionsOff"
         :controls="started"
-        aria-label="How stretto works: the explainer video"
+        aria-label="How Hoist works: the explainer video"
       >
         <track v-if="captions" kind="captions" :src="captions" srclang="en" label="English" />
       </video>
@@ -86,7 +86,7 @@ function captionsOff(e: Event) {
       </button>
     </div>
     <p class="hero-film__caption">
-      How stretto reads ahead, learns a flow and decides a lookup, with the live results and their scope.
+      How Hoist reads ahead, learns a flow and decides a lookup, with the live results and their scope.
       <a v-if="page" :href="page" target="_self">Or step through it at your own pace.</a>
     </p>
     <div v-if="deeper.length" class="hero-film__deeper" aria-label="Deep dives">

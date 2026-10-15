@@ -42,12 +42,12 @@ defineProps<{ message: ContextMessage }>()
   gap: 6px;
   font-size: 12px;
   font-weight: 500;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .bubble-t {
   font-weight: 400;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .bubble {
@@ -60,14 +60,14 @@ defineProps<{ message: ContextMessage }>()
 }
 
 .user .bubble {
-  background: var(--stretto-surface);
-  border: 1px solid var(--stretto-border);
+  background: var(--hoist-surface);
+  border: 1px solid var(--hoist-border);
   border-top-left-radius: 4px;
 }
 
 .assistant .bubble {
-  background: var(--stretto-surface-2);
-  border: 1px solid var(--stretto-border);
+  background: var(--hoist-surface-2);
+  border: 1px solid var(--hoist-border);
   border-top-right-radius: 4px;
 }
 </style>

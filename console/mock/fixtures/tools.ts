@@ -1,6 +1,6 @@
 /**
- * The servers the mock's sessions talk to: stretto-mcp-demo's shop (its
- * tools and answers exactly as `stretto-mcp-demo --world retail` gives them),
+ * The servers the mock's sessions talk to: hoist-mcp-demo's shop (its
+ * tools and answers exactly as `hoist-mcp-demo --world retail` gives them),
  * the official filesystem server over someone's notes, and a ticket desk
  * over Streamable HTTP.
  */

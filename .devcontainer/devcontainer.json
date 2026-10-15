@@ -1,5 +1,5 @@
 {
-  "name": "stretto",
+  "name": "hoist",
   "build": { "dockerfile": "Dockerfile" },
   "features": {
     "ghcr.io/devcontainers/features/node:1": { "version": "22" },
@@ -25,11 +25,11 @@
     "CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
   },
   "mounts": [
-    "source=stretto-claude-${devcontainerId},target=/home/vscode/.claude,type=volume"
+    "source=hoist-claude-${devcontainerId},target=/home/vscode/.claude,type=volume"
   ],
   "forwardPorts": [7878, 5173],
   "portsAttributes": {
-    "7878": { "label": "stretto console", "onAutoForward": "notify" },
+    "7878": { "label": "hoist console", "onAutoForward": "notify" },
     "5173": { "label": "docs site (npm run dev in website/)", "onAutoForward": "notify" }
   },
   "postCreateCommand": "bash .devcontainer/post-create.sh",

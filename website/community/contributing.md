@@ -1,20 +1,20 @@
 ---
-description: How to build, test and change stretto - the workspace, the checks CI runs, the conventions, the generated documentation, and this site.
+description: How to build, test and change Hoist - the workspace, the checks CI runs, the conventions, the generated documentation, and this site.
 ---
 
 # Contributing
 
-Issues and pull requests are welcome on [GitHub](https://github.com/alexnodeland/stretto). What is left to do is tracked in issues, all sub-issues of [#1](https://github.com/alexnodeland/stretto/issues/1), and grouped with context on [the roadmap](./roadmap).
+Issues and pull requests are welcome on [GitHub](https://github.com/alexnodeland/hoist). What is left to do is tracked in issues, all sub-issues of [#1](https://github.com/alexnodeland/hoist/issues/1), and grouped with context on [the roadmap](./roadmap).
 
 ## The workspace
 
 ```text
 crates/
-  stretto-trace/   the episode schema; τ²-bench and MCP proxy log ingest; tool manifests; redaction
-  stretto-model/   the action abstraction, the back-off habit, the α posterior (with fugue), argument provenance
-  stretto-oracle/  the Oracle trait, the Jev client, the replay cache, a mock
-  stretto-report/  the stretto CLI: phase0, learn, compile, serve, audit, flow-show, flow-diff, promote, redact, ...
-  stretto-proxy/   stretto-proxy, stretto-procedure and stretto-mcp-demo
+  hoist-trace/   the episode schema; τ²-bench and MCP proxy log ingest; tool manifests; redaction
+  hoist-model/   the action abstraction, the back-off habit, the α posterior (with fugue), argument provenance
+  hoist-oracle/  the Oracle trait, the Jev client, the replay cache, a mock
+  hoist-report/  the hoist CLI: phase0, learn, compile, serve, audit, flow-show, flow-diff, promote, redact, ...
+  hoist-mcp/   hoist-mcp, hoist-procedure and hoist-mcp-demo
 pilot/             live τ²-bench episodes behind the proxy, and replays
 scripts/           the walkthrough, the benchmarks round, and each results page's analysis
 docs/              the design, formats, CLI reference, privacy, review, roadmap, and every result
@@ -32,10 +32,10 @@ brand/             the brand kit, the explainer and the videos
 make help   # the everyday commands
 make fmt    # cargo fmt --all
 make ci     # the formatting check, clippy, the tests and doctests, and the API docs
-make console   # build the console's UI and run the console on ~/.stretto
+make console   # build the console's UI and run the console on ~/.hoist
 ```
 
-`make test` runs the unit tests, and every `stretto` command in the tests' own process, on a miniature τ²-bench checkout and a shop's recorded sessions (`crates/stretto-report/src/cli_tests.rs`). CI runs what `make ci` runs, checks that the workspace builds with Rust 1.88, the oldest it supports (`make msrv`), and measures line coverage (`make coverage`). It fails under a threshold, and when a pull request adds a line no test runs. Then it runs:
+`make test` runs the unit tests, and every `hoist` command in the tests' own process, on a miniature τ²-bench checkout and a shop's recorded sessions (`crates/hoist-report/src/cli_tests.rs`). CI runs what `make ci` runs, checks that the workspace builds with Rust 1.88, the oldest it supports (`make msrv`), and measures line coverage (`make coverage`). It fails under a threshold, and when a pull request adds a line no test runs. Then it runs:
 
 - [the quick start's demo](/guide/quick-start#2-see-the-whole-loop-with-no-key), with no key and no network (`sh examples/quickstart/run.sh --bin target/debug`);
 - `install.sh` against a local release of stand-in binaries (`sh packaging/test-install.sh`), and shellcheck on the shell scripts;
@@ -52,7 +52,7 @@ On macOS and Windows, CI builds the five programs, runs each one's `--version`, 
 
 ## Conventions
 
-- **One schema.** Everything downstream reads `stretto_trace::Episode`, never a benchmark's native format. Add a new source as an ingest module.
+- **One schema.** Everything downstream reads `hoist_trace::Episode`, never a benchmark's native format. Add a new source as an ingest module.
 - **Posteriors, not frequencies.** Anything that drives a decision is a posterior predictive, with its evidence counts next to it. Use closed forms where they exist, and fugue where they do not.
 - **Replay by default.** Oracle calls go through the replay cache, so experiments pay for each distinct question once and re-run for free. Never commit cache contents that contain third-party data.
 - **Honest reports.** Every metric in a report gets a definition. A proxy must say it is a proxy.
@@ -60,8 +60,8 @@ On macOS and Windows, CI builds the five programs, runs each one's `--version`, 
 
 ## Documentation that is generated or checked
 
-- **The CLI reference**, [`docs/cli.md`](../../docs/cli.md), is generated from the code. After changing an option, run `STRETTO_BLESS=1 cargo test --bins` to rewrite it; CI fails while it is out of date.
-- **The examples in [reviewing flows](/reference/review)** are what `flow-show` and `flow-diff` print for real flows. `STRETTO_BLESS=1 cargo test` rewrites them.
+- **The CLI reference**, [`docs/cli.md`](../../docs/cli.md), is generated from the code. After changing an option, run `HOIST_BLESS=1 cargo test --bins` to rewrite it; CI fails while it is out of date.
+- **The examples in [reviewing flows](/reference/review)** are what `flow-show` and `flow-diff` print for real flows. `HOIST_BLESS=1 cargo test` rewrites them.
 - **The file formats**: a test fails when a serialized field of a flow or an arbiter is missing from [`docs/formats.md`](../../docs/formats.md).
 - **The walkthrough** runs in CI, so it cannot drift from the code.
 
@@ -82,8 +82,8 @@ npm run preview   # serve the build
 - Headings get GitHub's anchors, so `formats.md#program` works on GitHub and here alike.
 - Math in `$…$` and `$$…$$` renders with MathJax, and a ```` ```mermaid ```` block renders as a diagram.
 
-The GitHub Pages workflow builds and deploys the site on every push to `main` that touches it or the files it includes. A build is for the site's custom domain, `https://stretto.alexnodeland.com/`. `SITE_URL` sets another address, and the workflow passes the one Pages gives the site, so that the base, the canonical links and the sitemap follow it.
+The GitHub Pages workflow builds and deploys the site on every push to `main` that touches it or the files it includes. A build is for the site's custom domain, `https://hoist.alexnodeland.com/`. `SITE_URL` sets another address, and the workflow passes the one Pages gives the site, so that the base, the canonical links and the sitemap follow it.
 
 ## License
 
-stretto is released under the [MIT License](./license).
+Hoist is released under the [MIT License](./license).

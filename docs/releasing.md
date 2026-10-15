@@ -1,9 +1,9 @@
-# Releasing stretto
+# Releasing Hoist
 
 A version tag, `vX.Y.Z`, pushed to the commit on `main` to release, starts two workflows:
 
-- [`release.yml`](../.github/workflows/release.yml) makes the GitHub release. Its notes are the version's section of [CHANGELOG.md](../CHANGELOG.md). It builds the console's UI once, then carries an archive of the five binaries (`stretto-console` with the UI built in), with `LICENSE` and `README.md`, for each of five targets, their `SHA256SUMS`, [`install.sh`](../install.sh), [`install.ps1`](../install.ps1), and `stretto.rb`, the Homebrew formula with the checksums filled in.
-- [`container.yml`](../.github/workflows/container.yml) publishes `ghcr.io/alexnodeland/stretto` and `ghcr.io/alexnodeland/stretto-console` for linux/amd64 and linux/arm64, tagged `X.Y.Z`, `X.Y` and `latest`.
+- [`release.yml`](../.github/workflows/release.yml) makes the GitHub release. Its notes are the version's section of [CHANGELOG.md](../CHANGELOG.md). It builds the console's UI once, then carries an archive of the five binaries (`hoist-console` with the UI built in), with `LICENSE` and `README.md`, for each of five targets, their `SHA256SUMS`, [`install.sh`](../install.sh), [`install.ps1`](../install.ps1), and `hoist.rb`, the Homebrew formula with the checksums filled in.
+- [`container.yml`](../.github/workflows/container.yml) publishes `ghcr.io/alexnodeland/hoist` and `ghcr.io/alexnodeland/hoist-console` for linux/amd64 and linux/arm64, tagged `X.Y.Z`, `X.Y` and `latest`.
 
 Nothing is published to crates.io ([below](#cratesio)). [docs/install.md](install.md) is what users read.
 
@@ -22,16 +22,16 @@ Run the Release workflow by hand from the Actions tab with *dry_run* checked, th
 
    ```sh
    git switch main && git pull
-   git tag -a vX.Y.Z -m "stretto X.Y.Z"
+   git tag -a vX.Y.Z -m "hoist X.Y.Z"
    git push origin vX.Y.Z
    ```
 
    `release.yml` checks that the tag is `v` plus Cargo.toml's version and that CHANGELOG.md has the section, before it builds anything. It creates the release only once all five builds have passed, so a failed build publishes no release. `container.yml` runs on the same tag on its own; the arm64 image is built under emulation and is the slowest step.
 7. **Check the release:**
-   - the release page lists five archives, `SHA256SUMS`, `install.sh`, `install.ps1` and `stretto.rb`;
-   - `curl -fsSL https://github.com/alexnodeland/stretto/releases/latest/download/install.sh | sh -s -- --prefix /tmp/stretto-check`, then `/tmp/stretto-check/bin/stretto doctor`;
-   - `docker run --rm ghcr.io/alexnodeland/stretto:X.Y.Z --version`, and the same for `stretto-console`;
-   - the first time only: the packages `stretto` and `stretto-console` appear under the account's packages on GitHub. If one is private, make it public in its settings (Package settings, Change visibility), and link it to the repository if it is not linked.
+   - the release page lists five archives, `SHA256SUMS`, `install.sh`, `install.ps1` and `hoist.rb`;
+   - `curl -fsSL https://github.com/alexnodeland/hoist/releases/latest/download/install.sh | sh -s -- --prefix /tmp/hoist-check`, then `/tmp/hoist-check/bin/hoist doctor`;
+   - `docker run --rm ghcr.io/alexnodeland/hoist:X.Y.Z --version`, and the same for `hoist-console`;
+   - the first time only: the packages `hoist` and `hoist-console` appear under the account's packages on GitHub. If one is private, make it public in its settings (Package settings, Change visibility), and link it to the repository if it is not linked.
 8. **Update the Homebrew tap** ([below](#homebrew)).
 
 **By hand, instead of pushing a tag:** in the Actions tab, run *Release* on `main`. It tags the commit it runs on `v` plus Cargo.toml's version, makes the release, and then starts *Container* on the new tag, since a tag made with the workflow's own token starts no workflow by itself.
@@ -68,22 +68,22 @@ The [Dockerfile](../Dockerfile) builds with `rust:RUST_VERSION-slim-trixie` and 
 
 `.dockerignore` lets in only the manifests, `crates/`, the quickstart, `LICENSE` and `README.md`. It leaves out `rust-toolchain.toml`, whose `stable` channel would make rustup in the builder fetch another toolchain than the pinned one.
 
-Pull requests that change the image's inputs build it for linux/amd64 and run each binary, `stretto doctor` and the quickstart in it, with nothing published. Only the tag job can write packages. If the arm64 build under QEMU grows too slow, build each platform on its own runner (`ubuntu-24.04-arm` for arm64) and join them with `docker buildx imagetools create`.
+Pull requests that change the image's inputs build it for linux/amd64 and run each binary, `hoist doctor` and the quickstart in it, with nothing published. Only the tag job can write packages. If the arm64 build under QEMU grows too slow, build each platform on its own runner (`ubuntu-24.04-arm` for arm64) and join them with `docker buildx imagetools create`.
 
 ## Homebrew
 
-Each release carries `stretto.rb`, filled from [`packaging/homebrew/stretto.rb`](../packaging/homebrew/stretto.rb) by [`fill.sh`](../packaging/homebrew/fill.sh). It installs the release binaries for macOS and Linux and the completions for bash, zsh and fish. For `brew install alexnodeland/tap/stretto` to work:
+Each release carries `hoist.rb`, filled from [`packaging/homebrew/hoist.rb`](../packaging/homebrew/hoist.rb) by [`fill.sh`](../packaging/homebrew/fill.sh). It installs the release binaries for macOS and Linux and the completions for bash, zsh and fish. For `brew install alexnodeland/tap/hoist` to work:
 
 1. Create the public repository `github.com/alexnodeland/homebrew-tap`. It does not exist yet; creating it is the repository owner's decision.
-2. For each release, copy the release's `stretto.rb` to `Formula/stretto.rb` in the tap and push. `brew install alexnodeland/tap/stretto`, `brew test alexnodeland/tap/stretto` and `brew audit --strict --online alexnodeland/tap/stretto` check it.
+2. For each release, copy the release's `hoist.rb` to `Formula/hoist.rb` in the tap and push. `brew install alexnodeland/tap/hoist`, `brew test alexnodeland/tap/hoist` and `brew audit --strict --online alexnodeland/tap/hoist` check it.
 3. To do this in `release.yml` instead, add a step that pushes the formula to the tap with a token that can write to it, kept as a repository secret (a fine-grained token limited to the tap). It is not set up.
 
 ## crates.io
 
-stretto is not on crates.io, for three reasons.
+Hoist is not on crates.io, for three reasons.
 
-1. **fugue comes from git.** crates.io takes a crate only if every dependency comes from a registry, and `fugue-ppl` is taken from a pinned git revision for its `program` feature. `cargo package -p stretto-model` fails today with *all dependencies must have a version requirement specified when packaging. dependency `fugue-ppl` does not specify a version*. crates.io has fugue-ppl 0.2.2 and earlier, none with `program`; the pinned revision is 0.2.3. A fugue-ppl release with `program` unblocks it; the workspace then takes it by version, `fugue = { package = "fugue-ppl", version = "…", features = ["program"] }`, in place of `git` and `rev`.
-2. **The crates depend on each other by path.** Each of those dependencies in `[workspace.dependencies]` also needs a version, such as `stretto-model = { path = "crates/stretto-model", version = "0.1.0" }`. They are published in order: `stretto-trace`, `stretto-oracle`, `stretto-model`, then the CLI's package, then `stretto-proxy`.
-3. **The name `stretto` is taken** on crates.io by an unrelated crate, a cache library. The binary keeps its name either way; the question is the CLI's package, now `stretto-report`. The proposal: publish it as `stretto-cli`, with `[[bin]] name = "stretto"` as now, so that `cargo install stretto-cli` installs `stretto`, and keep `stretto-proxy`, `stretto-trace`, `stretto-model` and `stretto-oracle` as they are. On 2026-09-27 the crates.io index had none of `stretto-cli`, `stretto-report`, `stretto-proxy`, `stretto-procedure`, `stretto-trace`, `stretto-model` and `stretto-oracle`. Renaming is a decision for the maintainer; nothing has been renamed.
+1. **fugue comes from git.** crates.io takes a crate only if every dependency comes from a registry, and `fugue-ppl` is taken from a pinned git revision for its `program` feature. `cargo package -p hoist-model` fails today with *all dependencies must have a version requirement specified when packaging. dependency `fugue-ppl` does not specify a version*. crates.io has fugue-ppl 0.2.2 and earlier, none with `program`; the pinned revision is 0.2.3. A fugue-ppl release with `program` unblocks it; the workspace then takes it by version, `fugue = { package = "fugue-ppl", version = "…", features = ["program"] }`, in place of `git` and `rev`.
+2. **The crates depend on each other by path.** Each of those dependencies in `[workspace.dependencies]` also needs a version, such as `hoist-model = { path = "crates/hoist-model", version = "0.1.0" }`. They are published in order: `hoist-trace`, `hoist-oracle`, `hoist-model`, then the CLI's package, then `hoist-mcp`.
+3. **The name `hoist` is taken** on crates.io by an unrelated crate, a cache library. The binary keeps its name either way; the question is the CLI's package, now `hoist-report`. The proposal: publish it as `hoist-cli`, with `[[bin]] name = "hoist"` as now, so that `cargo install hoist-cli` installs `hoist`, and keep `hoist-mcp`, `hoist-trace`, `hoist-model` and `hoist-oracle` as they are. On 2026-09-27 the crates.io index had none of `hoist-cli`, `hoist-report`, `hoist-mcp`, `hoist-procedure`, `hoist-trace`, `hoist-model` and `hoist-oracle`. Renaming is a decision for the maintainer; nothing has been renamed.
 
 The metadata crates.io shows is in the manifests already: each crate's description, keywords, categories, readme, homepage and documentation.

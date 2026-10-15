@@ -32,7 +32,7 @@ test('a flow has its bindings, tools, review, raw JSON and a comparison', async 
   await page.getByRole('tab', { name: 'Review' }).click()
   await expect(page.getByRole('heading', { name: 'Flow: shop' })).toBeVisible()
   await page.getByRole('tab', { name: 'Raw JSON' }).click()
-  await expect(page.getByText('stretto_flow')).toBeVisible()
+  await expect(page.getByText('hoist_flow')).toBeVisible()
   await page.getByRole('tab', { name: 'Compare' }).click()
   await page.getByTestId('compare-select').selectOption('shop.promoted')
   await expect(page.getByText('Nothing needs review')).toBeVisible()

@@ -2,11 +2,11 @@ WEBVTT
 
 1
 00:00:02.600 --> 00:00:07.124
-The console is stretto's management plane: a web app on your own machine.
+The console is hoist's management plane: a web app on your own machine.
 
 2
 00:00:07.624 --> 00:00:11.423
-It reads the files stretto writes, through stretto's own code.
+It reads the files hoist writes, through hoist's own code.
 
 3
 00:00:13.223 --> 00:00:15.783
@@ -22,7 +22,7 @@ Below, each domain: a server's name, with its sessions, flows and registry entry
 
 6
 00:00:26.637 --> 00:00:30.377
-Servers lists the MCP servers stretto fronts:
+Servers lists the MCP servers hoist fronts:
 
 7
 00:00:30.377 --> 00:00:33.059
@@ -30,7 +30,7 @@ recording, in shadow, or serving a flow.
 
 8
 00:00:33.509 --> 00:00:37.509
-Each shows what stretto init prints, to paste into your host.
+Each shows what hoist init prints, to paste into your host.
 
 9
 00:00:37.509 --> 00:00:39.530
@@ -82,7 +82,7 @@ Compare shows what changed against another.
 
 21
 00:01:31.058 --> 00:01:36.427
-Jobs run the stretto CLI from the page: learn, promote, audit, and more.
+Jobs run the hoist CLI from the page: learn, promote, audit, and more.
 
 22
 00:01:36.877 --> 00:01:40.617

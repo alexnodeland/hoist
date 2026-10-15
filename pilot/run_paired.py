@@ -1,4 +1,4 @@
-"""Paired live run on every test task (stretto #2), under a hard Z.ai budget.
+"""Paired live run on every test task (hoist #2), under a hard Z.ai budget.
 
 Runs run_episode.py exactly as run_pilot.py does, two episodes at a time (the
 two arms of one task together). With `--reuse`, a pilot's recorded pairs are

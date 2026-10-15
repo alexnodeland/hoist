@@ -1,11 +1,11 @@
 """Staged learning replayed on τ²-bench agents (issue #35).
 
-    python3 scripts/staged_study.py --tau2 DIR --glm5 DIR [--stretto BIN]
+    python3 scripts/staged_study.py --tau2 DIR --glm5 DIR [--hoist BIN]
         [--orders 10] [--batch 40] [--jobs 4] [--out FILE.json]
 
 **In order.** For each domain, the committed flow C0 is learned from one
-agent's episodes on the training tasks (`stretto learn --habit-only
---results`). A staged learner (`stretto stage --results`) starts from the
+agent's episodes on the training tasks (`hoist learn --habit-only
+--results`). A staged learner (`hoist stage --results`) starts from the
 same episodes, then takes the agent's test episodes in a random order,
 `--batch` at a time. Before it learns from a batch, each of its episodes is
 scored by the committed flow and by the staged flow as it was, as each is
@@ -15,10 +15,10 @@ served (`reach`). Three ways to commit, compared on the test episodes:
 - **every batch:** the staged flow is committed after each batch, and so
   serves the next. The staged flow a batch was scored by is that flow, so
   the same run's ledger holds its scores;
-- **when it dominates:** after each batch, `stretto flow-commit` if, on
+- **when it dominates:** after each batch, `hoist flow-commit` if, on
   that batch, the staged flow's lookups were used at least as often as the
   committed flow's with no more detours, one of the two strictly;
-- **when it nets more:** after each batch, `stretto flow-commit` if, on
+- **when it nets more:** after each batch, `hoist flow-commit` if, on
   that batch, the staged flow's used lookups less its detours were more
   than the committed flow's.
 
@@ -27,10 +27,10 @@ The agents are GLM-5 (`--glm5`, its results files) in retail and airline.
 **A splice.** Claude 3.7 Sonnet's retail test episodes, then GPT-4.1-mini's,
 with C0 learned from Claude 3.7's training episodes: never committing,
 committing every batch, and committing every batch of a staged flow that
-forgets (`--half-life 100`). `stretto drift` watches the same order.
+forgets (`--half-life 100`). `hoist drift` watches the same order.
 
 A lookup counts as used when the agent made it in a later LLM turn, which
-spares the agent that call, and as a detour when it never did (`stretto
+spares the agent that call, and as a detour when it never did (`hoist
 promote`'s scoring). Prints Markdown tables and writes every run to
 `--out`.
 """
@@ -51,10 +51,10 @@ def split(tau2: Path, domain: str) -> tuple[set[str], set[str]]:
     return set(s["train"]), set(s["test"])
 
 
-def run(stretto: str, *args: str) -> str:
-    done = subprocess.run([stretto, *args], capture_output=True, text=True)
+def run(hoist: str, *args: str) -> str:
+    done = subprocess.run([hoist, *args], capture_output=True, text=True)
     if done.returncode != 0:
-        raise SystemExit(f"stretto {' '.join(args)}: {done.stderr}")
+        raise SystemExit(f"hoist {' '.join(args)}: {done.stderr}")
     return done.stdout
 
 
@@ -107,9 +107,9 @@ def stream_run(a, tmp: Path, domain: str, name: str, results: dict, prefix: list
     for k, batch in enumerate([[]] + batches):
         stream += batch
         f = write(results, stream, work / "stream.json")
-        run(a.stretto, *base, "--results", str(f), "--json", str(work / "cmp.json"))
+        run(a.hoist, *base, "--results", str(f), "--json", str(work / "cmp.json"))
         if commit and k > 0 and better(json.loads((work / "cmp.json").read_text()), commit):
-            run(a.stretto, "flow-commit", "--flow", str(flow))
+            run(a.hoist, "flow-commit", "--flow", str(flow))
             commits.append(k)
     ledger = json.loads((work / f"{domain}.stage.json").read_text())["ledger"]
     shutil.rmtree(work)
@@ -122,7 +122,7 @@ def in_order(a, tmp: Path, domain: str, results: dict) -> list[dict]:
     prefix = [s for s in sims if s["task_id"] in train]
     c0 = tmp / f"glm5-{domain}-c0.flow.json"
     f = write(results, sims, tmp / f"glm5-{domain}.json")
-    run(a.stretto, "learn", "--domain", domain, "--habit-only", "--tau2", str(a.tau2),
+    run(a.hoist, "learn", "--domain", domain, "--habit-only", "--tau2", str(a.tau2),
         "--results", str(f), "--out", str(c0))
 
     def one(seed: int) -> dict:
@@ -155,7 +155,7 @@ def splice(a, tmp: Path) -> list[dict]:
     then = json.loads(next(final.glob(f"gpt-4.1-mini*_{domain}_*.json")).read_text())
     c0 = tmp / "splice-c0.flow.json"
     f = write(first, first["simulations"], tmp / "splice-first.json")
-    run(a.stretto, "learn", "--domain", domain, "--habit-only", "--tau2", str(a.tau2),
+    run(a.hoist, "learn", "--domain", domain, "--habit-only", "--tau2", str(a.tau2),
         "--results", str(f), "--out", str(c0))
     prefix = [s for s in first["simulations"] if s["task_id"] in train]
 
@@ -173,7 +173,7 @@ def splice(a, tmp: Path) -> list[dict]:
         fa = write(first, a_test, tmp / f"splice-{seed}-a.json")
         fb = write(first, b_test, tmp / f"splice-{seed}-b.json")
         out = tmp / f"splice-{seed}.drift.json"
-        subprocess.run([a.stretto, "drift", "--flow", str(c0), "--results", str(fa),
+        subprocess.run([a.hoist, "drift", "--flow", str(c0), "--results", str(fa),
                         "--results", str(fb), "--json", str(out), "--out", "/dev/null"],
                        capture_output=True, text=True)
         d = json.loads(out.read_text())
@@ -208,7 +208,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--tau2", type=Path, required=True)
     ap.add_argument("--glm5", type=Path, required=True, help="the directory of GLM-5's results files")
-    ap.add_argument("--stretto", default="target/release/stretto")
+    ap.add_argument("--hoist", default="target/release/hoist")
     ap.add_argument("--orders", type=int, default=10)
     ap.add_argument("--batch", type=int, default=20)
     ap.add_argument("--jobs", type=int, default=4)

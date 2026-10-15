@@ -145,7 +145,7 @@ async function runAgain() {
   }
 }
 
-/** Asked to stop: a running job ends a moment later, when its `stretto` has been killed. */
+/** Asked to stop: a running job ends a moment later, when its `hoist` has been killed. */
 const stopping = ref(false)
 watch(id, () => (stopping.value = false))
 watch(running, (r) => {
@@ -348,9 +348,9 @@ const icons = { flow: Workflow, report: FileText, dir: FolderOpen }
   max-height: 620px;
   overflow: auto;
   padding: 16px 20px;
-  background: var(--stretto-surface-2);
+  background: var(--hoist-surface-2);
   border-radius: 0 0 var(--c-radius-card) var(--c-radius-card);
-  font-family: var(--stretto-font-mono);
+  font-family: var(--hoist-font-mono);
   font-size: 12.5px;
   line-height: 1.65;
   white-space: pre-wrap;
@@ -363,7 +363,7 @@ const icons = { flow: Workflow, report: FileText, dir: FolderOpen }
   height: 14px;
   margin-left: 2px;
   vertical-align: -2px;
-  background: var(--stretto-accent-graphic);
+  background: var(--hoist-accent-graphic);
   animation: blink 1s steps(2, start) infinite;
 }
 
@@ -383,10 +383,10 @@ const icons = { flow: Workflow, report: FileText, dir: FolderOpen }
   gap: 5px;
   height: 28px;
   padding: 0 9px;
-  border: 1px solid var(--stretto-border);
+  border: 1px solid var(--hoist-border);
   border-radius: 7px;
-  background: var(--stretto-surface);
-  color: var(--stretto-accent);
+  background: var(--hoist-surface);
+  color: var(--hoist-accent);
   font-size: 12.5px;
   font-weight: 500;
 }
@@ -407,7 +407,7 @@ const icons = { flow: Workflow, report: FileText, dir: FolderOpen }
 .arts svg {
   flex: none;
   margin-top: 2px;
-  color: var(--stretto-accent-graphic);
+  color: var(--hoist-accent-graphic);
 }
 
 .arts .mono {

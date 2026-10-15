@@ -19,13 +19,13 @@ path: string,
  */
 name: string, domain: string, 
 /**
- * The file's `stretto_flow`.
+ * The file's `hoist_flow`.
  */
 format_version: number, 
 /**
- * The stretto that wrote it.
+ * The Hoist that wrote it.
  */
-stretto_version: string, sources: Array<string>, habit_episodes: number, arbiter_cases: number, compiled_unix_ms: number, modified_unix_ms: number, size_bytes: number, 
+hoist_version: string, sources: Array<string>, habit_episodes: number, arbiter_cases: number, compiled_unix_ms: number, modified_unix_ms: number, size_bytes: number, 
 /**
  * How the proxy serves it unless told otherwise.
  */

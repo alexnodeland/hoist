@@ -1,9 +1,9 @@
-# Install stretto on Windows (x64) from a GitHub release: stretto.exe,
-# stretto-proxy.exe, stretto-procedure.exe, stretto-mcp-demo.exe and
-# stretto-console.exe.
+# Install Hoist on Windows (x64) from a GitHub release: hoist.exe,
+# hoist-mcp.exe, hoist-procedure.exe, hoist-mcp-demo.exe and
+# hoist-console.exe.
 #
-#   irm https://github.com/alexnodeland/stretto/releases/latest/download/install.ps1 | iex
-#   & ([scriptblock]::Create((irm https://github.com/alexnodeland/stretto/releases/latest/download/install.ps1))) -Version v0.2.0
+#   irm https://github.com/alexnodeland/hoist/releases/latest/download/install.ps1 | iex
+#   & ([scriptblock]::Create((irm https://github.com/alexnodeland/hoist/releases/latest/download/install.ps1))) -Version v0.2.0
 #
 # It downloads the release's archive and its SHA256SUMS, checks the
 # archive's checksum, and copies the binaries into PREFIX\bin. It
@@ -11,7 +11,7 @@
 # add it. docs/install.md has the other ways to install.
 #
 # -Version  the release to install, such as v0.2.0 (default: the latest)
-# -Prefix   install into PREFIX\bin (default: %LOCALAPPDATA%\Programs\stretto)
+# -Prefix   install into PREFIX\bin (default: %LOCALAPPDATA%\Programs\hoist)
 # -BaseUrl  fetch the release's files from this URL instead of GitHub: a
 #           mirror, or a directory served over HTTP for testing
 param(
@@ -25,17 +25,17 @@ $ProgressPreference = "SilentlyContinue"
 # Windows PowerShell 5.1 may not offer TLS 1.2, which GitHub requires.
 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
-$repo = "alexnodeland/stretto"
-$binaries = @("stretto", "stretto-proxy", "stretto-procedure", "stretto-mcp-demo")
+$repo = "alexnodeland/hoist"
+$binaries = @("hoist", "hoist-mcp", "hoist-procedure", "hoist-mcp-demo")
 # Installed when the archive has it: a release from before the console has
 # none, and installs without it.
-$optional = @("stretto-console")
+$optional = @("hoist-console")
 # The x64 build; Windows on Arm runs it under emulation.
 $target = "x86_64-pc-windows-msvc"
-$archive = "stretto-$target.zip"
+$archive = "hoist-$target.zip"
 
 if (-not $Prefix) {
-    $Prefix = Join-Path $env:LOCALAPPDATA "Programs\stretto"
+    $Prefix = Join-Path $env:LOCALAPPDATA "Programs\hoist"
 }
 if ($BaseUrl) {
     $url = $BaseUrl.TrimEnd("/")
@@ -46,7 +46,7 @@ if ($BaseUrl) {
     $url = "https://github.com/$repo/releases/download/$tag"
 }
 
-$tmp = Join-Path ([System.IO.Path]::GetTempPath()) ("stretto-install-" + [guid]::NewGuid())
+$tmp = Join-Path ([System.IO.Path]::GetTempPath()) ("hoist-install-" + [guid]::NewGuid())
 New-Item -ItemType Directory -Path $tmp | Out-Null
 try {
     Write-Host "install.ps1: downloading $url/$archive"
@@ -69,7 +69,7 @@ try {
     }
 
     Expand-Archive -Path (Join-Path $tmp $archive) -DestinationPath $tmp -Force
-    $unpacked = Join-Path $tmp "stretto-$target"
+    $unpacked = Join-Path $tmp "hoist-$target"
     foreach ($bin in $binaries) {
         if (-not (Test-Path (Join-Path $unpacked "$bin.exe"))) {
             throw "$archive has no $bin.exe"
@@ -85,9 +85,9 @@ try {
     foreach ($bin in $binaries) {
         Copy-Item -Force -Path (Join-Path $unpacked "$bin.exe") -Destination (Join-Path $bindir "$bin.exe")
     }
-    $installed = & (Join-Path $bindir "stretto.exe") --version
+    $installed = & (Join-Path $bindir "hoist.exe") --version
     if ($LASTEXITCODE -ne 0) {
-        throw "$bindir\stretto.exe does not run on this system"
+        throw "$bindir\hoist.exe does not run on this system"
     }
 } finally {
     Remove-Item -Recurse -Force -Path $tmp -ErrorAction SilentlyContinue
@@ -106,13 +106,13 @@ if (-not $onPath) {
 Write-Host @"
 
 Next:
-    stretto doctor
+    hoist doctor
         checks the installation
-    stretto init --host claude-code --domain NAME -- <server command>
-        runs an MCP server behind stretto-proxy, recording its sessions
+    hoist init --host claude-code --domain NAME -- <server command>
+        runs an MCP server behind hoist-mcp, recording its sessions
         (also claude-desktop, cursor, vscode), and says what comes next
-    stretto completions powershell | Out-String | Invoke-Expression
-        completes stretto's commands in this session (docs/install.md)
+    hoist completions powershell | Out-String | Invoke-Expression
+        completes Hoist's commands in this session (docs/install.md)
 
 The quickstart, examples/quickstart, needs a POSIX shell: run it in WSL or
 in the container image.

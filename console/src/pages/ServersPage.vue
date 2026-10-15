@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/** The registry: each MCP server stretto fronts, and the upstreams its sessions came through that are not registered. */
+/** The registry: each MCP server Hoist fronts, and the upstreams its sessions came through that are not registered. */
 import { computed } from 'vue'
 import { Globe, Plus, Radar, Server, SquareTerminal, TriangleAlert, Workflow } from '@lucide/vue'
 import UiPageHeader from '@/components/ui/UiPageHeader.vue'
@@ -31,7 +31,7 @@ const unregistered = computed(() => discovered.value.filter((d) => !d.registered
 <template>
   <div class="page">
     <UiPageHeader title="Servers">
-      The MCP servers stretto fronts. Each runs behind stretto-proxy in your host, which records its
+      The MCP servers Hoist fronts. Each runs behind hoist-mcp in your host, which records its
       sessions and serves its flow.
       <template #actions>
         <UiButton
@@ -125,7 +125,7 @@ const unregistered = computed(() => discovered.value.filter((d) => !d.registered
           :title="domainFilter ? `No server named ${domainFilter}` : 'No servers yet'"
         >
           Add the MCP server your agent uses. The console gives you your host’s configuration, with
-          stretto-proxy in front: use your agent through it, then learn a flow.
+          hoist-mcp in front: use your agent through it, then learn a flow.
           <template #actions>
             <UiButton
               variant="primary"
@@ -211,7 +211,7 @@ const unregistered = computed(() => discovered.value.filter((d) => !d.registered
 }
 
 .srv:hover {
-  border-color: color-mix(in oklab, var(--stretto-border-strong) 45%, var(--stretto-border));
+  border-color: color-mix(in oklab, var(--hoist-border-strong) 45%, var(--hoist-border));
   box-shadow: var(--c-shadow-md);
 }
 
@@ -228,9 +228,9 @@ const unregistered = computed(() => discovered.value.filter((d) => !d.registered
   width: 34px;
   height: 34px;
   border-radius: 9px;
-  background: var(--stretto-surface-2);
-  border: 1px solid var(--stretto-border);
-  color: var(--stretto-text-muted);
+  background: var(--hoist-surface-2);
+  border: 1px solid var(--hoist-border);
+  color: var(--hoist-text-muted);
 }
 
 .srv-titles {
@@ -241,7 +241,7 @@ const unregistered = computed(() => discovered.value.filter((d) => !d.registered
 .srv-name {
   font-size: 15px;
   font-weight: 700;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .srv-name::after {
@@ -251,7 +251,7 @@ const unregistered = computed(() => discovered.value.filter((d) => !d.registered
 }
 
 .srv-name:hover {
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
 }
 
 .srv a:not(.srv-name) {
@@ -262,16 +262,16 @@ const unregistered = computed(() => discovered.value.filter((d) => !d.registered
 .srv-desc {
   margin-top: 2px;
   font-size: 13px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .srv-up {
   padding: 7px 10px;
   border-radius: 8px;
-  background: var(--stretto-surface-2);
-  border: 1px solid var(--stretto-border);
+  background: var(--hoist-surface-2);
+  border: 1px solid var(--hoist-border);
   font-size: 12px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -285,7 +285,7 @@ const unregistered = computed(() => discovered.value.filter((d) => !d.registered
 
 .srv-facts dt {
   font-size: 12px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .srv-facts dd {
@@ -329,7 +329,7 @@ const unregistered = computed(() => discovered.value.filter((d) => !d.registered
 
 .up {
   font-size: 12px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
   max-width: 420px;
   overflow-wrap: anywhere;
 }

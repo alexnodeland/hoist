@@ -1,4 +1,4 @@
-"""stretto-proxy in front of the reference Streamable HTTP server,
+"""hoist-mcp in front of the reference Streamable HTTP server,
 @modelcontextprotocol/server-everything, as CI runs it.
 
     python3 scripts/http_check.py [--bin target/debug]
@@ -40,9 +40,9 @@ def free_port() -> int:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--bin", default="target/debug", help="directory with stretto-proxy")
+    ap.add_argument("--bin", default="target/debug", help="directory with hoist-mcp")
     args = ap.parse_args()
-    proxy_bin = str(Path(args.bin).resolve() / "stretto-proxy")
+    proxy_bin = str(Path(args.bin).resolve() / "hoist-mcp")
     port = free_port()
     # Its own process group, so that the server npx starts goes with it.
     server = subprocess.Popen(SERVER, env={**os.environ, "PORT": str(port)}, start_new_session=True,
@@ -54,7 +54,7 @@ def main() -> None:
                 break
             if time.time() - started > 120:
                 fail("the server did not start")
-        work = Path(tempfile.mkdtemp(prefix="stretto-http-"))
+        work = Path(tempfile.mkdtemp(prefix="hoist-http-"))
         url = f"http://127.0.0.1:{port}/mcp"
         proxy = subprocess.Popen([proxy_bin, "--record", str(work / "logs"), "--domain", "everything",
                                   "--upstream", url],

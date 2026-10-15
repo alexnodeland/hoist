@@ -6,10 +6,10 @@ user wrote, what the user wrote so far, the call's tool and the argument's
 name, and the spans of the user's words a model may pick from (`spans`), with
 the agent's value, which is never shown. This asks the System-One model to
 pick among the spans, as a speculator that reads the request would, through
-`stretto ask` and its replay cache, and writes the picks for
+`hoist ask` and its replay cache, and writes the picks for
 `ceiling.py --model-answers`.
 
-    model_questions.py QUESTIONS.jsonl... --out PICKS.json [--stretto BIN] [--oracle jev|replay]
+    model_questions.py QUESTIONS.jsonl... --out PICKS.json [--hoist BIN] [--oracle jev|replay]
         [--oracle-cache DIR] [--oracle-budget DOLLARS] [--oracle-concurrency N]
 
 A question whose value is not among its spans counts as missed, as it would
@@ -52,7 +52,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("questions", nargs="+", type=Path)
     ap.add_argument("--out", type=Path, required=True)
-    ap.add_argument("--stretto", default="target/release/stretto")
+    ap.add_argument("--hoist", default="target/release/hoist")
     ap.add_argument("--oracle", default="replay", choices=["jev", "replay"])
     ap.add_argument("--oracle-cache", default=".oracle-cache")
     ap.add_argument("--oracle-budget", default="1")
@@ -64,11 +64,11 @@ def main():
         reqs, outs = Path(tmp) / "requests.jsonl", Path(tmp) / "answers.jsonl"
         keys = sorted(asked)
         reqs.write_text("".join(json.dumps({"key": k, "request": request(asked[k])}) + "\n" for k in keys))
-        subprocess.run([args.stretto, "ask", "--requests", str(reqs), "--out", str(outs), "--oracle", args.oracle,
+        subprocess.run([args.hoist, "ask", "--requests", str(reqs), "--out", str(outs), "--oracle", args.oracle,
                         "--oracle-cache", args.oracle_cache, "--oracle-budget", args.oracle_budget,
                         "--oracle-concurrency", args.oracle_concurrency], check=True)
         picks = {}
-        # `stretto ask` answers in the order it was asked, each line keyed by its request's hash.
+        # `hoist ask` answers in the order it was asked, each line keyed by its request's hash.
         for k, line in zip(keys, outs.read_text().splitlines()):
             answer = (json.loads(line).get("response") or {}).get("answers", {}).get("value")
             if answer:

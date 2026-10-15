@@ -9,18 +9,18 @@ const srcDir = fileURLToPath(new URL('..', import.meta.url))
 const repoRoot = path.resolve(srcDir, '..')
 
 // Where the site is served, ending in a slash. The Pages workflow passes the address
-// Pages gives the site: the custom domain, or https://alexnodeland.github.io/stretto/
+// Pages gives the site: the custom domain, or https://alexnodeland.github.io/hoist/
 // without one. The site's base is that address's path.
-const siteUrl = siteAddress(process.env.SITE_URL || 'https://stretto.alexnodeland.com/')
+const siteUrl = siteAddress(process.env.SITE_URL || 'https://hoist.alexnodeland.com/')
 const base = new URL(siteUrl).pathname
 // `vitepress build` sets NODE_ENV before it reads this file; `vitepress dev` does not.
 const isBuild = process.env.NODE_ENV === 'production'
-const repoUrl = 'https://github.com/alexnodeland/stretto'
+const repoUrl = 'https://github.com/alexnodeland/hoist'
 const branch = 'main'
 
-const title = 'stretto'
+const title = 'hoist'
 const description =
-  'stretto learns, from an LLM agent’s recorded tool calls, which reads it makes next and where their arguments come from, and serves those reads through an MCP proxy, so the agent needs fewer LLM turns.'
+  'hoist learns, from an LLM agent’s recorded tool calls, which reads it makes next and where their arguments come from, and serves those reads through an MCP proxy, so the agent needs fewer LLM turns.'
 
 /** An address as the site's links use it: over https, and ending in a slash. */
 function siteAddress(address: string): string {
@@ -72,8 +72,8 @@ const guide: DefaultTheme.SidebarItem[] = [
   {
     text: 'Introduction',
     items: [
-      { text: 'What is stretto?', link: '/guide/' },
-      { text: 'Why stretto?', link: '/guide/why' },
+      { text: 'What is Hoist?', link: '/guide/' },
+      { text: 'Why Hoist?', link: '/guide/why' },
       { text: 'Quick start', link: '/guide/quick-start' },
       { text: 'Installation', link: '/guide/installation' },
       { text: 'How it works', link: '/guide/how-it-works' },
@@ -120,8 +120,8 @@ const reference: DefaultTheme.SidebarItem[] = [
     text: 'Reference',
     items: [
       { text: 'Command line', link: '/reference/cli' },
-      { text: 'stretto-proxy', link: '/reference/proxy' },
-      { text: 'stretto-console', link: '/reference/console' },
+      { text: 'hoist-mcp', link: '/reference/proxy' },
+      { text: 'hoist-console', link: '/reference/console' },
       { text: 'File formats', link: '/reference/formats' },
       { text: 'Environment variables', link: '/reference/environment' }
     ]
@@ -142,7 +142,7 @@ const research: DefaultTheme.SidebarItem[] = [
     items: [
       { text: 'Overview', link: '/research/' },
       { text: 'The paper', link: '/research/paper' },
-      { text: 'The paper, as a PDF', link: '/paper/stretto.pdf', target: '_blank' },
+      { text: 'The paper, as a PDF', link: '/paper/hoist.pdf', target: '_blank' },
       { text: 'Claims and evidence', link: '/research/claims' },
       { text: 'Results index', link: '/research/results' },
       { text: 'Seven benchmarks', link: '/research/benchmarks' },
@@ -193,7 +193,7 @@ export default defineConfigWithTheme<ThemeConfig>({
     ['meta', { property: 'og:image', content: `${siteUrl}og.png` }],
     ['meta', { property: 'og:image:width', content: '1200' }],
     ['meta', { property: 'og:image:height', content: '630' }],
-    ['meta', { property: 'og:image:alt', content: 'stretto: Read ahead of your agent.' }],
+    ['meta', { property: 'og:image:alt', content: 'Hoist: Read ahead of your agent.' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:image', content: `${siteUrl}og.png` }]
   ],
@@ -270,7 +270,7 @@ export default defineConfigWithTheme<ThemeConfig>({
 
   themeConfig: {
     logo: { light: '/logo.svg', dark: '/logo-dark.svg', alt: '' },
-    siteTitle: 'stretto',
+    siteTitle: 'hoist',
 
     nav: [
       { text: 'Guide', link: '/guide/', activeMatch: '^/guide/' },
@@ -302,13 +302,13 @@ export default defineConfigWithTheme<ThemeConfig>({
     socialLinks: [{ icon: 'github', link: repoUrl }],
 
     editLink: {
-      // `https://github.com/alexnodeland/stretto/edit/main/website/:path`, except that a
+      // `https://github.com/alexnodeland/hoist/edit/main/website/:path`, except that a
       // page made from a repository file (front matter `editSource`) edits that file.
       // VitePress sends this function to the browser as text, so it names no variable.
       pattern: ({ filePath, frontmatter }) =>
         frontmatter.editSource
-          ? `https://github.com/alexnodeland/stretto/edit/main/${frontmatter.editSource}`
-          : `https://github.com/alexnodeland/stretto/edit/main/website/${filePath}`,
+          ? `https://github.com/alexnodeland/hoist/edit/main/${frontmatter.editSource}`
+          : `https://github.com/alexnodeland/hoist/edit/main/website/${filePath}`,
       text: 'Edit this page on GitHub'
     },
 

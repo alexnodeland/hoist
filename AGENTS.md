@@ -1,23 +1,23 @@
-# Agent context: stretto
+# Agent context: Hoist
 
-stretto learns, from an LLM agent's recorded tool calls, which reads it makes next and where their arguments come from, and serves those reads through an MCP proxy in the same tool result, so the agent needs fewer LLM turns (tagline: *Read ahead of your agent.*). A flow only reads. Its lookups are decided by counting (the reach decider, with no model), by a learned habit, or by an arbiter that also asks a System-One model (TypeSafe's Jev). Where no user speaks, `stretto-procedure` runs a workflow compiled once from traces. The design is RFC-001 (`docs/rfc/001-habit-compiler.md`); the decisions are summarized in `docs/design.md`; the paper is `paper/stretto.md`. Brand words and numbers follow `brand/messaging.md`: every number comes from `docs/results/claims.md` or the paper, with its scope.
+Hoist learns, from an LLM agent's recorded tool calls, which reads it makes next and where their arguments come from, and serves those reads through an MCP proxy in the same tool result, so the agent needs fewer LLM turns (tagline: *Read ahead of your agent.*). A flow only reads. Its lookups are decided by counting (the reach decider, with no model), by a learned habit, or by an arbiter that also asks a System-One model (TypeSafe's Jev). Where no user speaks, `hoist-procedure` runs a workflow compiled once from traces. The design is RFC-001 (`docs/rfc/001-habit-compiler.md`); the decisions are summarized in `docs/design.md`; the paper is `paper/hoist.md`. Brand words and numbers follow `brand/messaging.md`: every number comes from `docs/results/claims.md` or the paper, with its scope.
 
 ## Layout
 
 ```text
 crates/
-  stretto-trace/   episode schema, τ²-bench and MCP proxy log ingest, tool manifests
-  stretto-model/   abstraction, back-off world model, α posterior (fugue), provenance, runs, policy
-  stretto-oracle/  Oracle trait, Jev client (feature "http"), replay cache, mock
-  stretto-report/  `stretto` CLI: first run (`init`, `doctor`, `completions`); the Phase 0 report; Phase 0b (`shadow`: System-One questions at held-out decisions; `arbitrate`: combining them with the habit); read-only flows (`flow`: compile, learn, serve); policy guards (`guards`); the flow audit as a fugue program (`audit`)
-  stretto-proxy/   stdio MCP proxy: records sessions, and in active mode (`active`) runs a flow, guards, `stretto_commit` and the conversation context; plus `stretto-procedure`, the procedure runtime, and a demo MCP server (echo or a tiny retail world)
-  stretto-console/ the console's server (`stretto-console`, axum): a JSON API over ~/.stretto (sessions, flows, the server registry `servers.json`, jobs that run the `stretto` CLI), token auth, and the UI embedded; its tests run over `tests/fixtures/home`
+  hoist-trace/   episode schema, τ²-bench and MCP proxy log ingest, tool manifests
+  hoist-model/   abstraction, back-off world model, α posterior (fugue), provenance, runs, policy
+  hoist-oracle/  Oracle trait, Jev client (feature "http"), replay cache, mock
+  hoist-report/  `hoist` CLI: first run (`init`, `doctor`, `completions`); the Phase 0 report; Phase 0b (`shadow`: System-One questions at held-out decisions; `arbitrate`: combining them with the habit); read-only flows (`flow`: compile, learn, serve); policy guards (`guards`); the flow audit as a fugue program (`audit`)
+  hoist-mcp/   stdio MCP proxy: records sessions, and in active mode (`active`) runs a flow, guards, `hoist_commit` and the conversation context; plus `hoist-procedure`, the procedure runtime, and a demo MCP server (echo or a tiny retail world)
+  hoist-console/ the console's server (`hoist-console`, axum): a JSON API over ~/.hoist (sessions, flows, the server registry `servers.json`, jobs that run the `hoist` CLI), token auth, and the UI embedded; its tests run over `tests/fixtures/home`
 console/           the console's UI (Vue); `src/api/generated/` is the API's TypeScript, which `make types` writes
 pilot/             live τ²-bench episodes: GLM in Claude Code, tools over MCP, the flows arm, and a replay check
 pilot/bench/       live runs of other benchmarks (AgentDojo, BFCL) in their own environments
 website/           the documentation site (VitePress), deployed to GitHub Pages by .github/workflows/pages.yml
 site/              the research notebook of the rounds through 2026-09-25, served by the site at /notebook/
-paper/             the working paper, paper/stretto.md
+paper/             the working paper, paper/hoist.md
 brand/             the brand kit: logo, tokens, messaging, the explainer and the videos
 docs/
   design.md        decisions, architecture and implementation status
@@ -27,7 +27,7 @@ docs/
 
 ## Conventions
 
-- **One schema.** Everything downstream reads `stretto_trace::Episode`, never a benchmark's native format. Add new sources as ingest modules.
+- **One schema.** Everything downstream reads `hoist_trace::Episode`, never a benchmark's native format. Add new sources as ingest modules.
 - **Posteriors, not frequencies.** Anything that drives a decision is a posterior predictive, with evidence counts next to it. Use closed forms where they exist, and fugue where they do not.
 - **Replay by default.** Oracle calls go through `ReplayCache`, so experiments pay for each distinct question once and re-run for free. Never commit cache contents that contain third-party data.
 - **Honest reports.** Every metric in a report gets a definition in the "Reading the numbers" section. A proxy must say it is a proxy.

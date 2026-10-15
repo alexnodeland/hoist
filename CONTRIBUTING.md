@@ -1,11 +1,11 @@
-# Contributing to stretto
+# Contributing to Hoist
 
-Thanks for helping. stretto is a Rust workspace (the product: `stretto`, `stretto-proxy`, `stretto-procedure`) with Python scripts for the research behind it (converters, replays, live pilots). Most changes touch one of the two; you rarely need both toolchains.
+Thanks for helping. Hoist is a Rust workspace (the product: `hoist`, `hoist-mcp`, `hoist-procedure`) with Python scripts for the research behind it (converters, replays, live pilots). Most changes touch one of the two; you rarely need both toolchains.
 
 ## Development setup
 
 ```bash
-git clone https://github.com/alexnodeland/stretto && cd stretto
+git clone https://github.com/alexnodeland/hoist && cd hoist
 make help   # the everyday commands
 make ci     # what CI's check job runs
 ```
@@ -29,12 +29,12 @@ The [`Makefile`](Makefile)'s Rust targets run the commands CI runs ([`.github/wo
 | `make site` | Builds the documentation site, which fails on a dead link |
 | `make ui`, `make ui-check` | Builds the console's UI; runs its formatting check, lint, type check, unit tests and build, as CI's ui job |
 | `make e2e` | The UI's end-to-end tests in Chromium, on the mock API and on the console over the test fixtures |
-| `make console` | Builds the UI and runs the console on `~/.stretto` (`ARGS="--read-only --open"`) |
+| `make console` | Builds the UI and runs the console on `~/.hoist` (`ARGS="--read-only --open"`) |
 | `make docker`, `make docker-console` | Build the CLI's container image, and the console's |
 
-`docs/cli.md` is generated from the CLI's own help, and each binary's tests fail when its section is stale. After changing a command or an option, regenerate it with `make bless` (`STRETTO_BLESS=1 cargo test`) and commit the result. A test also checks that `docs/formats.md` names every field a flow or an arbiter file holds.
+`docs/cli.md` is generated from the CLI's own help, and each binary's tests fail when its section is stale. After changing a command or an option, regenerate it with `make bless` (`HOIST_BLESS=1 cargo test`) and commit the result. A test also checks that `docs/formats.md` names every field a flow or an arbiter file holds.
 
-Each `stretto` command's tests run it in the test's own process, in [`crates/stretto-report/src/cli_tests.rs`](crates/stretto-report/src/cli_tests.rs): `run` takes the parsed command line and an `Env` (stdin, stdout, HOME, PATH, whether a key is set, and Jev), so a test sets what the command sees and reads what it wrote. [`tests/common/mod.rs`](crates/stretto-report/tests/common/mod.rs) builds a miniature τ²-bench checkout and a shop's recorded sessions to run them on. A test of a new command or option goes there, with one for each way it fails.
+Each `hoist` command's tests run it in the test's own process, in [`crates/hoist-report/src/cli_tests.rs`](crates/hoist-report/src/cli_tests.rs): `run` takes the parsed command line and an `Env` (stdin, stdout, HOME, PATH, whether a key is set, and Jev), so a test sets what the command sees and reads what it wrote. [`tests/common/mod.rs`](crates/hoist-report/tests/common/mod.rs) builds a miniature τ²-bench checkout and a shop's recorded sessions to run them on. A test of a new command or option goes there, with one for each way it fails.
 
 The documentation site lives in [`website/`](website/) (VitePress). `make site` builds it; `cd website && npm run dev` serves it with hot reload while you edit.
 
@@ -56,11 +56,11 @@ Personal overrides go in `.claude/settings.local.json`, which git ignores.
 
 | Path | What it holds |
 |---|---|
-| `crates/stretto-trace` | Agent episodes and trace ingest (recorded sessions, τ²-bench's results) |
-| `crates/stretto-model` | Action abstraction and the Bayesian models of what an agent does next |
-| `crates/stretto-oracle` | The System-One model interface (Jev) and its replay cache |
-| `crates/stretto-report` | The `stretto` CLI: learn, compile, serve, show, diff, audit, promote, redact, and the Phase 0 reports |
-| `crates/stretto-proxy` | `stretto-proxy` (the MCP proxy that records sessions and serves flows), `stretto-procedure`, and a small demo MCP server |
+| `crates/hoist-trace` | Agent episodes and trace ingest (recorded sessions, τ²-bench's results) |
+| `crates/hoist-model` | Action abstraction and the Bayesian models of what an agent does next |
+| `crates/hoist-oracle` | The System-One model interface (Jev) and its replay cache |
+| `crates/hoist-report` | The `hoist` CLI: learn, compile, serve, show, diff, audit, promote, redact, and the Phase 0 reports |
+| `crates/hoist-mcp` | `hoist-mcp` (the MCP proxy that records sessions and serves flows), `hoist-procedure`, and a small demo MCP server |
 | `pilot/` | Live episodes: τ²-bench (`run_episode.py`) and other benchmarks (`bench/`) |
 | `scripts/` | Converters from other benchmarks' published runs, and the analyses behind the results pages |
 | `docs/` | Design, formats, privacy, review, the CLI reference, RFC-001, and the results pages |

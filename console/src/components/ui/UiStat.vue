@@ -43,8 +43,8 @@ defineProps<{
   column-gap: 12px;
   padding: 16px 18px 15px;
   border-radius: var(--c-radius-card);
-  background: var(--stretto-surface);
-  border: 1px solid var(--stretto-border);
+  background: var(--hoist-surface);
+  border: 1px solid var(--hoist-border);
   box-shadow: var(--c-shadow-sm);
   color: inherit;
   min-width: 0;
@@ -55,7 +55,7 @@ defineProps<{
 
 .stat.link:hover {
   color: inherit;
-  border-color: color-mix(in oklab, var(--stretto-border-strong) 45%, var(--stretto-border));
+  border-color: color-mix(in oklab, var(--hoist-border-strong) 45%, var(--hoist-border));
   box-shadow: var(--c-shadow-md);
 }
 
@@ -67,14 +67,14 @@ defineProps<{
   height: 20px;
   width: 3px;
   border-radius: 0 3px 3px 0;
-  background: var(--stretto-accent-graphic);
+  background: var(--hoist-accent-graphic);
 }
 
 .stat-label {
   grid-area: label;
   font-size: 13px;
   font-weight: 500;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -87,7 +87,7 @@ defineProps<{
   font-weight: 600;
   letter-spacing: -0.025em;
   line-height: 1.05;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .stat-spark {
@@ -99,6 +99,6 @@ defineProps<{
   grid-area: scope;
   margin-top: 8px;
   font-size: 12px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 </style>

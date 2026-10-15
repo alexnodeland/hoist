@@ -141,7 +141,7 @@ function cancel() {
       {{
         editing
           ? 'Changes apply to the configuration the console gives each host: paste it again after saving.'
-          : 'The console keeps the setup in servers.json in the data dir, and gives you each host’s configuration, with stretto-proxy in front.'
+          : 'The console keeps the setup in servers.json in the data dir, and gives you each host’s configuration, with hoist-mcp in front.'
       }}
     </UiPageHeader>
 
@@ -165,7 +165,7 @@ function cancel() {
       :editing="editing"
       :taken="servers.data.value?.items.map((s) => s.name) ?? []"
       :flows="flows.data.value?.items ?? []"
-      :data-dir="meta?.data_dir ?? '~/.stretto'"
+      :data-dir="meta?.data_dir ?? '~/.hoist'"
       :saving="saving"
       :server-error="serverError"
       @submit="save"

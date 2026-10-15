@@ -1,0 +1,46 @@
+[package]
+name = "hoist-mcp"
+description = "An MCP proxy, over stdio or Streamable HTTP, that records sessions as Hoist episodes, and can serve flows, guards and a commit tool."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+homepage.workspace = true
+documentation = "https://github.com/alexnodeland/hoist/blob/main/docs/cli.md#hoist-mcp"
+readme = "README.md"
+keywords = ["mcp", "proxy", "llm", "agents", "speculation"]
+categories = ["command-line-utilities", "network-programming", "development-tools"]
+
+[[bin]]
+name = "hoist-mcp"
+path = "src/main.rs"
+
+# A tiny MCP server for trying the proxy (and for its tests).
+[[bin]]
+name = "hoist-mcp-demo"
+path = "src/bin/hoist-mcp-demo/main.rs"
+
+# Runs a compiled procedure against an MCP server, with no model.
+[[bin]]
+name = "hoist-procedure"
+path = "src/bin/hoist-procedure/main.rs"
+
+[dependencies]
+anyhow.workspace = true
+# Serving hosts over Streamable HTTP (`--listen`), as hoist-console serves its UI.
+axum = { version = "0.8", default-features = false, features = ["http1", "tokio"] }
+clap.workspace = true
+fugue.workspace = true
+futures-util = { version = "0.3", default-features = false }
+rand.workspace = true
+hoist-model.workspace = true
+serde.workspace = true
+# `raw_value`: a host's message is forwarded as it was sent, not re-serialized.
+serde_json = { workspace = true, features = ["raw_value"] }
+hoist-oracle.workspace = true
+hoist-report.workspace = true
+hoist-trace.workspace = true
+reqwest.workspace = true
+tokio = { version = "1", features = ["macros", "net", "rt-multi-thread", "signal", "sync", "time"] }

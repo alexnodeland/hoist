@@ -1,6 +1,6 @@
 /**
  * The mock's flows: the shop flow the quickstart learns (from six sessions,
- * with no key), the flow `stretto stage` learned again beside it from those
+ * with no key), the flow `hoist stage` learned again beside it from those
  * and five more, the same flow promoted on three shadow sessions, the live
  * cold start's retail flow from docs/results (with an arbiter), and a file
  * that does not load. Each FlowDetail is computed at the threshold asked
@@ -349,7 +349,7 @@ export function sitesAt(flow: FlowRecord, threshold: number): SiteView[] {
     for (const l of site.lookups) if (!best || l.weighed_share > best.weighed_share) best = l
     const prob = (l: LookupSpec) => l.weighed_share * (l.binding_chance ?? 0)
     const acts = allowed && !!best && prob(best) >= t
-    // As `stretto flow-show` words it.
+    // As `hoist flow-show` words it.
     const describe = (l: LookupSpec) =>
       `\`${l.tool}\` ${l.weighed_share.toFixed(2)} × ${(l.binding_chance ?? 0).toFixed(2)} = ${prob(l).toFixed(2)}`
     const verdict = !allowed
@@ -420,7 +420,7 @@ export function detailAt(flow: FlowRecord, threshold: number): FlowDetail {
     sites: sitesAt(flow, threshold),
     bindings: flow.bindings,
     provenance: {
-      stretto: flow.summary.stretto_version,
+      hoist: flow.summary.hoist_version,
       sources: flow.summary.sources,
       habit_episodes: flow.summary.habit_episodes,
       arbiter_cases: flow.summary.arbiter_cases,
@@ -438,7 +438,7 @@ function summary(
 ): FlowSummary {
   return {
     format_version: 1,
-    stretto_version: '0.1.0',
+    hoist_version: '0.1.0',
     sources: [],
     habit_episodes: 0,
     arbiter_cases: 0,
@@ -478,11 +478,11 @@ export interface FlowTimes {
   promotedCompiled: number
   retailCopied: number
   scratchModified: number
-  /** When `stretto stage` last learned the shop's staged flow; a day after the promotion by default. */
+  /** When `hoist stage` last learned the shop's staged flow; a day after the promotion by default. */
   stagedCompiled?: number
 }
 
-/** The shop's sites as `stretto stage` learned them again from eleven sessions. */
+/** The shop's sites as `hoist stage` learned them again from eleven sessions. */
 function stagedShopSites(): SiteSpec[] {
   const [find, order, user] = shopSites(false)
   return [
@@ -609,7 +609,7 @@ export function buildFlows(times: FlowTimes): FlowRecord[] {
       path: 'flows/retail.flow.json',
       name: 'retail',
       domain: 'retail',
-      stretto_version: texts.retail_provenance.stretto,
+      hoist_version: texts.retail_provenance.hoist,
       sources: texts.retail_provenance.sources,
       habit_episodes: texts.retail_provenance.habit_episodes,
       arbiter_cases: texts.retail_provenance.arbiter_cases,
@@ -644,7 +644,7 @@ export function buildFlows(times: FlowTimes): FlowRecord[] {
       has_reach: false,
       modified_unix_ms: times.scratchModified,
       size_bytes: 2210,
-      error: 'stretto_flow 3 is not a version this build reads (1 or 2)',
+      error: 'hoist_flow 3 is not a version this build reads (1 or 2)',
     }),
     tools: [],
     sites: [],
@@ -652,7 +652,7 @@ export function buildFlows(times: FlowTimes): FlowRecord[] {
     promotion: null,
     weighedBy: 'habit',
     review: () => '',
-    raw: '{"stretto_flow":3,"provenance":{"stretto":"0.2.0"}}',
+    raw: '{"hoist_flow":3,"provenance":{"hoist":"0.2.0"}}',
     warnings: [],
   })
 
@@ -671,9 +671,9 @@ export function buildFlows(times: FlowTimes): FlowRecord[] {
 function rawFlow(f: FlowRecord): string {
   const s = f.summary
   return JSON.stringify({
-    stretto_flow: s.format_version,
+    hoist_flow: s.format_version,
     provenance: {
-      stretto: s.stretto_version,
+      hoist: s.hoist_version,
       sources: s.sources,
       habit_episodes: s.habit_episodes,
       arbiter_cases: s.arbiter_cases,

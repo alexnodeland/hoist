@@ -39,7 +39,7 @@ const words = { ok: 'OK', note: 'Note', warn: 'Warning', error: 'Error' }
   gap: 10px;
   padding: 10px 0;
   font-size: 13.5px;
-  border-bottom: 1px solid var(--stretto-border);
+  border-bottom: 1px solid var(--hoist-border);
 }
 
 .health-item:first-child {
@@ -62,11 +62,11 @@ const words = { ok: 'OK', note: 'Note', warn: 'Warning', error: 'Error' }
 }
 
 .lvl-ok .health-icon {
-  color: var(--stretto-accent-graphic);
+  color: var(--hoist-accent-graphic);
 }
 
 .lvl-note .health-icon {
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .lvl-warn .health-icon {
@@ -78,6 +78,6 @@ const words = { ok: 'OK', note: 'Note', warn: 'Warning', error: 'Error' }
 }
 
 .lvl-error .health-msg {
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 </style>

@@ -149,7 +149,7 @@ function delta(a: number, b: number): string {
     </li>
     <li>
       A lookup counts once after each of the agent’s calls, as
-      <span class="mono">stretto promote</span>
+      <span class="mono">hoist promote</span>
       counts it: one the flow would make after several calls counts after each.
     </li>
   </ul>
@@ -159,7 +159,7 @@ function delta(a: number, b: number): string {
 .stage-cmp th[scope='row'] {
   font-weight: 500;
   font-size: 13.5px;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   vertical-align: middle;
 }
 
@@ -168,13 +168,13 @@ function delta(a: number, b: number): string {
 }
 
 .stage-cmp .tool {
-  font-family: var(--stretto-font-mono);
+  font-family: var(--hoist-font-mono);
   font-size: 12.5px;
 }
 
 .stage-cmp tr.total th,
 .stage-cmp tr.total td {
-  border-top: 1px solid var(--stretto-border-strong);
+  border-top: 1px solid var(--hoist-border-strong);
   font-weight: 600;
 }
 
@@ -197,7 +197,7 @@ function delta(a: number, b: number): string {
   height: 6px;
   margin-top: 6px;
   border-radius: 3px;
-  background: var(--stretto-surface-2);
+  background: var(--hoist-surface-2);
 }
 
 .share .range {
@@ -205,7 +205,7 @@ function delta(a: number, b: number): string {
   top: 0;
   bottom: 0;
   border-radius: 3px;
-  background: var(--stretto-accent-soft);
+  background: var(--hoist-accent-soft);
 }
 
 .share .point {
@@ -214,7 +214,7 @@ function delta(a: number, b: number): string {
   width: 2px;
   height: 10px;
   margin-left: -1px;
-  background: var(--stretto-accent-graphic);
+  background: var(--hoist-accent-graphic);
 }
 
 .delta {

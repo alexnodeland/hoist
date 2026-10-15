@@ -51,21 +51,21 @@ const last = computed(() => points.value[points.value.length - 1])
 }
 
 .spark-area {
-  fill: var(--stretto-chart-baseline);
+  fill: var(--hoist-chart-baseline);
   opacity: 0.08;
 }
 
 .spark-line {
   fill: none;
-  stroke: var(--stretto-chart-baseline);
+  stroke: var(--hoist-chart-baseline);
   stroke-width: 1.6;
   stroke-linejoin: round;
   stroke-linecap: round;
 }
 
 .spark-dot {
-  fill: var(--stretto-chart-accent);
-  stroke: var(--stretto-surface);
+  fill: var(--hoist-chart-accent);
+  stroke: var(--hoist-surface);
   stroke-width: 2;
 }
 </style>

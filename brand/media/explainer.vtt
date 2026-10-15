@@ -2,7 +2,7 @@ WEBVTT
 
 1
 00:00:02.600 --> 00:00:04.622
-stretto reads ahead of your agent.
+hoist reads ahead of your agent.
 
 2
 00:00:05.172 --> 00:00:08.635
@@ -50,11 +50,11 @@ The model spends a turn typing it out.
 
 13
 00:00:43.984 --> 00:00:48.823
-stretto sits between the agent and its tools, as an MCP proxy.
+hoist sits between the agent and its tools, as an MCP proxy.
 
 14
 00:00:49.273 --> 00:00:53.677
-When a result names what comes next, stretto makes those reads at once.
+When a result names what comes next, hoist makes those reads at once.
 
 15
 00:00:54.077 --> 00:00:57.431
@@ -90,7 +90,7 @@ The lookups come from your agent's own recorded sessions.
 
 23
 00:01:20.386 --> 00:01:25.167
-stretto counts which reads follow each call, and where each argument came from.
+hoist counts which reads follow each call, and where each argument came from.
 
 24
 00:01:25.617 --> 00:01:30.153
@@ -118,7 +118,7 @@ Each lookup weighs two costs: a turn saved, against a detour.
 
 30
 00:01:58.045 --> 00:02:02.807
-stretto makes it when the chance it's used before the next write clears the line.
+hoist makes it when the chance it's used before the next write clears the line.
 
 31
 00:02:03.257 --> 00:02:08.007
@@ -162,11 +162,11 @@ With the prompt in both arms, a flow still saved the Claude models 17.2 and 22.9
 
 41
 00:02:59.375 --> 00:03:04.104
-stretto is open source, written in Rust, under the MIT license.
+hoist is open source, written in Rust, under the MIT license.
 
 42
 00:03:04.504 --> 00:03:07.946
-Run stretto init in front of any MCP server.
+Run hoist init in front of any MCP server.
 
 43
 00:03:08.346 --> 00:03:12.507
@@ -174,7 +174,7 @@ It learns from your agent's own sessions, with no key and no model.
 
 44
 00:03:14.807 --> 00:03:15.627
-stretto.
+hoist.
 
 45
 00:03:15.627 --> 00:03:16.860

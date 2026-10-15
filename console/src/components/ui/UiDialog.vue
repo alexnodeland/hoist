@@ -85,10 +85,10 @@ onBeforeUnmount(() => {
   width: min(var(--dialog-w), calc(100vw - 32px));
   max-height: calc(100vh - 64px);
   padding: 0;
-  border: 1px solid var(--stretto-border);
+  border: 1px solid var(--hoist-border);
   border-radius: 14px;
-  background: var(--stretto-surface);
-  color: var(--stretto-text);
+  background: var(--hoist-surface);
+  color: var(--hoist-text);
   box-shadow: var(--c-shadow-lg);
 }
 
@@ -127,7 +127,7 @@ onBeforeUnmount(() => {
 .dialog-desc {
   margin-top: 4px;
   font-size: 13.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .dialog-x {
@@ -139,12 +139,12 @@ onBeforeUnmount(() => {
   border: 0;
   border-radius: 8px;
   background: none;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .dialog-x:hover {
   background: var(--c-hover);
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .dialog-body {
@@ -159,7 +159,7 @@ onBeforeUnmount(() => {
   flex-wrap: wrap;
   gap: 8px;
   padding: 14px 20px;
-  border-top: 1px solid var(--stretto-border);
+  border-top: 1px solid var(--hoist-border);
 }
 
 @keyframes pop {

@@ -7,7 +7,7 @@ travel agency, and no user after it; its repository publishes each model's
 run of every task, the benign ones under `runs/<pipeline>/<suite>/user_task_<n>/none/none.json`,
 each message with its tool calls and what they returned. This writes each
 pipeline's benign runs of each suite as τ²-bench's results file, and a
-checkout-shaped folder that stretto reads as τ²-bench's: each suite's tools,
+checkout-shaped folder that Hoist reads as τ²-bench's: each suite's tools,
 marked a read or a write, and a train/test split by task.
 
     agentdojo_to_tau2.py --runs agentdojo/runs --out DIR [--test-share 0.4]

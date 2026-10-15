@@ -1,6 +1,6 @@
-# stretto brand kit
+# Hoist brand kit
 
-Everything stretto shows the world, and the sources to make it again: the logo, colors and type, the words, a social card, an interactive explainer, an explainer video and a terminal walkthrough, the last three narrated. The tone is calm and exact: stretto makes the reads an agent would make next, and says how much that saves only with the model, the benchmark and the kind of evidence next to the number.
+Everything Hoist shows the world, and the sources to make it again: the logo, colors and type, the words, a social card, an interactive explainer, an explainer video and a terminal walkthrough, the last three narrated. The tone is calm and exact: Hoist makes the reads an agent would make next, and says how much that saves only with the model, the benchmark and the kind of evidence next to the number.
 
 | What | Where | Made by |
 |---|---|---|
@@ -20,16 +20,16 @@ Everything stretto shows the world, and the sources to make it again: the logo, 
 
 ## Logo
 
-**The mark** is a stretto of three entries. In a fugue's stretto, each entry of the subject comes in before the last one has finished; here the same bar enters three times, each before the last ends and each sooner than the one before. The first bar is ink, the agent's own call; the two that overlap it are petrol, the reads stretto makes ahead of it.
+**The mark** is a Hoist of three entries. In a fugue's Hoist, each entry of the subject comes in before the last one has finished; here the same bar enters three times, each before the last ends and each sooner than the one before. The first bar is ink, the agent's own call; the two that overlap it are petrol, the reads Hoist makes ahead of it.
 
-**The wordmark** is "stretto", always lowercase, in Inter Display SemiBold converted to outlines, so it needs no font. Inter's kerning joins the crossbars of the two t's into one: two entries, overlapping.
+**The wordmark** is "hoist", always lowercase, in Inter Display SemiBold converted to outlines, so it needs no font. Inter's kerning joins the crossbars of the two t's into one: two entries, overlapping.
 
 | File | Use |
 |---|---|
-| `stretto-lockup.svg` | The default: mark and wordmark, on light backgrounds |
-| `stretto-lockup-dark.svg` | The same on dark backgrounds (paper and a lighter petrol) |
-| `stretto-mark.svg`, `stretto-mark-dark.svg` | The mark alone, where the name is already on screen (a sidebar, an avatar) |
-| `stretto-wordmark.svg`, `stretto-wordmark-dark.svg` | The name alone, where the mark would crowd |
+| `hoist-lockup.svg` | The default: mark and wordmark, on light backgrounds |
+| `hoist-lockup-dark.svg` | The same on dark backgrounds (paper and a lighter petrol) |
+| `hoist-mark.svg`, `hoist-mark-dark.svg` | The mark alone, where the name is already on screen (a sidebar, an avatar) |
+| `hoist-wordmark.svg`, `hoist-wordmark-dark.svg` | The name alone, where the mark would crowd |
 | `favicon.svg`, `favicon.ico` | Browser tabs. A petrol tile with paper bars, so it reads on light and dark tab bars; its bars fall on whole pixels at 16 and 32 px |
 | `app-icon.svg`, `apple-touch-icon.png`, `icon-512.png` | Home screens and web-app manifests. Full-bleed squares; the bars sit inside the maskable safe zone, so `"purpose": "any maskable"` is safe |
 
@@ -39,12 +39,12 @@ Everything stretto shows the world, and the sources to make it again: the logo, 
 
 ## Color
 
-One accent, petrol, and neutrals leaning toward its cool hue. Petrol marks what stretto adds: its reads in a diagram, a link, the primary action. The rest is ink on paper, or paper on ink. [`palette.md`](palette.md) lists every token with its use, and the contrast of all 80 foreground and background pairs: text at 4.5:1 or more and marks at 3:1 or more, in both themes (WCAG 2.2 AA).
+One accent, petrol, and neutrals leaning toward its cool hue. Petrol marks what Hoist adds: its reads in a diagram, a link, the primary action. The rest is ink on paper, or paper on ink. [`palette.md`](palette.md) lists every token with its use, and the contrast of all 80 foreground and background pairs: text at 4.5:1 or more and marks at 3:1 or more, in both themes (WCAG 2.2 AA).
 
 ```css
 @import url("tokens.css");
-body { background: var(--stretto-bg); color: var(--stretto-text); font-family: var(--stretto-font-sans); }
-a { color: var(--stretto-accent); }
+body { background: var(--hoist-bg); color: var(--hoist-text); font-family: var(--hoist-font-sans); }
+a { color: var(--hoist-accent); }
 ```
 
 `tokens.css` switches to dark under `prefers-color-scheme: dark`, and `<html data-theme="light|dark">` forces either. After changing a token, run `node brand/tools/contrast.mjs --check`.
@@ -65,16 +65,16 @@ Both are under the [SIL Open Font License 1.1](fonts/LICENSE-Inter.txt) ([JetBra
 `social/og-card.png` is 1200 × 630: the lockup, the tagline, a schematic of the turns a flow saves, and the live result with its scope. It is rendered from `social/og-card.html` (`node brand/tools/render_assets.mjs og`).
 
 ```html
-<meta property="og:image" content="https://stretto.alexnodeland.com/og.png">
+<meta property="og:image" content="https://hoist.alexnodeland.com/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="stretto: Read ahead of your agent. Live on 28 τ²-bench retail and airline tasks, Claude Sonnet 5, Claude Haiku 4.5 and GLM-5.3 took 20–28% fewer LLM turns.">
+<meta property="og:image:alt" content="hoist: Read ahead of your agent. Live on 28 τ²-bench retail and airline tasks, Claude Sonnet 5, Claude Haiku 4.5 and GLM-5.3 took 20–28% fewer LLM turns.">
 <meta name="twitter:card" content="summary_large_image">
 ```
 
 ## Interactive explainer
 
-`explainer/index.html` explains stretto in seven steps: where the proxy sits, recording sessions, learning a flow, serving it, what a detour costs, the decision rule, and the results with their scope. It is one file with its styles, script, drawings and fonts inline (180 KB), so it can be served from anywhere, and it links out only to the live results, the claims ledger and the walkthrough on GitHub.
+`explainer/index.html` explains Hoist in seven steps: where the proxy sits, recording sessions, learning a flow, serving it, what a detour costs, the decision rule, and the results with their scope. It is one file with its styles, script, drawings and fonts inline (180 KB), so it can be served from anywhere, and it links out only to the live results, the claims ledger and the walkthrough on GitHub.
 
 - **Controls:** play and pause, previous and next, a progress bar whose segments jump to a step; the arrow keys, Home and End; space or K to play and pause; swipes on touch screens. It starts playing once it is in view and stops after the last step.
 - **Narration:** the speaker button, or M, reads each step aloud: `audio/step-N.mp3` beside the page (0.9 MB in all, fetched only once the sound is on). It is off at first, since browsers play sound only after a click. With it on, a playing explainer moves on when a step's line has finished. Served without `audio/`, the button hides itself.
@@ -85,15 +85,15 @@ Both are under the [SIL Open Font License 1.1](fonts/LICENSE-Inter.txt) ([JetBra
 Embed it at `/explainer/`:
 
 ```html
-<iframe src="/explainer/" title="How stretto works" loading="lazy"
+<iframe src="/explainer/" title="How hoist works" loading="lazy"
         style="width: 100%; height: 780px; border: 0;"></iframe>
 <script>
   // Optional: size the frame to its content, and pass the site's theme.
-  const frame = document.querySelector('iframe[title="How stretto works"]');
+  const frame = document.querySelector('iframe[title="How hoist works"]');
   addEventListener('message', e => {
-    if (e.source === frame.contentWindow && e.data?.type === 'stretto-explainer:height') frame.style.height = e.data.height + 'px';
+    if (e.source === frame.contentWindow && e.data?.type === 'hoist-explainer:height') frame.style.height = e.data.height + 'px';
   });
-  // frame.contentWindow.postMessage({ type: 'stretto-explainer:theme', theme: 'dark' }, '*');  // or 'light', 'auto'
+  // frame.contentWindow.postMessage({ type: 'hoist-explainer:theme', theme: 'dark' }, '*');  // or 'light', 'auto'
 </script>
 ```
 
@@ -105,7 +105,7 @@ It is 760 px tall at 1000 px wide and 876 px at 720 px, the same for every step;
 |---|---|---|---|
 | `media/explainer.mp4` | 200.5 s, 1920 × 1080, 30 fps | 10.9 MB | H.264 High, yuv420p, BT.709, faststart; voice and music in AAC, at -16 LUFS |
 | `media/explainer.vtt` | 45 cues | 4 KB | The voice-over's captions (WebVTT), each starting on its first spoken word |
-| `media/explainer-poster.png` | 1920 × 1080 | 0.5 MB | One tool result carrying the two reads stretto made, and the turns closed up from five to three |
+| `media/explainer-poster.png` | 1920 × 1080 | 0.5 MB | One tool result carrying the two reads Hoist made, and the turns closed up from five to three |
 | `media/explainer-teaser.gif` | 8 s loop, 1280 × 720, 15 fps | 0.6 MB | For the README |
 | `media/explainer-teaser.webm` | 8 s loop, 1280 × 720 | 0.1 MB | For the site (VP9) |
 | `media/walkthrough.mp4` | 192.6 s, 1920 × 1080, 30 fps | 10.5 MB | H.264 High, faststart; the voice-over in AAC, at -16.5 LUFS |
@@ -116,11 +116,11 @@ It is 760 px tall at 1000 px wide and 876 px at 720 px, the same for every step;
 | `media/console.mp4` | 122.3 s, 1920 × 1080, 30 fps | 8.5 MB | H.264 High, faststart; voice and music in AAC, at -16 LUFS |
 | `media/console.vtt`, `media/console-poster.png` | 1920 × 1080 | | Captions; the poster is a served session's three lookups |
 
-**The explainer video** tells the story in ten chapters between the title and an end card, one diagram each, on a still stage: an agent's turns and what they cost; the turns the tools had already decided; stretto making those reads, inside the result the agent asked for; why a flow only reads; how a flow is learned and reviewed; the console; the rule that decides a lookup; the live results; the prompt baseline; and how to start. What it shows is the real thing: the proxy's wording for the reads it adds to a result, τ²-bench retail's tools, the counts of a flow in `docs/examples/`, the console's own screens and the commands of the docs. The line being spoken is set at the foot of the frame, each word lit as it is said, so the film reads with the sound off. Its pacing follows Auracle's films ([`video/PACING.md`](video/PACING.md)), and [`video/explainer/README.md`](video/explainer/README.md) lists the chapters and how the timing follows the voice.
+**The explainer video** tells the story in ten chapters between the title and an end card, one diagram each, on a still stage: an agent's turns and what they cost; the turns the tools had already decided; Hoist making those reads, inside the result the agent asked for; why a flow only reads; how a flow is learned and reviewed; the console; the rule that decides a lookup; the live results; the prompt baseline; and how to start. What it shows is the real thing: the proxy's wording for the reads it adds to a result, τ²-bench retail's tools, the counts of a flow in `docs/examples/`, the console's own screens and the commands of the docs. The line being spoken is set at the foot of the frame, each word lit as it is said, so the film reads with the sound off. Its pacing follows Auracle's films ([`video/PACING.md`](video/PACING.md)), and [`video/explainer/README.md`](video/explainer/README.md) lists the chapters and how the timing follows the voice.
 
-**The deep dives** are drawn on the explainer's stage (`video/stage/`), at its pace and in its voice, and rendered by the same `video/film.mjs`. [The math film](video/math/README.md) is for engineers: the event a lookup is decided on, why a flow only reads, the rule and its costs, the counts, alpha's posterior as a fugue program, the bindings, and how the estimate held up in replay and live, with the code that computes them. Its formulas are typeset with KaTeX (`npm install` in `brand/`), its derivations worked in place, and its charts drawn from the published rows and from fugue's own run on the console's fixtures (`video/math/data/`). [The console film](video/console/README.md) tours `stretto-console`, from shots of the real console over its test fixtures, captured by driving it as a user does.
+**The deep dives** are drawn on the explainer's stage (`video/stage/`), at its pace and in its voice, and rendered by the same `video/film.mjs`. [The math film](video/math/README.md) is for engineers: the event a lookup is decided on, why a flow only reads, the rule and its costs, the counts, alpha's posterior as a fugue program, the bindings, and how the estimate held up in replay and live, with the code that computes them. Its formulas are typeset with KaTeX (`npm install` in `brand/`), its derivations worked in place, and its charts drawn from the published rows and from fugue's own run on the console's fixtures (`video/math/data/`). [The console film](video/console/README.md) tours `hoist-console`, from shots of the real console over its test fixtures, captured by driving it as a user does.
 
-**The walkthrough** is a real terminal session, with the release binaries on the official MCP filesystem server, a scripted agent standing in for the LLM, and no key: `stretto doctor`, then `stretto init` printing Claude Code's configuration, then the loop `docs/walkthrough.md` runs (record, learn, review, audit, serve, learn again). `video/walkthrough/script.sh` is the command list; `capture.py` runs it in a pseudo-terminal, with a small allowlisted environment and the working directory as `HOME` (the binaries copied into its `.cargo/bin`, where `cargo install` puts them), and records every byte of output with its timing to `walkthrough.cast` (asciicast v2, with markers for steps, captions and commands); `render.mjs` draws the cast as a terminal, with a title card per step, and pipes the frames to ffmpeg. The only change to the output is the working directory's path, shown as `/home/me` as in the docs. The voice says the intro, each caption as it appears (`video/walkthrough/narration.json` gives a spoken form where the text on screen has paths or flags), and the outro; `term.js` holds each caption until its line has finished.
+**The walkthrough** is a real terminal session, with the release binaries on the official MCP filesystem server, a scripted agent standing in for the LLM, and no key: `hoist doctor`, then `hoist init` printing Claude Code's configuration, then the loop `docs/walkthrough.md` runs (record, learn, review, audit, serve, learn again). `video/walkthrough/script.sh` is the command list; `capture.py` runs it in a pseudo-terminal, with a small allowlisted environment and the working directory as `HOME` (the binaries copied into its `.cargo/bin`, where `cargo install` puts them), and records every byte of output with its timing to `walkthrough.cast` (asciicast v2, with markers for steps, captions and commands); `render.mjs` draws the cast as a terminal, with a title card per step, and pipes the frames to ffmpeg. The only change to the output is the working directory's path, shown as `/home/me` as in the docs. The voice says the intro, each caption as it appears (`video/walkthrough/narration.json` gives a spoken form where the text on screen has paths or flags), and the outro; `term.js` holds each caption until its line has finished.
 
 ```html
 <video controls preload="none" poster="/media/explainer-poster.png" width="1920" height="1080" style="width: 100%; height: auto;">
@@ -129,13 +129,13 @@ It is 760 px tall at 1000 px wide and 876 px at 720 px, the same for every step;
 </video>
 ```
 
-**The voice** is Kokoro-82M (hexgrad, Apache-2.0), an open text-to-speech model run locally, in its `af_heart` voice at speed 0.85: the voice of Auracle's films, one voice at one pace, every line at one loudness, for both videos and the interactive explainer. `video/narrate.py` speaks each line whole, so its commas keep their prosody, trims it and sets its level. Then it transcribes the line back with faster-whisper and speaks it again, a touch slower or faster, if a word went missing; the manifest keeps the time of every word, which the explainer video times its beats and captions by. The text is written for reading, and `SAY`, with each script's `say` fields, turns versions, acronyms and numbers into what the voice should say (`GLM-5.3`, "G L M five point three"). "stretto" is said the American way, STRED-oh, with the t flapped; `LEXICON` in `narrate.py` pins it.
+**The voice** is Kokoro-82M (hexgrad, Apache-2.0), an open text-to-speech model run locally, in its `af_heart` voice at speed 0.85: the voice of Auracle's films, one voice at one pace, every line at one loudness, for both videos and the interactive explainer. `video/narrate.py` speaks each line whole, so its commas keep their prosody, trims it and sets its level. Then it transcribes the line back with faster-whisper and speaks it again, a touch slower or faster, if a word went missing; the manifest keeps the time of every word, which the explainer video times its beats and captions by. The text is written for reading, and `SAY`, with each script's `say` fields, turns versions, acronyms and numbers into what the voice should say (`GLM-5.3`, "G L M five point three"). "hoist" is said the American way, STRED-oh, with the t flapped; `LEXICON` in `narrate.py` pins it.
 
-**The music** is synthesized, not sampled. `video/music.py` writes a bed in D major whose six-note motif enters three times, each entry before the last has finished, a stretto, landing with the mark's three bars, and returns once to close; the explainer's renderer runs it with the timeline's own times. There are no sound effects: the voice, the bed under it, and the motif in and out.
+**The music** is synthesized, not sampled. `video/music.py` writes a bed in D major whose six-note motif enters three times, each entry before the last has finished, a Hoist, landing with the mark's three bars, and returns once to close; the explainer's renderer runs it with the timeline's own times. There are no sound effects: the voice, the bed under it, and the motif in and out.
 
 ## Rebuilding
 
-Requirements: Node 18 or later, Python 3.10 or later, and for the walkthrough the stretto binaries, npx (the filesystem server comes from npm) and jq. For the voice-over, Python 3.10 to 3.12, `video/requirements-narrate.txt` (torch's CPU build, from PyTorch's index) and about 1 GB for the models it fetches on first use. No step needs a key.
+Requirements: Node 18 or later, Python 3.10 or later, and for the walkthrough the Hoist binaries, npx (the filesystem server comes from npm) and jq. For the voice-over, Python 3.10 to 3.12, `video/requirements-narrate.txt` (torch's CPU build, from PyTorch's index) and about 1 GB for the models it fetches on first use. No step needs a key.
 
 ```sh
 cd brand
@@ -161,7 +161,7 @@ sh video/console/capture.sh        # the console's shots, from the real console 
 PYTHON=.venv-voice/bin/python node video/film.mjs console
 
 # The walkthrough: record it, then render it (about 7 minutes).
-python3 video/walkthrough/capture.py --bin /path/to/stretto/binaries
+python3 video/walkthrough/capture.py --bin /path/to/hoist/binaries
 node video/walkthrough/render.mjs
 ```
 
@@ -180,7 +180,7 @@ Copy into `website/public/` (served at the site's root):
 | `logo/favicon.ico`, `logo/favicon.svg`, `logo/apple-touch-icon.png`, `logo/icon-512.png` | the same names, at the root |
 | `social/og-card.png` | `og.png` |
 | `explainer/index.html` | `explainer/index.html` |
-| `logo/stretto-lockup.svg`, `logo/stretto-lockup-dark.svg`, `logo/stretto-mark.svg` | `logo/` (for the header) |
+| `logo/hoist-lockup.svg`, `logo/hoist-lockup-dark.svg`, `logo/hoist-mark.svg` | `logo/` (for the header) |
 | `explainer/audio/step-1.mp3` … `step-7.mp3` | `explainer/audio/` |
 | `media/explainer.mp4`, `media/explainer-poster.png`, `media/explainer.vtt`, `media/explainer-teaser.webm`, `media/walkthrough.mp4`, `media/walkthrough-poster.png`, `media/walkthrough.vtt` | `media/` |
 | `tokens.css`, and `fonts/*` with the two licenses if the site serves its own fonts | where the site keeps its styles and fonts |
@@ -196,17 +196,17 @@ In the site's `<head>`:
 <meta name="theme-color" content="#0b0f11" media="(prefers-color-scheme: dark)">
 ```
 
-with `site.webmanifest`: `{"name": "stretto", "short_name": "stretto", "icons": [{"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}], "background_color": "#0b0f11", "theme_color": "#0b0f11", "display": "browser"}`.
+with `site.webmanifest`: `{"name": "hoist", "short_name": "hoist", "icons": [{"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}], "background_color": "#0b0f11", "theme_color": "#0b0f11", "display": "browser"}`.
 
 In the repository's `README.md`, the lockup (switching with the reader's theme) and the teaser:
 
 ```html
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="brand/logo/stretto-lockup-dark.svg">
-  <img alt="stretto" src="brand/logo/stretto-lockup.svg" height="44">
+  <source media="(prefers-color-scheme: dark)" srcset="brand/logo/hoist-lockup-dark.svg">
+  <img alt="hoist" src="brand/logo/hoist-lockup.svg" height="44">
 </picture>
 
-**Read ahead of your agent.** stretto learns, from your agent's recorded tool calls, which reads it makes next and where their arguments come from, and serves them through an MCP proxy in the same tool result, so the agent needs fewer LLM turns.
+**Read ahead of your agent.** hoist learns, from your agent's recorded tool calls, which reads it makes next and where their arguments come from, and serves them through an MCP proxy in the same tool result, so the agent needs fewer LLM turns.
 
 ![After each call, the reads the agent would make next ride in the same tool result, and it skips those turns](brand/media/explainer-teaser.gif)
 ```

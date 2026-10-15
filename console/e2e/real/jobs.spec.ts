@@ -1,11 +1,11 @@
 import { test, expect } from './fixtures'
 
-test('doctor runs the stretto CLI and shows its output', async ({ page }) => {
+test('doctor runs the Hoist CLI and shows its output', async ({ page }) => {
   await page.goto('/jobs/new?kind=doctor')
   await page.getByTestId('job-start').click()
   await expect(page).toHaveURL(/\/jobs\/[^/]+$/)
   await expect(page.getByText('Succeeded').first()).toBeVisible({ timeout: 30_000 })
-  await expect(page.getByTestId('job-output')).toContainText('$ stretto doctor')
+  await expect(page.getByTestId('job-output')).toContainText('$ hoist doctor')
 })
 
 test('an audit writes a report, which the job page renders', async ({ page }) => {
@@ -15,7 +15,7 @@ test('an audit writes a report, which the job page renders', async ({ page }) =>
   await expect(page.getByText('Succeeded').first()).toBeVisible({ timeout: 30_000 })
   await expect(page.getByRole('heading', { name: 'Flow audit: shop' })).toBeVisible()
   await page.getByRole('radio', { name: 'Output' }).click()
-  await expect(page.getByTestId('job-output')).toContainText('stretto: audited 8 decisions')
+  await expect(page.getByTestId('job-output')).toContainText('hoist: audited 8 decisions')
   await expect(page.getByTestId('job-artifacts')).toContainText('.audit.md')
 })
 

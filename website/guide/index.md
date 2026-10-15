@@ -1,15 +1,15 @@
 ---
-description: stretto learns which reads an LLM agent makes next, and where their arguments come from, and serves those reads through an MCP proxy so the agent needs fewer LLM turns.
+description: Hoist learns which reads an LLM agent makes next, and where their arguments come from, and serves those reads through an MCP proxy so the agent needs fewer LLM turns.
 ---
 
-# What is stretto?
+# What is Hoist?
 
-stretto makes tool-using LLM agents take fewer turns. It watches an agent's tool calls through an MCP proxy, learns from them which reads the agent makes next and where their arguments come from, and then makes those reads for it. After each of the agent's own calls, the results of the reads it was about to ask for ride in the same tool result. The agent sees them before it asks, and skips the turns it would have spent asking.
+Hoist makes tool-using LLM agents take fewer turns. It watches an agent's tool calls through an MCP proxy, learns from them which reads the agent makes next and where their arguments come from, and then makes those reads for it. After each of the agent's own calls, the results of the reads it was about to ask for ride in the same tool result. The agent sees them before it asks, and skips the turns it would have spent asking.
 
 It needs no new tool and no change to the agent's prompt, and, deciding by counts alone, no model of its own. It only ever reads: a flow never calls a tool the server marks as a write, so a wrong guess costs one extra lookup and never an action.
 
 ::: tip The name
-In a fugue, a *stretto* is where entries of the subject overlap and compress. stretto does that to an agent's tool calls: the reads the agent would make one turn at a time arrive together.
+Hoist moves the reads an agent would make one turn at a time into the same turn: they arrive together.
 :::
 
 ## What the agent sees
@@ -33,38 +33,38 @@ The agent made 1 call where it had made 3.
 
 ## The loop
 
-1. **Record.** `stretto-proxy` takes the place of an MCP server's command in your host's configuration, which `stretto init` prints for you. It starts the server, forwards every message byte for byte, and writes one log per session. See [sessions and recording](./concepts/sessions).
-2. **Learn.** `stretto learn` reads the logs and writes a *flow*: a JSON file that says which lookups the agent made after each call, how often, and where each argument's value came from. Learning is counting. See [flows](./concepts/flows).
-3. **Review.** `stretto flow-show` renders a flow for a person to read, and `stretto flow-diff` lists what changed between two flows. Run the flow in shadow mode first, then keep it to the places where its lookups were the agent's own. See [audit and review](./concepts/audit-and-review) and [shadow mode](./concepts/shadow-and-promotion).
+1. **Record.** `hoist-mcp` takes the place of an MCP server's command in your host's configuration, which `hoist init` prints for you. It starts the server, forwards every message byte for byte, and writes one log per session. See [sessions and recording](./concepts/sessions).
+2. **Learn.** `hoist learn` reads the logs and writes a *flow*: a JSON file that says which lookups the agent made after each call, how often, and where each argument's value came from. Learning is counting. See [flows](./concepts/flows).
+3. **Review.** `hoist flow-show` renders a flow for a person to read, and `hoist flow-diff` lists what changed between two flows. Run the flow in shadow mode first, then keep it to the places where its lookups were the agent's own. See [audit and review](./concepts/audit-and-review) and [shadow mode](./concepts/shadow-and-promotion).
 4. **Serve.** Give the proxy the flow. After each of the agent's calls it makes the lookups that clear a threshold and appends their results. See [lookups and detours](./concepts/lookups) and [deciders](./concepts/deciders).
 5. **Learn again.** New sessions are new counts. Learn from them, and let `flow-diff` tell you whether the new flow can do anything the old one could not.
 
 ## What you get
 
-stretto is a Rust workspace of five programs:
+Hoist is a Rust workspace of five programs:
 
 | Program | What it does |
 |---|---|
-| `stretto` | Prints your MCP host's configuration (`init`) and checks the installation (`doctor`). Learns flows from recorded sessions (`learn`), shows and compares them (`flow-show`, `flow-diff`), audits them on new sessions (`audit`), promotes them from shadow mode (`promote`), pseudonymizes sessions (`redact`), and measures how compressible an agent's behavior is on τ²-bench's published trajectories (`phase0`). |
-| `stretto-proxy` | Wraps any MCP server, run as a command or reached over Streamable HTTP, and serves the host over stdio, or over Streamable HTTP with `--listen`. It records sessions and serves flows. |
-| `stretto-procedure` | Runs a compiled procedure against an MCP server with no model, for work where no user speaks. See [procedures](./concepts/procedures). |
-| `stretto-mcp-demo` | A tiny MCP server for trying the proxy. |
-| `stretto-console` | A web app on your machine, over the files the others write. It has the servers stretto fronts, with each host's configuration and a connection test, and every session as a timeline of the agent's calls and the flow's lookups. It shows each flow's graph and review, and runs the CLI's jobs from the page. See [the console](./console). |
+| `hoist` | Prints your MCP host's configuration (`init`) and checks the installation (`doctor`). Learns flows from recorded sessions (`learn`), shows and compares them (`flow-show`, `flow-diff`), audits them on new sessions (`audit`), promotes them from shadow mode (`promote`), pseudonymizes sessions (`redact`), and measures how compressible an agent's behavior is on τ²-bench's published trajectories (`phase0`). |
+| `hoist-mcp` | Wraps any MCP server, run as a command or reached over Streamable HTTP, and serves the host over stdio, or over Streamable HTTP with `--listen`. It records sessions and serves flows. |
+| `hoist-procedure` | Runs a compiled procedure against an MCP server with no model, for work where no user speaks. See [procedures](./concepts/procedures). |
+| `hoist-mcp-demo` | A tiny MCP server for trying the proxy. |
+| `hoist-console` | A web app on your machine, over the files the others write. It has the servers Hoist fronts, with each host's configuration and a connection test, and every session as a timeline of the agent's calls and the flow's lookups. It shows each flow's graph and review, and runs the CLI's jobs from the page. See [the console](./console). |
 
 Every command and option is in the [CLI reference](/reference/cli). The quick start installs the first four; [the console](./console#start-it) is built from a checkout, or run in a container.
 
 ## Where it helps
 
-stretto takes the reads whose arguments an earlier tool result supplies: an order id listed in the customer's record, a file a search found, the hotels a city's listing named. How much of an agent's work that is, the *read-only ceiling*, depends on the domain. Across seven benchmarks it runs from 3.5% of LLM turns, where each request names what to read, to 47.1%, where one listing names what every later read takes ([the claims](/research/claims)). Replies to the user, writes, and reads that only the user's words can name stay with the model.
+Hoist takes the reads whose arguments an earlier tool result supplies: an order id listed in the customer's record, a file a search found, the hotels a city's listing named. How much of an agent's work that is, the *read-only ceiling*, depends on the domain. Across seven benchmarks it runs from 3.5% of LLM turns, where each request names what to read, to 47.1%, where one listing names what every later read takes ([the claims](/research/claims)). Replies to the user, writes, and reads that only the user's words can name stay with the model.
 
-[Why stretto?](./why) says more about when it pays, with the evidence.
+[Why Hoist?](./why) says more about when it pays, with the evidence.
 
 ## Status
 
-stretto is pre-release. 0.1.0 is prepared but not yet tagged ([changelog](/community/changelog)), and these pages follow the `main` branch. It is not on crates.io yet, because it depends on a [fugue](https://github.com/alexnodeland/fugue) feature that is not in a fugue release yet. Until the first release is tagged, install it from source: see [installation](./installation).
+Hoist is pre-release. 0.1.0 is prepared but not yet tagged ([changelog](/community/changelog)), and these pages follow the `main` branch. It is not on crates.io yet, because it depends on a [fugue](https://github.com/alexnodeland/fugue) feature that is not in a fugue release yet. Until the first release is tagged, install it from source: see [installation](./installation).
 
-::: warning Not the `stretto` crate
-The crate named `stretto` on crates.io is an unrelated cache library. This project's binary is `stretto`, and its crates are named `stretto-*`.
+::: warning Not the `hoist` crate
+The crate named `hoist` on crates.io is an unrelated cache library. This project's binary is `hoist`, and its crates are named `hoist-*`.
 :::
 
 ## Next steps

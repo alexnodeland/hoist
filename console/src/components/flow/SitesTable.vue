@@ -136,30 +136,30 @@ const rows = computed(() => props.previews)
   width: 64px;
   height: 6px;
   border-radius: 3px;
-  background: var(--stretto-surface-2);
-  box-shadow: inset 0 0 0 1px var(--stretto-border);
+  background: var(--hoist-surface-2);
+  box-shadow: inset 0 0 0 1px var(--hoist-border);
 }
 
 .bar > span {
   position: absolute;
   inset: 0 auto 0 0;
   border-radius: 3px;
-  background: var(--stretto-chart-baseline);
+  background: var(--hoist-chart-baseline);
 }
 
 .bar > span.acts {
-  background: var(--stretto-chart-accent);
+  background: var(--hoist-chart-accent);
 }
 
 .bar > span.hb {
-  background: var(--stretto-border-strong);
+  background: var(--hoist-border-strong);
   opacity: 0.55;
 }
 
 .share {
   width: 36px;
   text-align: right;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .verdict {
@@ -169,11 +169,11 @@ const rows = computed(() => props.previews)
 .verdict-text {
   margin-top: 6px;
   font-size: 13px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .verdict-text.acts {
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
   font-weight: 500;
 }
 

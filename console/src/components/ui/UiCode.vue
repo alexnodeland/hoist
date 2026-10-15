@@ -32,9 +32,9 @@ withDefaults(
 <style scoped>
 .codeblock {
   position: relative;
-  border: 1px solid var(--stretto-border);
+  border: 1px solid var(--hoist-border);
   border-radius: var(--c-radius-control);
-  background: var(--stretto-surface-2);
+  background: var(--hoist-surface-2);
   overflow: hidden;
   min-width: 0;
 }
@@ -44,15 +44,15 @@ withDefaults(
   align-items: center;
   gap: 8px;
   padding: 6px 8px 6px 14px;
-  border-bottom: 1px solid var(--stretto-border);
-  background: color-mix(in oklab, var(--stretto-surface-2) 60%, var(--stretto-surface));
+  border-bottom: 1px solid var(--hoist-border);
+  background: color-mix(in oklab, var(--hoist-surface-2) 60%, var(--hoist-surface));
 }
 
 .codeblock-lang {
   font-size: 11.5px;
   font-weight: 500;
   letter-spacing: 0.02em;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
   text-transform: uppercase;
 }
 

@@ -1,20 +1,20 @@
 ---
-description: Run an MCP server behind stretto-proxy in Cursor and VS Code - stretto init prints the entry for mcp.json in each editor's format.
+description: Run an MCP server behind hoist-mcp in Cursor and VS Code - hoist init prints the entry for mcp.json in each editor's format.
 ---
 
 # Cursor and VS Code
 
-Both editors start stdio MCP servers from a JSON file, and `stretto init` prints the entry that runs your server behind `stretto-proxy`, in each editor's format:
+Both editors start stdio MCP servers from a JSON file, and `hoist init` prints the entry that runs your server behind `hoist-mcp`, in each editor's format:
 
 ::: code-group
 
 ```sh [Cursor]
-stretto init --host cursor --domain notes \
+hoist init --host cursor --domain notes \
   -- npx -y @modelcontextprotocol/server-filesystem /home/me/notes
 ```
 
 ```sh [VS Code]
-stretto init --host vscode --domain notes \
+hoist init --host vscode --domain notes \
   -- npx -y @modelcontextprotocol/server-filesystem /home/me/notes
 ```
 
@@ -28,8 +28,8 @@ The two formats differ in their top-level key, and VS Code's names the transport
 {
   "mcpServers": {
     "notes": {
-      "command": "stretto-proxy",
-      "args": ["--record", "~/.stretto/logs/notes", "--domain", "notes",
+      "command": "hoist-mcp",
+      "args": ["--record", "~/.hoist/logs/notes", "--domain", "notes",
                "--", "npx", "-y", "@modelcontextprotocol/server-filesystem",
                "/home/me/notes"]
     }
@@ -42,8 +42,8 @@ The two formats differ in their top-level key, and VS Code's names the transport
   "servers": {
     "notes": {
       "type": "stdio",
-      "command": "stretto-proxy",
-      "args": ["--record", "~/.stretto/logs/notes", "--domain", "notes",
+      "command": "hoist-mcp",
+      "args": ["--record", "~/.hoist/logs/notes", "--domain", "notes",
                "--", "npx", "-y", "@modelcontextprotocol/server-filesystem",
                "/home/me/notes"]
     }
@@ -63,16 +63,16 @@ The two formats differ in their top-level key, and VS Code's names the transport
 Once you have [learned and reviewed a flow](/guide/quick-start#4-learn-a-flow), run `init` again with it, with `--host cursor` or `--host vscode`:
 
 ```sh
-stretto init --host vscode --domain notes \
-  --flow ~/.stretto/notes.flow.json \
+hoist init --host vscode --domain notes \
+  --flow ~/.hoist/notes.flow.json \
   -- npx -y @modelcontextprotocol/server-filesystem /home/me/notes
 ```
 
 It prints the same entry, with the flow added to the proxy's arguments:
 
 ```json
-"args": ["--record", "~/.stretto/logs/notes", "--domain", "notes",
-         "--flow", "/home/me/.stretto/notes.flow.json",
+"args": ["--record", "~/.hoist/logs/notes", "--domain", "notes",
+         "--flow", "/home/me/.hoist/notes.flow.json",
          "--flow-decider", "reach",
          "--", "npx", "-y", "@modelcontextprotocol/server-filesystem",
          "/home/me/notes"]
@@ -85,7 +85,7 @@ Replace the server's entry with the new one, and restart the server.
 
 ## Notes
 
-- **Checked-in configuration.** A project's `mcp.json` is shared with everyone who opens the project. Keep `--record` under each person's home, as `init` does (`~/.stretto/logs/NAME`), not in the repository: logs hold whatever the tools read and return.
-- **Finding the program.** If the editor cannot start `stretto-proxy`, give its full path as `command`, from `which stretto-proxy`.
+- **Checked-in configuration.** A project's `mcp.json` is shared with everyone who opens the project. Keep `--record` under each person's home, as `init` does (`~/.hoist/logs/NAME`), not in the repository: logs hold whatever the tools read and return.
+- **Finding the program.** If the editor cannot start `hoist-mcp`, give its full path as `command`, from `which hoist-mcp`.
 
 [Any MCP host](./) has what applies to every host: paths, credentials and the three stages of a deployment.

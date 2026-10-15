@@ -75,7 +75,7 @@ def draw(train: list[str], agent: str, domain: str, size: int, index: int, seed:
 
 
 def learn(args, results: Path, tasks: list[str] | None, flow: str, out: Path) -> str | None:
-    """Learn one flow; None if it was learned, else stretto's error."""
+    """Learn one flow; None if it was learned, else Hoist's error."""
     cmd = [str(args.bin), "learn", "--results", str(results), "--tau2", str(args.tau2),
            "--domain", args.domain, "--trials", "0", "--out", str(out)]
     if tasks is not None:
@@ -91,7 +91,7 @@ def learn(args, results: Path, tasks: list[str] | None, flow: str, out: Path) ->
     done = subprocess.run(cmd, capture_output=True, text=True)
     if done.returncode == 0:
         return None
-    # stretto's own message, not the backtrace after it.
+    # Hoist's own message, not the backtrace after it.
     lines = done.stderr.strip().splitlines()
     return next((line for line in lines if line.startswith("Error:")), "\n".join(lines[-5:]))[:500]
 
@@ -249,7 +249,7 @@ def main():
     run.add_argument("--oracle-cache", type=Path, required=True)
     run.add_argument("--budget", type=float, default=1.0, help="each learn's --oracle-budget, in dollars")
     run.add_argument("--tau2", type=Path, default=ROOT.parent / "tau2-bench")
-    run.add_argument("--bin", type=Path, default=ROOT / "target/release/stretto")
+    run.add_argument("--bin", type=Path, default=ROOT / "target/release/hoist")
     run.add_argument("--python", default=sys.executable, help="the Python with τ²-bench, for the replays")
     run.add_argument("--jobs", type=int, default=4)
     run.set_defaults(run=cmd_run)

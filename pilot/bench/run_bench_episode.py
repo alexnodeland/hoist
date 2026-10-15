@@ -3,10 +3,10 @@
 The agent runs in Claude Code with no built-in tools, on GLM through Z.ai's
 coding endpoint (`../glm-claude.sh`) or on a Claude model (`../claude-agent.sh`),
 as the τ²-bench pilots ran. Its only tools are the task's, served by
-`bench_mcp.py` behind `stretto-proxy`, which records the session and, in a
+`bench_mcp.py` behind `hoist-mcp`, which records the session and, in a
 flow arm, serves a flow: after each of the agent's calls, the flow's lookups
 ride in the same result. The flow is the published one, learned from older
-agents' runs of the benchmark's training tasks (`stretto learn --habit-only`),
+agents' runs of the benchmark's training tasks (`hoist learn --habit-only`),
 and the episode is a test task, so the flow never saw it.
 
 - `agentdojo`: the user task's prompt, once, with AgentDojo's default system
@@ -42,7 +42,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 PILOT = HERE.parent
 sys.path.insert(0, str(PILOT.parent / "scripts"))
-BIN = Path(os.environ.get("STRETTO_BIN", PILOT.parent / "target" / "release"))
+BIN = Path(os.environ.get("HOIST_BIN", PILOT.parent / "target" / "release"))
 WRAPPERS = {"glm": PILOT / "glm-claude.sh", "claude": PILOT / "claude-agent.sh"}
 # Z.ai's GLM Coding Plan credits per token, as run_pilot.py counts them (halved off-peak).
 RATES = {"input_tokens": 6.9, "cache_read_input_tokens": 1.7, "cache_creation_input_tokens": 6.9, "output_tokens": 24.0}
@@ -170,7 +170,7 @@ def mcp_config(args, bench, episode: Path) -> dict:
         ]
     server = [sys.executable, str(HERE / "bench_mcp.py")] + bench.server_args() + [
         "--episode-dir", str(episode), "--max-calls", str(args.max_calls)]
-    return {"mcpServers": {SERVER: {"command": str(BIN / "stretto-proxy"), "args": proxy + ["--"] + server}}}
+    return {"mcpServers": {SERVER: {"command": str(BIN / "hoist-mcp"), "args": proxy + ["--"] + server}}}
 
 
 def run_agent(args, bench, episode: Path) -> tuple[list[str], list[list[tuple[str, dict]]], str]:

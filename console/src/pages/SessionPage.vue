@@ -276,7 +276,7 @@ async function remove() {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .upstream {
@@ -295,7 +295,7 @@ async function remove() {
 
 .stat {
   padding: 14px 18px;
-  border-right: 1px solid var(--stretto-border);
+  border-right: 1px solid var(--hoist-border);
   min-width: 0;
 }
 
@@ -306,7 +306,7 @@ async function remove() {
 .stat-label {
   font-size: 12.5px;
   font-weight: 500;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .stat-value {
@@ -319,7 +319,7 @@ async function remove() {
 .stat-hint {
   margin-top: 2px;
   font-size: 11.5px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .tabs-wrap {
@@ -339,7 +339,7 @@ async function remove() {
 }
 
 .threshold-note strong {
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   font-weight: 600;
 }
 
@@ -353,7 +353,7 @@ async function remove() {
   }
 
   .stat:nth-child(-n + 3) {
-    border-bottom: 1px solid var(--stretto-border);
+    border-bottom: 1px solid var(--hoist-border);
   }
 }
 
@@ -365,11 +365,11 @@ async function remove() {
   .stat {
     padding: 12px 14px;
     border-right: 0;
-    border-bottom: 1px solid var(--stretto-border);
+    border-bottom: 1px solid var(--hoist-border);
   }
 
   .stat:nth-child(odd) {
-    border-right: 1px solid var(--stretto-border);
+    border-right: 1px solid var(--hoist-border);
   }
 
   .stat:nth-last-child(-n + 2) {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/** Every committed version of a flow, the latest first, as `stretto flow-log` lists them. */
+/** Every committed version of a flow, the latest first, as `hoist flow-log` lists them. */
 import { History, RotateCcw } from '@lucide/vue'
 import UiBadge from '../ui/UiBadge.vue'
 import UiButton from '../ui/UiButton.vue'
@@ -83,7 +83,7 @@ function evidence(e: ComparisonView): string {
   flex-direction: column;
   gap: 6px;
   padding: 12px 20px;
-  border-top: 1px solid var(--stretto-border);
+  border-top: 1px solid var(--hoist-border);
 }
 
 .version:first-child {
@@ -91,7 +91,7 @@ function evidence(e: ComparisonView): string {
 }
 
 .version.current {
-  background: var(--stretto-accent-soft);
+  background: var(--hoist-accent-soft);
 }
 
 .v-head {
@@ -116,15 +116,15 @@ function evidence(e: ComparisonView): string {
 .v-note {
   margin: 0;
   padding-left: 10px;
-  border-left: 2px solid var(--stretto-border-strong);
-  color: var(--stretto-text-muted);
+  border-left: 2px solid var(--hoist-border-strong);
+  color: var(--hoist-text-muted);
   font-size: 13.5px;
 }
 
 .v-changes summary {
   cursor: pointer;
   font-size: 12.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .v-changes ul {

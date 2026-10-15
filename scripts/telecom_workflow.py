@@ -36,7 +36,7 @@ line's state, keeping the tasks whose own gold actions still solve them and
 whose faults the account still shows.
 
 With --export FILE, the workflow is written as a procedure (the IR in
-docs/formats.md), which `stretto-procedure` runs against an MCP server with
+docs/formats.md), which `hoist-procedure` runs against an MCP server with
 no model; `pilot/run_procedure.py` runs it on the test tasks and checks it
 against this script's runs.
 
@@ -571,7 +571,7 @@ def run(task, predict, vocab, sure, guard, tau2, rng=None, record=None, construc
 
 
 def export(predict, vocab, sources, train):
-    """The compiled workflow as a procedure, the IR `stretto-procedure` runs:
+    """The compiled workflow as a procedure, the IR `hoist-procedure` runs:
     per site the tree cut at its chosen depth, each leaf its calls in the
     order the workflow tries them; the ticket words it reads; the tools that
     only read; and the checks of each ticket's stated outcome."""
@@ -584,7 +584,7 @@ def export(predict, vocab, sources, train):
         return {"feature": f, "yes": node(yes, depth - 1), "no": node(no, depth - 1)}
 
     return {
-        "stretto_procedure": 1,
+        "hoist_procedure": 1,
         "domain": "telecom",
         "provenance": {"sources": sorted(sources), "training_tasks": len(train)},
         "symbolic": SYMBOLIC,
@@ -675,7 +675,7 @@ def main():
     ap.add_argument("--train-share", type=float, default=1.0, help="learn from this share of the training tasks")
     ap.add_argument("--json", help="write each test task's run here")
     ap.add_argument("--show", help="write the compiled workflow here, as rules (Markdown)")
-    ap.add_argument("--export", help="write the compiled workflow here as a procedure, the IR stretto-procedure runs")
+    ap.add_argument("--export", help="write the compiled workflow here as a procedure, the IR hoist-procedure runs")
     ap.add_argument("--bootstrap", type=int, metavar="SEED", help="learn from a resample of the episodes, with replacement")
     ap.add_argument("--self-train", type=int, default=0, metavar="ROUNDS",
                     help="then learn from its own runs on every training task's ticket that its own check says resolved")

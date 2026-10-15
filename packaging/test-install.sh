@@ -16,7 +16,7 @@
 set -eu
 
 root=$(cd "$(dirname "$0")/.." && pwd)
-work=$(mktemp -d "${TMPDIR:-/tmp}/stretto-test-install.XXXXXX")
+work=$(mktemp -d "${TMPDIR:-/tmp}/hoist-test-install.XXXXXX")
 server=
 cleanup() {
     if [ -n "$server" ]; then kill "$server" 2>/dev/null || true; fi
@@ -57,14 +57,14 @@ fi
 # five).
 release() {
     rm -rf "${work:?}/release" "${work:?}/pack"
-    mkdir -p "$work/release" "$work/pack/stretto-$target"
-    for bin in ${2:-stretto stretto-proxy stretto-procedure stretto-mcp-demo stretto-console}; do
-        printf '#!/bin/sh\necho "%s %s"\n' "$bin" "$1" >"$work/pack/stretto-$target/$bin"
-        chmod 755 "$work/pack/stretto-$target/$bin"
+    mkdir -p "$work/release" "$work/pack/hoist-$target"
+    for bin in ${2:-hoist hoist-mcp hoist-procedure hoist-mcp-demo hoist-console}; do
+        printf '#!/bin/sh\necho "%s %s"\n' "$bin" "$1" >"$work/pack/hoist-$target/$bin"
+        chmod 755 "$work/pack/hoist-$target/$bin"
     done
-    cp "$root/LICENSE" "$root/README.md" "$work/pack/stretto-$target/"
-    (cd "$work/pack" && tar -czf "$work/release/stretto-$target.tar.gz" "stretto-$target")
-    (cd "$work/release" && sums "stretto-$target.tar.gz" >SHA256SUMS)
+    cp "$root/LICENSE" "$root/README.md" "$work/pack/hoist-$target/"
+    (cd "$work/pack" && tar -czf "$work/release/hoist-$target.tar.gz" "hoist-$target")
+    (cd "$work/release" && sums "hoist-$target.tar.gz" >SHA256SUMS)
 }
 
 release 0.9.0
@@ -86,26 +86,26 @@ install() {
 }
 
 install || fail "install.sh: $(cat "$work/out")"
-for bin in stretto stretto-proxy stretto-procedure stretto-mcp-demo stretto-console; do
+for bin in hoist hoist-mcp hoist-procedure hoist-mcp-demo hoist-console; do
     [ "$("$prefix/bin/$bin" --version)" = "$bin 0.9.0" ] || fail "$bin is not installed"
 done
-grep -q "stretto 0.9.0 is installed in $prefix/bin" "$work/out" || fail "no summary: $(cat "$work/out")"
+grep -q "hoist 0.9.0 is installed in $prefix/bin" "$work/out" || fail "no summary: $(cat "$work/out")"
 grep -q "is not on your PATH" "$work/out" || fail "no word about PATH: $(cat "$work/out")"
 echo "test-install: installs the five binaries into --prefix, and says how to put them on PATH"
 
 release 0.9.1
 PATH="$prefix/bin:$PATH" install || fail "install.sh again: $(cat "$work/out")"
-[ "$("$prefix/bin/stretto" --version)" = "stretto 0.9.1" ] || fail "the second install did not replace the first"
+[ "$("$prefix/bin/hoist" --version)" = "hoist 0.9.1" ] || fail "the second install did not replace the first"
 if grep -q "not on your PATH" "$work/out"; then fail "it asked to add a directory already on PATH"; fi
 echo "test-install: a second install replaces the first"
 
 # A release from before the console: the four others, and the console
 # already installed stays as it was.
-release 0.8.0 "stretto stretto-proxy stretto-procedure stretto-mcp-demo"
+release 0.8.0 "hoist hoist-mcp hoist-procedure hoist-mcp-demo"
 PATH="$prefix/bin:$PATH" install || fail "install.sh, a release with no console: $(cat "$work/out")"
-[ "$("$prefix/bin/stretto" --version)" = "stretto 0.8.0" ] || fail "the release with no console was not installed"
-[ "$("$prefix/bin/stretto-console" --version)" = "stretto-console 0.9.1" ] || fail "the console was changed"
-grep -q "stretto-mcp-demo\.$" "$work/out" || fail "the summary names the console: $(cat "$work/out")"
+[ "$("$prefix/bin/hoist" --version)" = "hoist 0.8.0" ] || fail "the release with no console was not installed"
+[ "$("$prefix/bin/hoist-console" --version)" = "hoist-console 0.9.1" ] || fail "the console was changed"
+grep -q "hoist-mcp-demo\.$" "$work/out" || fail "the summary names the console: $(cat "$work/out")"
 echo "test-install: a release from before the console installs the other four"
 release 0.9.1
 PATH="$prefix/bin:$PATH" install || fail "install.sh, back to 0.9.1: $(cat "$work/out")"
@@ -117,10 +117,10 @@ sed -e 's/^0/1/' -e t -e 's/^./0/' "$work/sums" >"$work/release/SHA256SUMS"
 if cmp -s "$work/sums" "$work/release/SHA256SUMS"; then fail "the checksum was not changed"; fi
 if install; then fail "it installed an archive whose checksum does not match"; fi
 grep -q "does not match its checksum" "$work/out" || fail "wrong error: $(cat "$work/out")"
-printf '%s  stretto-some-other-target.tar.gz\n' "$(cut -d ' ' -f 1 "$work/sums")" >"$work/release/SHA256SUMS"
+printf '%s  hoist-some-other-target.tar.gz\n' "$(cut -d ' ' -f 1 "$work/sums")" >"$work/release/SHA256SUMS"
 if install; then fail "it installed an archive SHA256SUMS does not list"; fi
 grep -q "SHA256SUMS has no checksum" "$work/out" || fail "wrong error: $(cat "$work/out")"
 if install --frobnicate; then fail "it took an unknown argument"; fi
-[ "$("$prefix/bin/stretto" --version)" = "stretto 0.9.1" ] || fail "a refused install changed the binaries"
+[ "$("$prefix/bin/hoist" --version)" = "hoist 0.9.1" ] || fail "a refused install changed the binaries"
 echo "test-install: refuses a bad checksum, an unlisted archive and an unknown argument"
 echo "test-install: ok"

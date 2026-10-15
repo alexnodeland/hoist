@@ -91,7 +91,7 @@ const actions = computed<Entry[]>(() => {
       list.push({
         id: `a-job-${kind}`,
         group: 'Actions',
-        label: kind === 'doctor' ? 'Run stretto doctor' : `New ${kind} job`,
+        label: kind === 'doctor' ? 'Run hoist doctor' : `New ${kind} job`,
         icon: SquareTerminal,
         to: { name: 'job-new', query: { kind } },
       })
@@ -359,10 +359,10 @@ function onBackdrop(event: MouseEvent) {
   max-height: min(560px, calc(100vh - 96px));
   margin: 12vh auto auto;
   padding: 0;
-  border: 1px solid var(--stretto-border);
+  border: 1px solid var(--hoist-border);
   border-radius: 14px;
-  background: var(--stretto-surface);
-  color: var(--stretto-text);
+  background: var(--hoist-surface);
+  color: var(--hoist-text);
   box-shadow: var(--c-shadow-lg);
   overflow: hidden;
 }
@@ -387,8 +387,8 @@ function onBackdrop(event: MouseEvent) {
   align-items: center;
   gap: 10px;
   padding: 0 14px;
-  border-bottom: 1px solid var(--stretto-border);
-  color: var(--stretto-text-subtle);
+  border-bottom: 1px solid var(--hoist-border);
+  color: var(--hoist-text-subtle);
 }
 
 .palette-input {
@@ -397,13 +397,13 @@ function onBackdrop(event: MouseEvent) {
   height: 52px;
   border: 0;
   background: transparent;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   font-size: 15px;
   outline: none;
 }
 
 .palette-input::placeholder {
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .palette-list {
@@ -416,7 +416,7 @@ function onBackdrop(event: MouseEvent) {
   padding: 10px 10px 4px;
   font-size: 11.5px;
   font-weight: 600;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
   letter-spacing: 0.02em;
 }
 
@@ -432,16 +432,16 @@ function onBackdrop(event: MouseEvent) {
 }
 
 .palette-item.active {
-  background: var(--stretto-accent-soft);
+  background: var(--hoist-accent-soft);
 }
 
 .palette-icon {
   flex: none;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .palette-item.active .palette-icon {
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
 }
 
 .palette-label {
@@ -464,19 +464,19 @@ function onBackdrop(event: MouseEvent) {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 12.5px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .palette-enter {
   flex: none;
   margin-left: auto;
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
 }
 
 .palette-empty {
   padding: 24px 12px;
   text-align: center;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
   font-size: 13.5px;
 }
 
@@ -484,9 +484,9 @@ function onBackdrop(event: MouseEvent) {
   display: flex;
   gap: 16px;
   padding: 9px 14px;
-  border-top: 1px solid var(--stretto-border);
+  border-top: 1px solid var(--hoist-border);
   font-size: 12px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .palette-foot span {

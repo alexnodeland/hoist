@@ -49,13 +49,13 @@ describe('the API client', () => {
     expect(calls[0]!.init.body).toBeUndefined()
   })
 
-  it('marks every write with X-Stretto-Console: 1 and sends JSON', async () => {
+  it('marks every write with X-Hoist-Console: 1 and sends JSON', async () => {
     await api.createJob({ kind: 'doctor' })
     await api.deleteSession('20260928T014620.569Z-654')
     await api.updateServer('shop', {
       name: 'shop',
       description: null,
-      upstream: { kind: 'stdio', command: ['stretto-mcp-demo', '--world', 'retail'], env: [] },
+      upstream: { kind: 'stdio', command: ['hoist-mcp-demo', '--world', 'retail'], env: [] },
       mode: 'record',
       flow: null,
       record_dir: null,

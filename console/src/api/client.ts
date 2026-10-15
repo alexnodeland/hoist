@@ -1,6 +1,6 @@
 /**
  * The console's API client: fetch with the session cookie, the
- * `X-Stretto-Console: 1` header on every write (the server refuses a write
+ * `X-Hoist-Console: 1` header on every write (the server refuses a write
  * without it, so a cross-site form cannot make one), typed results, a 401
  * handed to the sign-in screen, and other errors handed to the toasts.
  */
@@ -67,7 +67,7 @@ export function setClientHooks(next: ClientHooks): void {
 }
 
 /** The header every POST, PUT and DELETE carries. */
-export const WRITE_HEADER = 'X-Stretto-Console'
+export const WRITE_HEADER = 'X-Hoist-Console'
 
 const JSON_TYPE = /^application\/([\w.-]+\+)?json\b/i
 
@@ -122,7 +122,7 @@ export async function request<T>(
     })
   } catch (e) {
     if (isAbort(e)) throw e
-    const error = new ApiError(0, 'The console server did not answer. Is stretto-console running?')
+    const error = new ApiError(0, 'The console server did not answer. Is hoist-console running?')
     if (!options.quiet) hooks.onError?.(error, { method, path })
     throw error
   }
@@ -188,10 +188,10 @@ export const api = {
   /** The flow's staged learning: the staged flow beside it, the comparison, every version. */
   flowStage: (key: string, o?: RequestOptions) =>
     request<StageView>('GET', `/api/flows/${seg(key)}/stage`, undefined, o),
-  /** `stretto flow-commit`: 409 when there is nothing to commit. */
+  /** `hoist flow-commit`: 409 when there is nothing to commit. */
   commitFlow: (key: string, body: CommitRequest, o?: RequestOptions) =>
     request<VersionView>('POST', `/api/flows/${seg(key)}/commit`, body, o),
-  /** `stretto flow-rollback`: 409 when there is no such version, or it is committed already. */
+  /** `hoist flow-rollback`: 409 when there is no such version, or it is committed already. */
   rollbackFlow: (key: string, body: RollbackRequest, o?: RequestOptions) =>
     request<VersionView>('POST', `/api/flows/${seg(key)}/rollback`, body, o),
 

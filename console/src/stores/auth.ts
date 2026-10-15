@@ -44,7 +44,7 @@ export async function signIn(
   here: Location = window.location,
 ): Promise<string | null> {
   const value = token.trim()
-  if (!value) return 'Paste the token stretto-console printed when it started.'
+  if (!value) return 'Paste the token hoist-console printed when it started.'
   let response: Response
   try {
     response = await fetch('/api/meta', {
@@ -52,10 +52,10 @@ export async function signIn(
       credentials: 'include',
     })
   } catch {
-    return 'The console server did not answer. Is stretto-console running?'
+    return 'The console server did not answer. Is hoist-console running?'
   }
   if (response.status === 401)
-    return 'That token was not accepted. Check it against the one stretto-console printed.'
+    return 'That token was not accepted. Check it against the one hoist-console printed.'
   if (!response.ok) return `The console answered ${response.status}.`
   const params = new URLSearchParams(here.search)
   params.set('token', value)

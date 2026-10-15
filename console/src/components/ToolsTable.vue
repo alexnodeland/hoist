@@ -44,7 +44,7 @@ function hints(t: ToolInfo): string {
 <style scoped>
 .desc {
   min-width: 240px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .hints {
@@ -54,7 +54,7 @@ function hints(t: ToolInfo): string {
 
 .contract {
   font-size: 11.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
   min-width: 160px;
 }
 </style>

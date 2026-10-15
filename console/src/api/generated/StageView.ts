@@ -27,12 +27,12 @@ staged: FlowSummary | null,
  */
 staged_path: string, 
 /**
- * The last run of `stretto stage`: its comparison
+ * The last run of `hoist stage`: its comparison
  * (`NAME.stage.json`).
  */
 last: ComparisonView | null, 
 /**
- * That run's report, as `stretto stage` writes it.
+ * That run's report, as `hoist stage` writes it.
  */
 report_markdown: string | null, 
 /**
@@ -45,7 +45,7 @@ evidence: boolean,
  */
 refused: string | null, 
 /**
- * What committing it would change, as `stretto flow-diff` lists it at
+ * What committing it would change, as `hoist flow-diff` lists it at
  * its defaults, and as the commit records it.
  */
 diff: FlowDiffView | null, 

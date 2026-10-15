@@ -52,6 +52,6 @@ threshold: number | null,
  */
 active: boolean, 
 /**
- * What the flow does here, as `stretto flow-show` words it.
+ * What the flow does here, as `hoist flow-show` words it.
  */
 verdict: string, };

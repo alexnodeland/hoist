@@ -5,12 +5,12 @@ test('a learn job runs, streams its output, and links the flow it wrote', async 
   await page.getByTestId('learn-domain').fill('notes')
   await expect(
     page.getByText(
-      'stretto learn --sessions logs/notes --domain notes --habit-only --out notes.flow.json',
+      'hoist learn --sessions logs/notes --domain notes --habit-only --out notes.flow.json',
     ),
   ).toBeVisible()
   await page.getByTestId('job-start').click()
   await expect(page).toHaveURL(/\/jobs\/j-\d+/)
-  await expect(page.getByTestId('job-output')).toContainText('$ stretto learn')
+  await expect(page.getByTestId('job-output')).toContainText('$ hoist learn')
   await expect(page.getByText('Succeeded')).toBeVisible()
   await expect(page.getByTestId('job-output')).toContainText(
     'learned the notes flow from 12 sessions',
@@ -36,14 +36,14 @@ test('an audit’s report is rendered', async ({ page }) => {
   await page.goto('/jobs/j-0005')
   await expect(page.getByRole('heading', { name: 'Flow audit: shop' })).toBeVisible()
   await page.getByRole('radio', { name: 'Output' }).click()
-  await expect(page.getByTestId('job-output')).toContainText('stretto: audited 32 decisions')
+  await expect(page.getByTestId('job-output')).toContainText('hoist: audited 32 decisions')
 })
 
 test('redacting needs a salt in the console’s environment', async ({ page }) => {
   await page.goto('/jobs/new?kind=redact')
   await page.getByPlaceholder('logs/shop').fill('logs/shop')
   await page.getByTestId('job-start').click()
-  await expect(page.getByRole('alert')).toContainText('STRETTO_REDACT_SALT')
+  await expect(page.getByRole('alert')).toContainText('HOIST_REDACT_SALT')
   await mockState(page, { redact_salt: true })
   await page.getByTestId('job-start').click()
   await expect(page).toHaveURL(/\/jobs\/j-\d+/)
@@ -64,18 +64,18 @@ test('a job can be cancelled while it runs, or before it starts', async ({ page 
   await expect(heading).toContainText('Queued')
   await cancel.click()
   await expect(heading).toContainText('Cancelled')
-  await expect(output).toHaveText('stretto-console: cancelled before it started')
+  await expect(output).toHaveText('hoist-console: cancelled before it started')
   await expect(page.getByText('Check the installation: cancelled')).toBeVisible()
   const first = page.url()
 
-  // Running: its stretto is killed, and the job ends a moment later.
+  // Running: its Hoist is killed, and the job ends a moment later.
   await page.getByRole('button', { name: 'Run again' }).click()
   await expect(page).not.toHaveURL(first)
   await expect(heading).toContainText('Running', { timeout: 5000 })
   await cancel.click()
   await expect(heading).toContainText('Cancelled')
-  await expect(output).toContainText('$ stretto doctor')
-  await expect(output).toContainText('stretto-console: cancelled')
+  await expect(output).toContainText('$ hoist doctor')
+  await expect(output).toContainText('hoist-console: cancelled')
   await expect(output).not.toContainText('before it started')
   await expect(page.getByText('exit code 137')).toBeVisible()
   await expect(cancel).toHaveCount(0)
@@ -84,7 +84,7 @@ test('a job can be cancelled while it runs, or before it starts', async ({ page 
 
 test('the API refuses to cancel a job that has ended', async ({ page }) => {
   const response = await page.request.post('/api/jobs/j-0001/cancel', {
-    headers: { 'X-Stretto-Console': '1' },
+    headers: { 'X-Hoist-Console': '1' },
   })
   expect(response.status()).toBe(409)
   expect((await response.json()).error).toContain('has ended')

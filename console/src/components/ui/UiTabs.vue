@@ -112,7 +112,7 @@ function onKey(event: KeyboardEvent, index: number) {
   position: relative;
   display: flex;
   gap: 4px;
-  border-bottom: 1px solid var(--stretto-border);
+  border-bottom: 1px solid var(--hoist-border);
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -149,7 +149,7 @@ function onKey(event: KeyboardEvent, index: number) {
   padding: 0 12px;
   border: 0;
   background: none;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
   font-size: 13.5px;
   font-weight: 500;
   white-space: nowrap;
@@ -158,11 +158,11 @@ function onKey(event: KeyboardEvent, index: number) {
 }
 
 .tab:hover {
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .tab[aria-selected='true'] {
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .tab[aria-selected='true']::after {
@@ -173,7 +173,7 @@ function onKey(event: KeyboardEvent, index: number) {
   bottom: -1px;
   height: 2px;
   border-radius: 2px;
-  background: var(--stretto-accent-graphic);
+  background: var(--hoist-accent-graphic);
 }
 
 .tab:focus-visible {
@@ -204,9 +204,9 @@ function onKey(event: KeyboardEvent, index: number) {
   height: 18px;
   padding: 0 6px;
   border-radius: 999px;
-  background: var(--stretto-surface-2);
-  border: 1px solid var(--stretto-border);
-  color: var(--stretto-text-subtle);
+  background: var(--hoist-surface-2);
+  border: 1px solid var(--hoist-border);
+  color: var(--hoist-text-subtle);
   font-size: 11.5px;
   line-height: 16px;
   font-variant-numeric: tabular-nums;

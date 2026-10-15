@@ -1,4 +1,4 @@
-"""Run a compiled procedure with `stretto-procedure` on τ²-bench telecom's
+"""Run a compiled procedure with `hoist-procedure` on τ²-bench telecom's
 held-out solo tasks, over MCP, and score each run with τ²-bench's evaluator.
 
 Each task's tools are served by `tau2_mcp.py --solo`, which records the run
@@ -86,7 +86,7 @@ def main() -> None:
     ap.add_argument("procedure", type=Path)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--compare", type=Path, help="scripts/telecom_workflow.py --json, for parity")
-    ap.add_argument("--bin", type=Path, default=HERE.parent / "target/release/stretto-procedure")
+    ap.add_argument("--bin", type=Path, default=HERE.parent / "target/release/hoist-procedure")
     ap.add_argument("--python", default=sys.executable, help="the Python with τ²-bench, for the tools")
     ap.add_argument("--tau2", type=Path, default=HERE.parent.parent / "sierra-research" / "tau2-bench")
     ap.add_argument("--jobs", type=int, default=4)

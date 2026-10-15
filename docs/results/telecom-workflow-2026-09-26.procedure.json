@@ -1,5 +1,5 @@
 {
- "stretto_procedure": 1,
+ "hoist_procedure": 1,
  "domain": "telecom",
  "provenance": {
   "sources": [

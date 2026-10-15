@@ -12,7 +12,7 @@ import type { Upstream } from "./Upstream";
  */
 export type ServerView = { 
 /**
- * The `stretto-proxy` arguments that run it, as `stretto init` writes
+ * The `hoist-mcp` arguments that run it, as `hoist init` writes
  * them (without the program itself).
  */
 proxy_args: Array<string>, 
@@ -72,7 +72,7 @@ guards: boolean,
  */
 judge: Judge | null, 
 /**
- * Offer `stretto_commit`, several calls in one (`--commit`).
+ * Offer `hoist_commit`, several calls in one (`--commit`).
  */
 commit: boolean, 
 /**

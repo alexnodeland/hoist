@@ -19,7 +19,7 @@ test('the overview shows the totals, the last 14 days, each domain and health', 
   await expect(page.getByText('Server orders-api: flow not found')).toBeVisible()
   await expect(
     page.getByText(
-      'shop-promoted.flow.json: the agent may have changed under it: stretto drift sounded its alarm (job j-0007)',
+      'shop-promoted.flow.json: the agent may have changed under it: hoist drift sounded its alarm (job j-0007)',
     ),
   ).toBeVisible()
   await expect(page.getByText('Get started')).toHaveCount(0)

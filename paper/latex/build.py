@@ -3,7 +3,7 @@
 
     python3 build.py     # or `make`, which then runs pdflatex and bibtex
 
-reads ../stretto.md and writes stretto.tex (from template.tex) and
+reads ../hoist.md and writes hoist.tex (from template.tex) and
 figures/*.pdf (from ../*.svg). The Markdown is the source:
 
 - its citation labels ([AWM], [ASI, SkillWeaver]) become natbib citations of
@@ -33,7 +33,7 @@ from datetime import date
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-PAPER = HERE.parent / "stretto.md"
+PAPER = HERE.parent / "hoist.md"
 
 # Each citation label of the Markdown, and its keys in refs.bib.
 CITES = {
@@ -330,8 +330,8 @@ def main() -> None:
     left = re.findall(r"TABLELABEL|```|\[@", tex)
     if left:
         sys.exit(f"build.py: left unconverted: {sorted(set(left))}")
-    (HERE / "stretto.tex").write_text(tex)
-    print(f"build.py: wrote stretto.tex and {len(list((HERE / 'figures').glob('*.pdf')))} figures")
+    (HERE / "hoist.tex").write_text(tex)
+    print(f"build.py: wrote hoist.tex and {len(list((HERE / 'figures').glob('*.pdf')))} figures")
 
 
 if __name__ == "__main__":

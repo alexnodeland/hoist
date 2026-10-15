@@ -120,8 +120,8 @@ describe('labels and commands', () => {
     expect(serverModeLabel('shadow')).toBe('Shadow')
   })
 
-  it('quotes words as stretto init does, and leaves placeholders alone', () => {
-    expect(shellQuote('~/.stretto/logs/shop')).toBe('~/.stretto/logs/shop')
+  it('quotes words as hoist init does, and leaves placeholders alone', () => {
+    expect(shellQuote('~/.hoist/logs/shop')).toBe('~/.hoist/logs/shop')
     expect(shellQuote('@acme/shop-mcp')).toBe('@acme/shop-mcp')
     expect(shellQuote('two words')).toBe("'two words'")
     expect(shellQuote("it's")).toBe(`'it'\\''s'`)
@@ -133,9 +133,9 @@ describe('labels and commands', () => {
   })
 
   it('writes where a server is', () => {
-    expect(
-      upstreamText({ kind: 'stdio', command: ['stretto-mcp-demo', '--world', 'retail'] }),
-    ).toBe('stretto-mcp-demo --world retail')
+    expect(upstreamText({ kind: 'stdio', command: ['hoist-mcp-demo', '--world', 'retail'] })).toBe(
+      'hoist-mcp-demo --world retail',
+    )
     expect(upstreamText({ kind: 'http', url: 'https://desk.example.com/mcp', headers: [] })).toBe(
       'https://desk.example.com/mcp',
     )

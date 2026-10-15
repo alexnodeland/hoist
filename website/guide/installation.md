@@ -1,16 +1,16 @@
 ---
-description: Install stretto from source today; release binaries, install scripts and a Docker image come with every release, from the first.
+description: Install Hoist from source today; release binaries, install scripts and a Docker image come with every release, from the first.
 ---
 
 # Installation
 
-stretto is five programs from three Rust packages. Until the first release is tagged, you build them from source. From then on, each release carries prebuilt binaries for Linux, macOS and Windows, install scripts that check each archive's checksum, and Docker images ([every way to install](../../docs/install.md)).
+Hoist is five programs from three Rust packages. Until the first release is tagged, you build them from source. From then on, each release carries prebuilt binaries for Linux, macOS and Windows, install scripts that check each archive's checksum, and Docker images ([every way to install](../../docs/install.md)).
 
 | Package | Installs |
 |---|---|
-| `stretto-report` | `stretto`: learn, review, audit, promote and redact flows and sessions, and measure agents |
-| `stretto-proxy` | `stretto-proxy`, the MCP proxy; `stretto-procedure`, which runs a compiled procedure; `stretto-mcp-demo`, a tiny server for trying the proxy |
-| `stretto-console` | `stretto-console`, [the console](./console): a web app over `~/.stretto` with your servers, sessions, flows and jobs |
+| `hoist-report` | `hoist`: learn, review, audit, promote and redact flows and sessions, and measure agents |
+| `hoist-mcp` | `hoist-mcp`, the MCP proxy; `hoist-procedure`, which runs a compiled procedure; `hoist-mcp-demo`, a tiny server for trying the proxy |
+| `hoist-console` | `hoist-console`, [the console](./console): a web app over `~/.hoist` with your servers, sessions, flows and jobs |
 
 <!--
   FIRST RELEASE: the three tabs marked "First release" hold what each release ships
@@ -28,17 +28,17 @@ stretto is five programs from three Rust packages. Until the first release is ta
 You need Rust 1.88 or later ([rustup](https://rustup.rs)) and git. Install both packages from the `main` branch:
 
 ```sh
-cargo install --locked --git https://github.com/alexnodeland/stretto \
-  stretto-proxy stretto-report
+cargo install --locked --git https://github.com/alexnodeland/hoist \
+  hoist-mcp hoist-report
 ```
 
 Or from a checkout:
 
 ```sh
-git clone https://github.com/alexnodeland/stretto
-cd stretto
-cargo install --locked --path crates/stretto-proxy
-cargo install --locked --path crates/stretto-report
+git clone https://github.com/alexnodeland/hoist
+cd hoist
+cargo install --locked --path crates/hoist-mcp
+cargo install --locked --path crates/hoist-report
 ```
 
 Cargo puts the programs in `~/.cargo/bin`. Once releases are tagged, add `--tag vX.Y.Z` to the first command to build one.
@@ -47,7 +47,7 @@ The console embeds its UI, which is built with Node 22.12 or later, so install i
 
 ```sh
 npm --prefix console ci && npm --prefix console run build
-cargo install --locked --path crates/stretto-console
+cargo install --locked --path crates/hoist-console
 ```
 
 </template>
@@ -57,12 +57,12 @@ cargo install --locked --path crates/stretto-console
 Until the first release is tagged, install from source.
 :::
 
-Each release on [GitHub Releases](https://github.com/alexnodeland/stretto/releases) carries an archive of the binaries for Linux (x86_64 and aarch64, glibc 2.35 or later), macOS (Apple silicon and Intel) and Windows x64, with `SHA256SUMS`:
+Each release on [GitHub Releases](https://github.com/alexnodeland/hoist/releases) carries an archive of the binaries for Linux (x86_64 and aarch64, glibc 2.35 or later), macOS (Apple silicon and Intel) and Windows x64, with `SHA256SUMS`:
 
 ```sh
 sha256sum --ignore-missing --check SHA256SUMS
-tar -xzf stretto-x86_64-unknown-linux-gnu.tar.gz
-cp stretto-x86_64-unknown-linux-gnu/stretto* ~/.local/bin/
+tar -xzf hoist-x86_64-unknown-linux-gnu.tar.gz
+cp hoist-x86_64-unknown-linux-gnu/hoist* ~/.local/bin/
 ```
 
 </template>
@@ -75,33 +75,33 @@ Until the first release is tagged, install from source.
 The script picks the archive for your system, checks its checksum against the release's `SHA256SUMS`, and copies the binaries into `~/.local/bin`, changing nothing else:
 
 ```sh
-curl -fsSL https://github.com/alexnodeland/stretto/releases/latest/download/install.sh | sh
+curl -fsSL https://github.com/alexnodeland/hoist/releases/latest/download/install.sh | sh
 ```
 
 On Windows, in PowerShell:
 
 ```powershell
-irm https://github.com/alexnodeland/stretto/releases/latest/download/install.ps1 | iex
+irm https://github.com/alexnodeland/hoist/releases/latest/download/install.ps1 | iex
 ```
 
 </template>
 <template #docker>
 
 ::: info From the first release
-Until the first release is tagged, build the image from a checkout: `docker build -t stretto .`
+Until the first release is tagged, build the image from a checkout: `docker build -t hoist .`
 :::
 
-`ghcr.io/alexnodeland/stretto` is published for linux/amd64 and linux/arm64 with each release. It runs as a non-root user, with `/data` as its home: mount a volume there to keep `~/.stretto`.
+`ghcr.io/alexnodeland/hoist` is published for linux/amd64 and linux/arm64 with each release. It runs as a non-root user, with `/data` as its home: mount a volume there to keep `~/.hoist`.
 
 ```sh
-docker run --rm ghcr.io/alexnodeland/stretto --help
-docker run --rm --entrypoint /usr/local/share/stretto/quickstart/run.sh ghcr.io/alexnodeland/stretto
+docker run --rm ghcr.io/alexnodeland/hoist --help
+docker run --rm --entrypoint /usr/local/share/hoist/quickstart/run.sh ghcr.io/alexnodeland/hoist
 ```
 
-`ghcr.io/alexnodeland/stretto-console` is [the console](./console) on port 8080, and the repository's `compose.yaml` runs it over your `~/.stretto`:
+`ghcr.io/alexnodeland/hoist-console` is [the console](./console) on port 8080, and the repository's `compose.yaml` runs it over your `~/.hoist`:
 
 ```sh
-STRETTO_UID=$(id -u) STRETTO_GID=$(id -g) docker compose up -d
+HOIST_UID=$(id -u) HOIST_GID=$(id -g) docker compose up -d
 ```
 
 </template>
@@ -110,15 +110,15 @@ STRETTO_UID=$(id -u) STRETTO_GID=$(id -g) docker compose up -d
 ## Check the install
 
 ```sh
-stretto doctor
+hoist doctor
 ```
 
-`stretto doctor` checks the programs on your `PATH`, whether `~/.stretto` is writable, whether a TypeSafe key is set (never its value), and the flows and sessions you have. It exits with 1 when something needs fixing. `stretto completions bash|zsh|fish|powershell|elvish` prints shell completions.
+`hoist doctor` checks the programs on your `PATH`, whether `~/.hoist` is writable, whether a TypeSafe key is set (never its value), and the flows and sessions you have. It exits with 1 when something needs fixing. `hoist completions bash|zsh|fish|powershell|elvish` prints shell completions.
 
-MCP hosts start servers without your shell, and some do not see your `PATH`. If a host cannot start `stretto-proxy`, give its absolute path in the host's configuration: `which stretto-proxy` prints it.
+MCP hosts start servers without your shell, and some do not see your `PATH`. If a host cannot start `hoist-mcp`, give its absolute path in the host's configuration: `which hoist-mcp` prints it.
 
-::: warning Not `cargo install stretto`
-The crate named `stretto` on crates.io is an unrelated cache library, and nothing of this project is on crates.io yet: it depends on a [fugue](https://github.com/alexnodeland/fugue) feature (`program`) that is not in a fugue release yet. Install with `--git` as above.
+::: warning Not `cargo install hoist`
+The crate named `hoist` on crates.io is an unrelated cache library, and nothing of this project is on crates.io yet: it depends on a [fugue](https://github.com/alexnodeland/fugue) feature (`program`) that is not in a fugue release yet. Install with `--git` as above.
 :::
 
 ## Other tools you may want
@@ -135,5 +135,5 @@ The crate named `stretto` on crates.io is an unrelated cache library, and nothin
 Run the install command again to update; `cargo install` replaces the programs. To remove them:
 
 ```sh
-cargo uninstall stretto-proxy stretto-report stretto-console
+cargo uninstall hoist-mcp hoist-report hoist-console
 ```

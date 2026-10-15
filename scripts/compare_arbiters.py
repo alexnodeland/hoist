@@ -1,9 +1,9 @@
 """Compare ways of deciding a flow's lookups at one domain's held-out
-decisions (docs/results/telecom-2026-09-25.md; stretto #10).
+decisions (docs/results/telecom-2026-09-25.md; hoist #10).
 
     python3 scripts/compare_arbiters.py LOG FLOW [ARBITER ...] [--json OUT]
 
-LOG is a decision log from `stretto compile --oracle-log`, and FLOW the flow
+LOG is a decision log from `hoist compile --oracle-log`, and FLOW the flow
 that compile wrote: its five fold arbiters judge each decision as the flow
 would (a fold never saw the decision's task). Each ARBITER file (from
 `export-arbiter` or `fit-arbiter`) judges every decision instead, as a
@@ -42,7 +42,7 @@ def task_group(task_id: str) -> int:
 
 
 class Arbiter:
-    """A fitted arbiter, as crates/stretto-report/src/arbitrate.rs judges."""
+    """A fitted arbiter, as crates/hoist-report/src/arbitrate.rs judges."""
 
     def __init__(self, fitted: dict):
         self.w = fitted["weights"]

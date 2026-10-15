@@ -1,6 +1,6 @@
 /**
  * What the console server derives from the data dir: the overview, server
- * views and their host configuration (as `stretto init` prints it), probes,
+ * views and their host configuration (as `hoist init` prints it), probes,
  * settings and doctor's output. The mock computes them from its world.
  */
 import type {
@@ -38,9 +38,9 @@ function dayKey(ms: number): string {
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`
 }
 
-/** `~/.stretto/x` (or a path relative to the data dir) as the data dir's relative path. */
+/** `~/.hoist/x` (or a path relative to the data dir) as the data dir's relative path. */
 export function relative(world: World, path: string): string {
-  if (path.startsWith('~/.stretto/')) return path.slice('~/.stretto/'.length)
+  if (path.startsWith('~/.hoist/')) return path.slice('~/.hoist/'.length)
   if (path.startsWith(world.dataDir + '/')) return path.slice(world.dataDir.length + 1)
   return path
 }
@@ -65,10 +65,10 @@ export function flowSummaries(world: World): FlowSummary[] {
 }
 
 export function defaultRecord(name: string, mode: ServerEntry['mode']): string {
-  return `~/.stretto/${mode === 'shadow' ? 'shadow' : 'logs'}/${name}`
+  return `~/.hoist/${mode === 'shadow' ? 'shadow' : 'logs'}/${name}`
 }
 
-/** The guards, the judge, stretto_commit and retention: the proxy's options, and init's. */
+/** The guards, the judge, hoist_commit and retention: the proxy's options, and init's. */
 function policyArgs(entry: ServerEntry): string[] {
   const args: string[] = []
   if (entry.retain_days !== null) args.push('--retain-days', String(entry.retain_days))
@@ -86,7 +86,7 @@ function listenArgs(entry: ServerEntry): string[] {
   return args
 }
 
-/** stretto_report::init::Setup::args, with the console's extras (threshold, HTTP); `stdio`: a proxy a host starts itself. */
+/** hoist_report::init::Setup::args, with the console's extras (threshold, HTTP); `stdio`: a proxy a host starts itself. */
 export function proxyArgs(world: World, entry: ServerEntry, stdio = false): string[] {
   const args = [
     '--record',
@@ -181,7 +181,7 @@ function shellQuote(word: string): string {
 }
 
 /** The variable a host's JSON configuration reads the listening proxy's token from. */
-const TOKEN_VAR = 'STRETTO_PROXY_TOKEN'
+const TOKEN_VAR = 'HOIST_PROXY_TOKEN'
 
 const PLACEMENT: Record<HostName, string> = {
   'claude-code':
@@ -198,10 +198,10 @@ function urlFor(entry: ServerEntry, host: HostName): string | null {
   return entry.listen && host !== 'claude-desktop' ? listenUrl(entry.listen.addr) : null
 }
 
-/** What `stretto init` prints for a host: the configuration, where it goes, and the next steps. */
+/** What `hoist init` prints for a host: the configuration, where it goes, and the next steps. */
 export function hostConfig(world: World, entry: ServerEntry, host: HostName): HostConfig {
   const args = proxyArgs(world, entry, true)
-  const proxy = 'stretto-proxy'
+  const proxy = 'hoist-mcp'
   const url = urlFor(entry, host)
   const token = entry.listen?.token_file ?? null
   const key = host === 'vscode' ? 'servers' : 'mcpServers'
@@ -244,11 +244,11 @@ export function hostConfig(world: World, entry: ServerEntry, host: HostName): Ho
   }
 }
 
-/** stretto_report::init::next_steps, from the step the server is at. */
+/** hoist_report::init::next_steps, from the step the server is at. */
 function nextSteps(world: World, entry: ServerEntry, host: HostName): string {
   const d = entry.name
   const init = [
-    `stretto init --host ${host} --domain ${d}`,
+    `hoist init --host ${host} --domain ${d}`,
     ...policyArgs(entry).map(shellQuote),
     ...listenArgs(entry).map(shellQuote),
   ].join(' ')
@@ -257,14 +257,14 @@ function nextSteps(world: World, entry: ServerEntry, host: HostName): string {
       ? entry.upstream.command.map(shellQuote).join(' ')
       : `--upstream ${entry.upstream.url}`
   const record = entry.record_dir ?? defaultRecord(d, entry.mode)
-  const flow = `~/.stretto/${d}.flow.json`
-  const promoted = `~/.stretto/${d}-promoted.flow.json`
+  const flow = `~/.hoist/${d}.flow.json`
+  const promoted = `~/.hoist/${d}-promoted.flow.json`
   const steps: string[] = []
   // A host that connects by URL keeps its configuration; the proxy changes.
   const url = urlFor(entry, host)
   if (url)
     steps.push(
-      `Start the proxy, and keep it running: each host that connects to ${url} gets a session of its own.\n${['stretto-proxy', ...proxyArgs(world, entry)].map(shellQuote).join(' ')}`,
+      `Start the proxy, and keep it running: each host that connects to ${url} gets a session of its own.\n${['hoist-mcp', ...proxyArgs(world, entry)].map(shellQuote).join(' ')}`,
     )
   const restart = 'Restart the proxy with the command this prints'
   const replaceAbove = url ? restart : 'Replace the configuration above with what this prints'
@@ -273,16 +273,16 @@ function nextSteps(world: World, entry: ServerEntry, host: HostName): string {
   if (entry.mode === 'record' || !entry.flow) {
     steps.push(`Use the agent as usual. The proxy records each session in ${record}.`)
     steps.push(
-      `Learn a flow from the sessions, with no key:\nstretto learn --sessions ${record} --domain ${d} --habit-only --out ${flow}`,
+      `Learn a flow from the sessions, with no key:\nhoist learn --sessions ${record} --domain ${d} --habit-only --out ${flow}`,
     )
     steps.push(
-      `Review what it may do: the tools it may call, the lookups it may make and where their arguments come from:\nstretto flow-show ${flow}`,
+      `Review what it may do: the tools it may call, the lookups it may make and where their arguments come from:\nhoist flow-show ${flow}`,
     )
     steps.push(
       `Run it in shadow: it decides and logs, but looks nothing up. ${replaceAbove}:\n${init} --flow ${flow} --shadow -- ${server}`,
     )
     steps.push(
-      `Keep the flow to the calls where its lookups were the agent's own:\nstretto promote --flow ${flow} --sessions ~/.stretto/shadow/${d} --decider reach --out ${promoted}`,
+      `Keep the flow to the calls where its lookups were the agent's own:\nhoist promote --flow ${flow} --sessions ~/.hoist/shadow/${d} --decider reach --out ${promoted}`,
     )
     steps.push(serve)
   } else if (entry.mode === 'shadow') {
@@ -291,7 +291,7 @@ function nextSteps(world: World, entry: ServerEntry, host: HostName): string {
       `Use the agent as usual. The proxy records each session in ${record}, and next to it what the flow would have looked up (<session>.flow.jsonl).`,
     )
     steps.push(
-      `Keep the flow to the calls where its lookups were the agent's own:\nstretto promote --flow ${entry.flow} --sessions ${record}${summary?.has_arbiter ? ' --oracle-cache ~/.stretto/oracle-cache' : ' --decider reach'} --out ${promoted}`,
+      `Keep the flow to the calls where its lookups were the agent's own:\nhoist promote --flow ${entry.flow} --sessions ${record}${summary?.has_arbiter ? ' --oracle-cache ~/.hoist/oracle-cache' : ' --decider reach'} --out ${promoted}`,
     )
     steps.push(serve)
   } else {
@@ -299,7 +299,7 @@ function nextSteps(world: World, entry: ServerEntry, host: HostName): string {
       `Use the agent as usual. After each of its calls, the flow's lookups ride in the same result. The proxy records each session in ${record}, and next to it each of the flow's decisions (<session>.flow.jsonl).`,
     )
     steps.push(
-      `When the agent, its prompts or the server change, learn again and review what changed (flow-diff exits with 1 when a change needs review):\nstretto learn --sessions ${record} --domain ${d} --habit-only --out ~/.stretto/${d}-new.flow.json\nstretto flow-diff ${entry.flow} ~/.stretto/${d}-new.flow.json`,
+      `When the agent, its prompts or the server change, learn again and review what changed (flow-diff exits with 1 when a change needs review):\nhoist learn --sessions ${record} --domain ${d} --habit-only --out ~/.hoist/${d}-new.flow.json\nhoist flow-diff ${entry.flow} ~/.hoist/${d}-new.flow.json`,
     )
   }
   let out = 'Next steps (docs/walkthrough.md runs them on a real server):\n'
@@ -351,12 +351,12 @@ export function probe(world: World, entry: ServerEntry): ProbeResult {
   const program = entry.upstream.command[0] ?? ''
   let tools: ToolDef[] | null = null
   let server = { name: '', version: '', instructions: null as string | null }
-  if (program.endsWith('stretto-mcp-demo')) {
+  if (program.endsWith('hoist-mcp-demo')) {
     tools = SHOP_TOOLS
     server = {
-      name: 'stretto-mcp-demo',
+      name: 'hoist-mcp-demo',
       version: '0.1.0',
-      instructions: 'A demo server for stretto-proxy: two tools that echo their arguments.',
+      instructions: 'A demo server for hoist-mcp: two tools that echo their arguments.',
     }
   } else if (entry.upstream.command.some((w) => w.includes('server-filesystem'))) {
     tools = FS_TOOLS
@@ -369,7 +369,7 @@ export function probe(world: World, entry: ServerEntry): ProbeResult {
     )
   const result: ProbeResult = {
     ok: true,
-    ms: program.endsWith('stretto-mcp-demo') ? 41 : 1840,
+    ms: program.endsWith('hoist-mcp-demo') ? 41 : 1840,
     error: null,
     server_name: server.name,
     server_version: server.version,
@@ -396,7 +396,7 @@ export function probe(world: World, entry: ServerEntry): ProbeResult {
   return result
 }
 
-/** What the console reads of `stretto drift`'s JSON report. */
+/** What the console reads of `hoist drift`'s JSON report. */
 interface DriftReport {
   sessions?: unknown[]
   alarms?: { change?: number; probability?: number; moved?: { site?: string }[] }[]
@@ -440,7 +440,7 @@ export function latestDrift(world: World, key: string): DriftCheck | null {
 export function health(world: World, options: MockOptions): HealthItem[] {
   const items: HealthItem[] = [
     { level: 'ok', message: `${world.dataDir} exists and is writable` },
-    { level: 'ok', message: 'stretto 0.1.0 and stretto-proxy 0.1.0 found in /home/me/.cargo/bin' },
+    { level: 'ok', message: 'hoist 0.1.0 and hoist-mcp 0.1.0 found in /home/me/.cargo/bin' },
   ]
   items.push(
     options.keySet
@@ -458,7 +458,7 @@ export function health(world: World, options: MockOptions): HealthItem[] {
     if (drift?.alarm)
       items.push({
         level: 'warn',
-        message: `${f.summary.path}: the agent may have changed under it: stretto drift sounded its alarm (job ${drift.job})`,
+        message: `${f.summary.path}: the agent may have changed under it: hoist drift sounded its alarm (job ${drift.job})`,
       })
   }
   for (const s of world.servers)
@@ -553,13 +553,13 @@ export function settings(world: World, options: MockOptions): Settings {
     flows: world.flows.length,
     key_set: options.keySet,
     retention_note:
-      'The console deletes nothing: Delete moves a session or a flow to console/trash. stretto-proxy --retain-days N deletes logs and cached answers older than N days when it starts.',
+      'The console deletes nothing: Delete moves a session or a flow to console/trash. hoist-mcp --retain-days N deletes logs and cached answers older than N days when it starts.',
     binaries: [
-      { name: 'stretto', path: '/home/me/.cargo/bin/stretto', version: 'stretto 0.1.0' },
+      { name: 'hoist', path: '/home/me/.cargo/bin/hoist', version: 'hoist 0.1.0' },
       {
-        name: 'stretto-proxy',
-        path: '/home/me/.cargo/bin/stretto-proxy',
-        version: 'stretto-proxy 0.1.0',
+        name: 'hoist-mcp',
+        path: '/home/me/.cargo/bin/hoist-mcp',
+        version: 'hoist-mcp 0.1.0',
       },
     ],
     version: '0.1.0',
@@ -568,33 +568,33 @@ export function settings(world: World, options: MockOptions): Settings {
   }
 }
 
-/** `stretto doctor`'s output for the mock's data dir. */
+/** `hoist doctor`'s output for the mock's data dir. */
 export function doctorOutput(world: World, options: MockOptions): string {
   const lines = [
-    'stretto 0.1.0 (/home/me/.cargo/bin/stretto)',
+    'hoist 0.1.0 (/home/me/.cargo/bin/hoist)',
     '',
-    'ok       stretto-proxy 0.1.0 (/home/me/.cargo/bin/stretto-proxy)',
-    'ok       stretto-procedure 0.1.0 (/home/me/.cargo/bin/stretto-procedure)',
-    'ok       stretto-mcp-demo 0.1.0 (/home/me/.cargo/bin/stretto-mcp-demo)',
+    'ok       hoist-mcp 0.1.0 (/home/me/.cargo/bin/hoist-mcp)',
+    'ok       hoist-procedure 0.1.0 (/home/me/.cargo/bin/hoist-procedure)',
+    'ok       hoist-mcp-demo 0.1.0 (/home/me/.cargo/bin/hoist-mcp-demo)',
     `ok       ${world.dataDir} exists and is writable`,
     options.keySet
-      ? 'ok       TYPESAFE_API_KEY is set (its value is not shown); `stretto doctor --network` asks Jev one question with it'
+      ? 'ok       TYPESAFE_API_KEY is set (its value is not shown); `hoist doctor --network` asks Jev one question with it'
       : 'note     TYPESAFE_API_KEY is not set: flows served with `reach` or the habit need none',
   ]
   const good = world.flows.filter((f) => !f.summary.error)
-  lines.push(`ok       ${good.length} flows in ~/.stretto:`)
+  lines.push(`ok       ${good.length} flows in ~/.hoist:`)
   for (const f of good) {
     const s = f.summary
     const decides = s.has_arbiter
       ? `decides with its arbiter, which asks ${'`jev-latest`'}`
       : 'decides by `reach`'
     lines.push(
-      `           ~/.stretto/${s.path}: domain ${s.domain}, from ${s.habit_episodes} sessions, ${decides}${s.promoted ? ', promoted' : ''}`,
+      `           ~/.hoist/${s.path}: domain ${s.domain}, from ${s.habit_episodes} sessions, ${decides}${s.promoted ? ', promoted' : ''}`,
     )
   }
   for (const f of world.flows.filter((x) => x.summary.error))
-    lines.push(`error    ~/.stretto/${f.summary.path}: ${f.summary.error}`)
-  lines.push('ok       recorded sessions in ~/.stretto:')
+    lines.push(`error    ~/.hoist/${f.summary.path}: ${f.summary.error}`)
+  lines.push('ok       recorded sessions in ~/.hoist:')
   const dirs = new Map<string, { n: number; domain: string }>()
   for (const s of world.sessions) {
     const dir = s.summary.path.split('/').slice(0, -1).join('/')
@@ -603,6 +603,6 @@ export function doctorOutput(world: World, options: MockOptions): string {
     dirs.set(dir, d)
   }
   for (const [dir, d] of [...dirs.entries()].sort())
-    lines.push(`           ~/.stretto/${dir}: ${d.n} sessions, domain ${d.domain}`)
+    lines.push(`           ~/.hoist/${dir}: ${d.n} sessions, domain ${d.domain}`)
   return lines.join('\n') + '\n'
 }

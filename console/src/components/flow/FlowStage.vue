@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * A flow's staged learning: the next version `stretto stage` learns beside the
+ * A flow's staged learning: the next version `hoist stage` learns beside the
  * committed flow as sessions arrive, how the two did on those sessions before
  * either learned from them, what committing it would change, and every
  * committed version, to commit and to roll back.
@@ -47,10 +47,10 @@ const nothingToCommit = computed(() => !!refusal.value?.includes('nothing to com
 const latest = computed(() => view.value?.versions[0]?.version ?? 0)
 const stageCommand = computed(() =>
   commandText([
-    'stretto',
+    'hoist',
     'stage',
     '--flow',
-    `~/.stretto/${view.value?.committed_path ?? `${props.flowKey}.flow.json`}`,
+    `~/.hoist/${view.value?.committed_path ?? `${props.flowKey}.flow.json`}`,
     '--sessions',
     '<dir>',
   ]),
@@ -144,7 +144,7 @@ const rollbackOpen = computed({
     <template v-else>
       <UiCard v-if="!staged" data-testid="stage-empty">
         <UiEmpty :icon="GitBranch" title="Nothing is staged">
-          <code class="mono">stretto stage</code> learns the next version of this flow from the
+          <code class="mono">hoist stage</code> learns the next version of this flow from the
           sessions as they arrive, beside it as <span class="mono">{{ view.staged_path }}</span
           >, and scores each new session with both flows before it learns from it. Nothing reaches
           the proxy until you commit.
@@ -234,7 +234,7 @@ const rollbackOpen = computed({
       >
         <StageComparison v-if="last.compared" :last="last" />
         <details v-if="view.report_markdown" class="report">
-          <summary>The report, as stretto stage writes it</summary>
+          <summary>The report, as hoist stage writes it</summary>
           <MarkdownView :text="view.report_markdown" />
         </details>
       </UiCard>
@@ -242,14 +242,14 @@ const rollbackOpen = computed({
       <UiCard
         v-if="view.diff && !nothingToCommit"
         title="What committing it would change"
-        caption="As stretto flow-diff lists it, and as the commit records it"
+        caption="As hoist flow-diff lists it, and as the commit records it"
       >
         <DiffLists :diff="view.diff" />
       </UiCard>
 
       <UiCard
         title="Versions"
-        :caption="`Every committed version of ${view.committed_path}, the latest first: stretto flow-log`"
+        :caption="`Every committed version of ${view.committed_path}, the latest first: hoist flow-log`"
         flush
       >
         <p v-if="view.unrecorded && view.versions.length" class="notice warn versions-note">
@@ -357,7 +357,7 @@ const rollbackOpen = computed({
   cursor: pointer;
   padding: 8px 0;
   font-size: 13px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .versions-note {

@@ -43,7 +43,7 @@ const current = computed(() => String(route.name ?? ''))
       <RouterLink
         :to="{ name: 'overview' }"
         class="side-logo"
-        aria-label="stretto console, overview"
+        aria-label="Hoist console, overview"
         @click="emit('navigate')"
       >
         <BrandLogo v-if="collapsed && !drawer" variant="mark" :height="26" />
@@ -134,9 +134,9 @@ const current = computed(() => String(route.name ?? ''))
 .side-product {
   padding: 2px 7px;
   border-radius: 6px;
-  background: var(--stretto-surface-2);
-  border: 1px solid var(--stretto-border);
-  color: var(--stretto-text-muted);
+  background: var(--hoist-surface-2);
+  border: 1px solid var(--hoist-border);
+  color: var(--hoist-text-muted);
   font-size: 11.5px;
   font-weight: 500;
   letter-spacing: 0.01em;
@@ -158,7 +158,7 @@ const current = computed(() => String(route.name ?? ''))
   height: 38px;
   padding: 0 10px;
   border-radius: 9px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
@@ -173,12 +173,12 @@ const current = computed(() => String(route.name ?? ''))
 
 .side-link:hover {
   background: var(--c-hover);
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .side-link.active {
-  background: var(--stretto-accent-soft);
-  color: var(--stretto-accent);
+  background: var(--hoist-accent-soft);
+  color: var(--hoist-accent);
 }
 
 .side-link.active::before {
@@ -189,7 +189,7 @@ const current = computed(() => String(route.name ?? ''))
   bottom: 9px;
   width: 3px;
   border-radius: 0 3px 3px 0;
-  background: var(--stretto-accent-graphic);
+  background: var(--hoist-accent-graphic);
 }
 
 .side-label {
@@ -203,8 +203,8 @@ const current = computed(() => String(route.name ?? ''))
   height: 20px;
   padding: 0 6px;
   border-radius: 999px;
-  background: var(--stretto-accent-fill);
-  color: var(--stretto-on-accent);
+  background: var(--hoist-accent-fill);
+  color: var(--hoist-on-accent);
   font-size: 11.5px;
   font-weight: 600;
   line-height: 20px;
@@ -223,7 +223,7 @@ const current = computed(() => String(route.name ?? ''))
   align-items: center;
   gap: 6px;
   padding: 8px 4px 0 10px;
-  border-top: 1px solid var(--stretto-border);
+  border-top: 1px solid var(--hoist-border);
   min-height: 44px;
 }
 
@@ -231,7 +231,7 @@ const current = computed(() => String(route.name ?? ''))
   flex: 1;
   min-width: 0;
   font-size: 11.5px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -250,12 +250,12 @@ const current = computed(() => String(route.name ?? ''))
   border: 0;
   border-radius: 8px;
   background: none;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .side-collapse:hover {
   background: var(--c-hover);
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .collapsed .side-brand {

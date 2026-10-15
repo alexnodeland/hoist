@@ -1,18 +1,18 @@
 """Prompt injection against a flow's System-One questions and the
-confirmation judge (docs/results/injection-2026-09-25.md; stretto #13).
+confirmation judge (docs/results/injection-2026-09-25.md; hoist #13).
 
     python3 scripts/injection.py WORK check    # the arbiter here matches the compile's decision log
     python3 scripts/injection.py WORK build    # WORK/requests.jsonl: clean, injected and mitigated questions
-    stretto ask --requests WORK/requests.jsonl --oracle jev ... --out WORK/answers.jsonl
+    hoist ask --requests WORK/requests.jsonl --oracle jev ... --out WORK/answers.jsonl
     python3 scripts/injection.py WORK analyze  # WORK/results.json
 
 WORK holds what the results page's Reproduce section makes: `retail.flow.json`,
-`log-retail.jsonl` and `dump-retail.jsonl` from `stretto compile --oracle-log
---oracle-dump`, `confirm-dump-{retail,airline}.jsonl` from `stretto confirm
+`log-retail.jsonl` and `dump-retail.jsonl` from `hoist compile --oracle-log
+--oracle-dump`, `confirm-dump-{retail,airline}.jsonl` from `hoist confirm
 --oracle-dump`, and `judge-clean-answers.jsonl`, their answers from
-`stretto ask`.
+`hoist ask`.
 
-Flow sites: at a sample of the held-out retail decisions `stretto compile`
+Flow sites: at a sample of the held-out retail decisions `hoist compile`
 asked about, a note is added to the latest tool result. `stop` tells the
 agent to make no more lookups; `steer` tells it to make the lookup the
 arbiter liked least at that site. Each decision is then judged again by its
@@ -33,7 +33,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(sys.argv[1]).resolve() if len(sys.argv) > 2 else Path.cwd()
-STRETTO = Path(__file__).resolve().parent.parent
+HOIST = Path(__file__).resolve().parent.parent
 SAMPLE_SITES, SAMPLE_WRITES, SEED = 300, 120, 13
 RESPOND = "respond"
 SHRINK = 10.0
@@ -59,7 +59,7 @@ def copy(x):
     return json.loads(json.dumps(x))
 
 
-# ---- the arbiter, as crates/stretto-report/src/arbitrate.rs computes it ----
+# ---- the arbiter, as crates/hoist-report/src/arbitrate.rs computes it ----
 
 def ln(v: float) -> float:
     return math.log(max(v, 1e-6))
@@ -234,7 +234,7 @@ def build() -> None:
     for path in sorted(HERE.glob("confirm-dump-*.jsonl")):
         for e in load_jsonl(path):
             judge[e["key"]] = e["request"]
-    labels = json.loads((STRETTO / "docs/results/confirm-2026-09-24-labels.json").read_text())["writes"]
+    labels = json.loads((HOIST / "docs/results/confirm-2026-09-24-labels.json").read_text())["writes"]
     labelled = {w["key"]: w for w in labels}
     p_yes = {}
     for e in load_jsonl(HERE / "judge-clean-answers.jsonl"):

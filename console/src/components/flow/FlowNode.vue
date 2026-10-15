@@ -47,15 +47,15 @@ const role = computed(() => {
   gap: 2px;
   padding: 0 14px;
   border-radius: 10px;
-  border: 1px solid var(--stretto-border-strong);
-  background: var(--stretto-surface);
+  border: 1px solid var(--hoist-border-strong);
+  background: var(--hoist-surface);
   box-shadow: var(--c-shadow-sm);
   cursor: default;
 }
 
 .fnode.acts {
-  border: 1.5px solid var(--stretto-accent-graphic);
-  background: color-mix(in oklab, var(--stretto-accent-soft) 70%, var(--stretto-surface));
+  border: 1.5px solid var(--hoist-accent-graphic);
+  background: color-mix(in oklab, var(--hoist-accent-soft) 70%, var(--hoist-surface));
 }
 
 .fnode.failed {
@@ -63,10 +63,10 @@ const role = computed(() => {
 }
 
 .fnode-name {
-  font-family: var(--stretto-font-mono);
+  font-family: var(--hoist-font-mono);
   font-size: 12.5px;
   font-weight: 700;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -74,11 +74,11 @@ const role = computed(() => {
 
 .fnode-role {
   font-size: 11.5px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .acts .fnode-role {
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
 }
 
 .fnode-handle {

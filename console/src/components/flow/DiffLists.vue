@@ -70,7 +70,7 @@ defineProps<{ diff: FlowDiffView }>()
   margin-bottom: 6px;
   font-size: 12.5px;
   font-weight: 600;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .cmp-list {

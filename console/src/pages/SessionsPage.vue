@@ -91,8 +91,8 @@ function clear() {
 <template>
   <div class="page">
     <UiPageHeader title="Sessions">
-      Every session stretto-proxy recorded, newest first: the agent’s calls, and the flow’s lookups
-      and why.
+      Every session hoist-mcp recorded, newest first: the agent’s calls, and the flow’s lookups and
+      why.
     </UiPageHeader>
 
     <div class="filters" role="search">
@@ -144,7 +144,7 @@ function clear() {
           </template>
         </UiEmpty>
         <UiEmpty v-else :icon="ScrollText" title="No sessions recorded yet">
-          Add a server, use your agent through it, then learn a flow. stretto-proxy records each
+          Add a server, use your agent through it, then learn a flow. hoist-mcp records each
           session, and it shows here as it is written.
           <template #actions>
             <UiButton
@@ -179,14 +179,14 @@ function clear() {
 
 .search .input {
   padding-left: 36px;
-  background: var(--stretto-surface);
+  background: var(--hoist-surface);
 }
 
 .search-icon {
   position: absolute;
   left: 12px;
   top: 10px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
   pointer-events: none;
 }
 

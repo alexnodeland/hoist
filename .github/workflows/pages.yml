@@ -2,7 +2,7 @@ name: Pages
 
 # Builds the documentation site (website/, VitePress) and publishes it to
 # GitHub Pages, at the address set in Settings → Pages: the custom domain,
-# https://stretto.alexnodeland.com/, or https://alexnodeland.github.io/stretto/
+# https://hoist.alexnodeland.com/, or https://alexnodeland.github.io/hoist/
 # without one. The build takes that address from configure-pages, for the
 # site's base, its canonical links and its sitemap, so after changing the
 # custom domain, run this workflow once (Actions → Pages → Run workflow).
@@ -22,7 +22,7 @@ on:
       # The brand kit: the explainer and the videos are copied in at build time.
       - "brand/**"
       # The site also renders these two files.
-      - "crates/stretto-proxy/README.md"
+      - "crates/hoist-mcp/README.md"
       - "LICENSE"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
@@ -60,7 +60,7 @@ jobs:
         working-directory: website
         run: npm run build
         env:
-          # Where Pages serves the site, such as https://stretto.alexnodeland.com.
+          # Where Pages serves the site, such as https://hoist.alexnodeland.com.
           SITE_URL: ${{ steps.pages.outputs.base_url }}
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -1,9 +1,9 @@
 #!/bin/sh
-# Install stretto from a GitHub release: stretto, stretto-proxy,
-# stretto-procedure, stretto-mcp-demo and stretto-console, on Linux (x86_64
+# Install Hoist from a GitHub release: hoist, hoist-mcp,
+# hoist-procedure, hoist-mcp-demo and hoist-console, on Linux (x86_64
 # or aarch64, with glibc 2.35 or later) or macOS (Apple silicon or Intel).
 #
-#   curl -fsSL https://github.com/alexnodeland/stretto/releases/latest/download/install.sh | sh
+#   curl -fsSL https://github.com/alexnodeland/hoist/releases/latest/download/install.sh | sh
 #   curl -fsSL .../install.sh | sh -s -- --version v0.2.0 --prefix /usr/local
 #
 # It downloads the release's archive for this system and its SHA256SUMS,
@@ -13,11 +13,11 @@
 
 set -eu
 
-repo=alexnodeland/stretto
-binaries="stretto stretto-proxy stretto-procedure stretto-mcp-demo"
+repo=alexnodeland/hoist
+binaries="hoist hoist-mcp hoist-procedure hoist-mcp-demo"
 # Installed when the archive has it: a release from before the console has
 # none, and installs without it.
-optional="stretto-console"
+optional="hoist-console"
 
 usage() {
     cat <<'EOF'
@@ -118,8 +118,8 @@ else
     url=https://github.com/$repo/releases/download/$tag
 fi
 
-archive=stretto-$target.tar.gz
-tmp=$(mktemp -d "${TMPDIR:-/tmp}/stretto-install.XXXXXX")
+archive=hoist-$target.tar.gz
+tmp=$(mktemp -d "${TMPDIR:-/tmp}/hoist-install.XXXXXX")
 trap 'rm -rf "${tmp:?}"' EXIT
 trap 'exit 1' HUP INT TERM
 
@@ -136,19 +136,19 @@ tar -xzf "$tmp/$archive" -C "$tmp"
 bindir=${prefix%/}/bin
 mkdir -p "$bindir" || die "cannot create $bindir: pass --prefix"
 for bin in $binaries; do
-    [ -f "$tmp/stretto-$target/$bin" ] || die "$archive has no $bin"
+    [ -f "$tmp/hoist-$target/$bin" ] || die "$archive has no $bin"
 done
 for bin in $optional; do
-    if [ -f "$tmp/stretto-$target/$bin" ]; then binaries="$binaries $bin"; fi
+    if [ -f "$tmp/hoist-$target/$bin" ]; then binaries="$binaries $bin"; fi
 done
 # Each binary is copied beside its final name, then renamed over it, so a
 # running copy is replaced cleanly.
 for bin in $binaries; do
-    cp "$tmp/stretto-$target/$bin" "$bindir/.$bin.new"
+    cp "$tmp/hoist-$target/$bin" "$bindir/.$bin.new"
     chmod 755 "$bindir/.$bin.new"
     mv -f "$bindir/.$bin.new" "$bindir/$bin"
 done
-installed=$("$bindir/stretto" --version) || die "$bindir/stretto does not run on this system"
+installed=$("$bindir/hoist" --version) || die "$bindir/hoist does not run on this system"
 
 echo
 echo "$installed is installed in $bindir: $(echo "$binaries" | sed 's/ /, /g')."
@@ -165,14 +165,14 @@ esac
 cat <<'EOF'
 
 Next:
-    stretto doctor
+    hoist doctor
         checks the installation
-    stretto init --host claude-code --domain NAME -- <server command>
-        runs an MCP server behind stretto-proxy, recording its sessions
+    hoist init --host claude-code --domain NAME -- <server command>
+        runs an MCP server behind hoist-mcp, recording its sessions
         (also claude-desktop, cursor, vscode), and says what comes next
-    stretto completions bash|zsh|fish|powershell|elvish
+    hoist completions bash|zsh|fish|powershell|elvish
         prints shell completions
 
 The quickstart runs the whole loop with no key:
-https://github.com/alexnodeland/stretto/tree/main/examples/quickstart
+https://github.com/alexnodeland/hoist/tree/main/examples/quickstart
 EOF

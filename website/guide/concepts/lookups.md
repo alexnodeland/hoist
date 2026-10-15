@@ -30,7 +30,7 @@ A detour is the worst a flow can do. It costs the tokens of its result in every 
 After each call, the flow scores each lookup it may make there: the tool's probability under the flow's [decider](./deciders), times the chance that the arguments it would bind are the agent's own ([bindings](./bindings)). It makes the best one if that score is at least the threshold, then decides again with the new result in hand, and hands back when nothing clears it.
 
 ```sh
-stretto-proxy ... --flow orders.flow.json --flow-decider reach --flow-threshold 0.3 -- <server command>
+hoist-mcp ... --flow orders.flow.json --flow-decider reach --flow-threshold 0.3 -- <server command>
 ```
 
 The threshold is 0.3 by default. That is not a tuning knob but a ratio of costs: make a lookup when its chance of use $q$ satisfies
@@ -47,7 +47,7 @@ with $\delta$ a detour's cost and $\beta$ a saved turn's value. Live, a detour c
 - With `--flow-tools`, only the tools named there:
 
   ```sh
-  stretto-proxy ... --flow orders.flow.json --flow-tools get_order_details,get_user_details -- <server command>
+  hoist-mcp ... --flow orders.flow.json --flow-tools get_order_details,get_user_details -- <server command>
   ```
 
   A server's `readOnlyHint` says a call changes nothing, not that it is free, unlogged, or fine to make unasked: a read can be metered, rate-limited, or recorded as an access. Name the tools you are content for the flow to call. In [the console](/guide/console), a server's form sets it: *Only some of its lookups* lists the flow's lookups to choose from.
@@ -73,10 +73,10 @@ After each run's decisions comes one line for the run itself, `run`: each site's
 
 ## Exploring, to evaluate other rules
 
-`--flow-explore EPSILON` makes the flow, with that probability, take a lookup other than the rule's choice, and log every option with the chance that the flow took what it took. `stretto evaluate` reads such logs, labelled with each option's outcome, and estimates what another decider or threshold would have done, without running it ([results](../../../docs/results/evaluate-2026-09-25.md)).
+`--flow-explore EPSILON` makes the flow, with that probability, take a lookup other than the rule's choice, and log every option with the chance that the flow took what it took. `hoist evaluate` reads such logs, labelled with each option's outcome, and estimates what another decider or threshold would have done, without running it ([results](../../../docs/results/evaluate-2026-09-25.md)).
 
 ## Related
 
 - [Deciders](./deciders): where the tool's probability comes from
 - [Bindings](./bindings): where the arguments come from
-- [`stretto-proxy` options](/reference/cli#stretto-proxy)
+- [`hoist-mcp` options](/reference/cli#hoist-mcp)

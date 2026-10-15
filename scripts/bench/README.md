@@ -5,7 +5,7 @@ These scripts recompute every number in [docs/results/benchmarks-2026-09-27.md](
 ## 1. Build and fetch
 
 ```bash
-cargo build --release                      # target/release/stretto, or set S
+cargo build --release                      # target/release/hoist, or set S
 scripts/fetch-leaderboard.sh -t all        # τ²-bench's leaderboard runs, in .data/tau2-targets/
 export WORK=work TAU2=../tau2-bench PY=python3   # PY: a Python with τ²-bench installed
 ```

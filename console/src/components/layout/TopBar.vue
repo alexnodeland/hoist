@@ -18,7 +18,7 @@ const themeLabel = computed(
 const live = computed(() => {
   switch (liveStatus.value) {
     case 'live':
-      return { label: 'Live', title: 'Lists refresh as stretto writes sessions, flows and jobs' }
+      return { label: 'Live', title: 'Lists refresh as Hoist writes sessions, flows and jobs' }
     case 'connecting':
       return { label: 'Connecting', title: 'Opening the live updates' }
     case 'reconnecting':
@@ -109,9 +109,9 @@ const options = computed(() => {
   gap: 10px;
   height: var(--c-topbar-h);
   padding: 0 var(--c-gutter);
-  background: color-mix(in oklab, var(--stretto-bg) 86%, transparent);
+  background: color-mix(in oklab, var(--hoist-bg) 86%, transparent);
   backdrop-filter: saturate(1.4) blur(10px);
-  border-bottom: 1px solid var(--stretto-border);
+  border-bottom: 1px solid var(--hoist-border);
 }
 
 .top-icon {
@@ -123,12 +123,12 @@ const options = computed(() => {
   border: 0;
   border-radius: 9px;
   background: none;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .top-icon:hover {
   background: var(--c-hover);
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .top-menu {
@@ -148,14 +148,14 @@ const options = computed(() => {
   min-height: 36px;
   font-size: 13.5px;
   font-weight: 500;
-  border-color: var(--stretto-border);
-  background-color: var(--stretto-surface);
+  border-color: var(--hoist-border);
+  background-color: var(--hoist-surface);
 }
 
 .top-select.set {
-  border-color: color-mix(in oklab, var(--stretto-accent-graphic) 60%, var(--stretto-border));
-  background-color: var(--stretto-accent-soft);
-  color: var(--stretto-accent);
+  border-color: color-mix(in oklab, var(--hoist-accent-graphic) 60%, var(--hoist-border));
+  background-color: var(--hoist-accent-soft);
+  color: var(--hoist-accent);
 }
 
 .top-search {
@@ -166,18 +166,18 @@ const options = computed(() => {
   min-width: 0;
   height: 36px;
   padding: 0 8px 0 12px;
-  border: 1px solid var(--stretto-border);
+  border: 1px solid var(--hoist-border);
   border-radius: 9px;
-  background: var(--stretto-surface);
-  color: var(--stretto-text-subtle);
+  background: var(--hoist-surface);
+  color: var(--hoist-text-subtle);
   font-size: 13.5px;
   text-align: left;
   transition: border-color 0.12s var(--c-ease);
 }
 
 .top-search:hover {
-  border-color: color-mix(in oklab, var(--stretto-border-strong) 60%, var(--stretto-border));
-  color: var(--stretto-text-muted);
+  border-color: color-mix(in oklab, var(--hoist-border-strong) 60%, var(--hoist-border));
+  color: var(--hoist-text-muted);
 }
 
 .top-search-text {
@@ -213,7 +213,7 @@ const options = computed(() => {
   gap: 7px;
   font-size: 12.5px;
   font-weight: 500;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
   white-space: nowrap;
 }
 
@@ -221,18 +221,18 @@ const options = computed(() => {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--stretto-border-strong);
+  background: var(--hoist-border-strong);
 }
 
 .top-live.live .top-live-dot {
-  background: var(--stretto-accent-graphic);
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--stretto-accent-graphic) 22%, transparent);
+  background: var(--hoist-accent-graphic);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--hoist-accent-graphic) 22%, transparent);
 }
 
 .top-live.reconnecting .top-live-dot,
 .top-live.connecting .top-live-dot {
   background: transparent;
-  box-shadow: inset 0 0 0 1.5px var(--stretto-accent-graphic);
+  box-shadow: inset 0 0 0 1.5px var(--hoist-accent-graphic);
   animation: blink 1.2s ease-in-out infinite;
 }
 

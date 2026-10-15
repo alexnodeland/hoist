@@ -99,13 +99,13 @@ defineExpose({ probe })
 .probe-text {
   flex: 1 1 320px;
   font-size: 13.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .probe-instructions {
   display: block;
   margin-top: 4px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .probe-tools {
