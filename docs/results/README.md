@@ -2,7 +2,7 @@
 
 Every result so far, in the order it was found. Each page says how to reproduce it. The JSON files beside the pages hold per-episode or per-decision rows. The answer bundles hold every System-One answer the pages read, so they replay without a key.
 
-The project was called stretto until 2026-10-15 and is now Hoist. The dated pages, their rows and archives keep the name they were written under: a command or file named `stretto` there is `hoist` today, except the loose `*.flow.json` and `*.procedure.json` files, which carry the renamed keys. The tarballs keep the old keys (`stretto_flow`, `provenance.stretto` in a flow; `stretto_mcp_log` in a session log's header), so rename them in a file before `hoist` reads it.
+The project was called stretto until 2026-10-15 and is now Hoist. The dated pages, their rows and archives keep the name they were written under: a command or file named `stretto` there is `hoist` today, except the format keys in the flow, procedure and session-log files (also those inside the tarballs), which were renamed so that `hoist` reads them, and the proxy's call ids in the logs, `stretto-N`, which became `hoist-N`.
 
 The [working paper](../../paper/hoist.md) puts them together, and [RFC-001](../rfc/001-habit-compiler.md) records what each round changed in the design, amendment by amendment. What is still open is in the [roadmap](../roadmap.md).
 
