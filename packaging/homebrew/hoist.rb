@@ -2,8 +2,8 @@
 # release workflow fills in the version and the archives' checksums with
 # packaging/homebrew/fill.sh and attaches the result to the release as
 # hoist.rb. Homebrew installs it from a tap, a repository named
-# homebrew-tap under the same account, as Formula/hoist.rb; that
-# repository does not exist yet (docs/releasing.md).
+# homebrew-tap under the same account, as Formula/hoist.rb
+# (docs/releasing.md).
 class Hoist < Formula
   desc "Learn an LLM agent's next reads from its tool calls and serve them over MCP"
   homepage "https://hoist.alexnodeland.com/"

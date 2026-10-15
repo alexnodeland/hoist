@@ -4,6 +4,8 @@ The `hoist` CLI and `hoist-mcp` are the product. The library crates (`hoist-trac
 
 ## Unreleased
 
+## 0.2.0 (2026-10-15)
+
 ### A file in the way of `hoist init --force`
 
 - `hoist init` named the "pass --force" advice whenever writing a configuration file failed because the path already existed, even with `--force` given. With `--force` that error means a directory is in the way, which `--force` does not fix, so it now says it could not write the path.
