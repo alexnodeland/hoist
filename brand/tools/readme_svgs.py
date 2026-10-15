@@ -115,9 +115,9 @@ def hero():
 # ---------------------------------------------------------------- numbers
 def numbers():
     cols = [
-        ("LIVE", "20.5% · 22.4%", "fewer LLM turns", "Claude Sonnet 5 · Claude Haiku 4.5", "τ²-bench, 28 tasks, 3 trials, pre-registered"),
+        ("LIVE", "20.5% · 22.4%", "fewer LLM turns", "Claude Sonnet 5 · Claude Haiku 4.5", "τ²-bench retail and airline, pre-registered"),
         ("REPLAY", "86.4%", "of retail’s read-only ceiling", "nine agents it never saw", "10.2 points over a next-step speculator"),
-        ("PROCEDURE", "39 of 40", "held-out tasks passed", "0.48 LLM turns per ticket", "τ²-bench solo telecom; 15.9 for the model alone"),
+        ("PROCEDURE", "39 of 40", "held-out tasks passed by the cascade", "0.48 LLM turns per ticket", "solo telecom; 15.9 for GLM-5.3 alone"),
     ]
     W, H, cw = 880, 150, 277
     body, css = [], []
@@ -135,7 +135,7 @@ def numbers():
     return svg(W, H, "Hoist's headline results, each with its scope",
                "Live on 28 τ²-bench retail and airline tasks, three trials, pre-registered: Claude Sonnet 5 took 20.5% fewer LLM turns and Claude Haiku 4.5 22.4% fewer. "
                "Replay of nine agents it never saw: 86.4% of retail's read-only ceiling, 10.2 points more than a next-step speculator. "
-               "A procedure compiled once passes 39 of 40 held-out solo telecom tasks at 0.48 LLM turns per ticket against 15.9 for the model alone.",
+               "A procedure compiled once, with a model on what its check cannot confirm, passes 39 of 40 held-out solo telecom tasks at 0.48 LLM turns per ticket against 15.9 for GLM-5.3 alone.",
                "".join(body), "".join(css))
 
 
@@ -196,7 +196,7 @@ def how():
 # ---------------------------------------------------------------- ceiling
 def ceiling():
     rows = [
-        ("AgentDojo, travel suite", 47.1, "a city’s listing names every later lookup"),
+        ("AgentDojo, travel suite", 47.1, "a city’s listing names the hotels every later lookup takes"),
         ("τ²-bench", 29.0, "the user names themselves; the agent walks the records"),
         ("τ-bench", 28.4, "the same walk, with agents a year older"),
         ("AgentDojo, 4 suites", 22.1, ""),
@@ -209,7 +209,7 @@ def ceiling():
     H = y0 + len(rows) * rh + 66
     lx, bx, bw = 24, 190, 330
     body = [f'<text x="24" y="30" font-size="13" font-weight="700" class="muted">WHERE A READ-ONLY SPECULATOR HAS ROOM</text>',
-            f'<text x="24" y="50" font-size="12" class="subtle">The read-only ceiling: the most LLM turns a speculator that binds arguments from tool results could save. The domain sets it.</text>']
+            f'<text x="24" y="50" font-size="12" class="subtle">The read-only ceiling: the most LLM turns a speculator binding arguments from tool results could save, an upper bound, not a saving.</text>']
     css = []
     for i, (name, v, note) in enumerate(rows):
         y = y0 + i * rh
@@ -224,7 +224,7 @@ def ceiling():
         body.append(f'<text class="m" x="{bx+w+8:.1f}" y="{y+18}" font-size="12" font-weight="700">{v}%</text>')
         if note:
             body.append(f'<text x="{bx+bw+18}" y="{y+17}" font-size="11" class="subtle">{note}</text>')
-    body.append(f'<text x="24" y="{H-30}" font-size="11" class="subtle">Share of LLM turns, replayed from the agents’ published trajectories (the paper’s Tables 1 and 1b).</text>')
+    body.append(f'<text x="24" y="{H-30}" font-size="11" class="subtle">Share of LLM turns, replayed from the agents’ published trajectories (the paper’s Tables 1 and 1b). AgentDojo’s results read as JSON.</text>')
     body.append(f'<text x="24" y="{H-16}" font-size="11" class="subtle">In WorkBench, the lowest, the speculator makes no lookup at all.</text>')
     return svg(W, H, "The read-only ceiling by benchmark",
                "The most LLM turns a read-only speculator could save, as a share of turns: AgentDojo travel suite 47.1%, τ²-bench 29.0%, τ-bench 28.4%, "

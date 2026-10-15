@@ -38,10 +38,10 @@ Hoist learns, from your agent's recorded tool calls, which reads it makes next a
 </p>
 
 <p align="center">
-  <img src="brand/readme/numbers.svg" alt="Live on 28 τ²-bench retail and airline tasks, three trials, pre-registered: Claude Sonnet 5 took 20.5% fewer LLM turns (95% CI 16.5–24.4%) and Claude Haiku 4.5 22.4% fewer (15.8–29.4%). Replay, nine agents it never saw: 86.4% of retail's read-only ceiling, 10.2 points more than a next-step speculator. A procedure compiled once passes 39 of 40 held-out solo telecom tasks at 0.48 LLM turns per ticket against 15.9 for the model alone." width="880">
+  <img src="brand/readme/numbers.svg" alt="Live on 28 τ²-bench retail and airline tasks, three trials, pre-registered: Claude Sonnet 5 took 20.5% fewer LLM turns (95% CI 16.5–24.4%) and Claude Haiku 4.5 22.4% fewer (15.8–29.4%). Replay, nine agents it never saw: 86.4% of retail's read-only ceiling, 10.2 points more than a next-step speculator. A procedure compiled once, with a model on what its check cannot confirm, passes 39 of 40 held-out solo telecom tasks at 0.48 LLM turns per ticket against 15.9 for GLM-5.3 alone." width="880">
 </p>
 
-Also live: GLM-5.3 took 27.9% fewer LLM turns (95% CI 19.1–35.9%) in one run on the same tasks, and in AgentDojo's Slack and travel suites GLM-5.3 and Claude Haiku 4.5 took 10.1% fewer (5.8–14.0%), with passes unchanged. [The claims ledger](docs/results/claims.md) has each number with its scope.
+Also live: GLM-5.3 took 27.9% fewer LLM turns (95% CI 19.1–35.9%) in one run on the same tasks, and in AgentDojo's Slack and travel suites GLM-5.3 and Claude Haiku 4.5 took 10.1% fewer (5.8–14.0%), with passes unchanged (27 of 34 in both arms), one run per arm. The first row is 28 tasks, three trials. [The claims ledger](docs/results/claims.md) has each number with its scope.
 
 ## Quick start
 
@@ -101,7 +101,7 @@ A flow fits the agent, prompt, harness and tools it was learned from. `hoist dri
   <img src="brand/readme/ceiling.svg" alt="The read-only ceiling, the most LLM turns a speculator could save, as a share of turns, replayed from published trajectories: AgentDojo travel suite 47.1%, τ²-bench 29.0%, τ-bench 28.4%, AgentDojo four suites 22.1%, BFCL multi-turn 13.2%, DTap-Bench 10.7%, MCPMark 7.0%, WorkBench 3.5%. In WorkBench, the lowest, the speculator makes no lookup at all." width="880">
 </p>
 
-Where agents walk records, results name what to read next, and Hoist takes it. Where each request names what to read, the lever is language, and Hoist takes little or nothing.
+The bars are ceilings, not savings. In τ²-bench retail, in replay, Hoist takes 86.4% of its ceiling. Where each request names what to read, the lever is language, not a pattern, and in WorkBench Hoist makes no lookup.
 
 ## The console
 
