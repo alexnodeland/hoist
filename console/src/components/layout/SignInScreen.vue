@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/** The sign-in screen for a 401: paste the token stretto-console printed when it started. */
+/** The sign-in screen for a 401: paste the token hoist-console printed when it started. */
 import { ref } from 'vue'
 import { Eye, EyeOff, KeyRound, LogIn } from '@lucide/vue'
 import BrandLogo from '../BrandLogo.vue'
@@ -25,9 +25,9 @@ async function submit() {
       <div class="signin-head">
         <h1>Sign in to the console</h1>
         <p class="muted">
-          When it starts, <span class="mono">stretto-console</span> prints a link with its token,
-          such as <span class="mono">http://127.0.0.1:7878/?token=…</span>. Open that link, or paste
-          the token here.
+          When it starts, <span class="mono">hoist-console</span> prints a link with its token, such
+          as <span class="mono">http://127.0.0.1:7878/?token=…</span>. Open that link, or paste the
+          token here.
         </p>
       </div>
       <label class="signin-label" for="token">Token</label>
@@ -57,7 +57,7 @@ async function submit() {
       </div>
       <p v-if="error" class="signin-error" role="alert">{{ error }}</p>
       <p id="token-help" class="caption">
-        The token is also in <span class="mono">STRETTO_CONSOLE_TOKEN</span> if you set it, or after
+        The token is also in <span class="mono">HOIST_CONSOLE_TOKEN</span> if you set it, or after
         <span class="mono">--token</span>. The browser keeps it in a cookie only this console reads.
       </p>
       <UiButton type="submit" variant="primary" :icon="LogIn" :loading="busy" block
@@ -76,10 +76,10 @@ async function submit() {
   background:
     radial-gradient(
       60% 50% at 50% 0%,
-      color-mix(in oklab, var(--stretto-accent-soft) 90%, transparent),
+      color-mix(in oklab, var(--hoist-accent-soft) 90%, transparent),
       transparent 70%
     ),
-    var(--stretto-bg);
+    var(--hoist-bg);
 }
 
 .signin-card {
@@ -89,8 +89,8 @@ async function submit() {
   width: min(440px, 100%);
   padding: 28px;
   border-radius: 16px;
-  background: var(--stretto-surface);
-  border: 1px solid var(--stretto-border);
+  background: var(--hoist-surface);
+  border: 1px solid var(--hoist-border);
   box-shadow: var(--c-shadow-md);
 }
 
@@ -128,7 +128,7 @@ async function submit() {
   position: absolute;
   left: 12px;
   top: 10px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .signin-eye {
@@ -142,12 +142,12 @@ async function submit() {
   border: 0;
   border-radius: 7px;
   background: none;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .signin-eye:hover {
   background: var(--c-hover);
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .signin-error {

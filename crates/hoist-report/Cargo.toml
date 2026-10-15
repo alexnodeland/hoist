@@ -1,0 +1,37 @@
+[package]
+name = "hoist-report"
+description = "The Hoist CLI: compile, learn, serve and audit flows from agent traces."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+homepage.workspace = true
+documentation = "https://github.com/alexnodeland/hoist/blob/main/docs/cli.md"
+readme.workspace = true
+keywords.workspace = true
+categories = ["command-line-utilities", "development-tools"]
+
+[[bin]]
+name = "hoist"
+path = "src/main.rs"
+
+[features]
+# TypeScript declarations (ts-rs) for the views that `hoist-console`
+# serves, such as `review::FlowView`.
+ts = ["dep:ts-rs", "hoist-trace/ts"]
+
+[dependencies]
+anyhow.workspace = true
+clap.workspace = true
+clap_complete.workspace = true
+fugue.workspace = true
+fugue-evo.workspace = true
+rand.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+hoist-model.workspace = true
+hoist-oracle.workspace = true
+hoist-trace.workspace = true
+ts-rs = { workspace = true, optional = true }

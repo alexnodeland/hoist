@@ -23,7 +23,7 @@ function toggleAll() {
     <div class="tl-tools">
       <ul class="tl-legend" aria-label="Legend">
         <li><span class="key key-agent" aria-hidden="true" />The agent’s call</li>
-        <li><span class="key key-made" aria-hidden="true" />Read ahead by stretto</li>
+        <li><span class="key key-made" aria-hidden="true" />Read ahead by Hoist</li>
         <li><span class="key key-shadow" aria-hidden="true" />Would read ahead (shadow)</li>
         <li><span class="key key-back" aria-hidden="true" />Handed back</li>
       </ul>
@@ -89,7 +89,7 @@ function toggleAll() {
   flex: 1;
   list-style: none;
   font-size: 12.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .tl-legend li {
@@ -105,23 +105,23 @@ function toggleAll() {
 }
 
 .key-agent {
-  background: var(--stretto-surface);
-  border: 1px solid var(--stretto-border-strong);
+  background: var(--hoist-surface);
+  border: 1px solid var(--hoist-border-strong);
 }
 
 .key-made {
-  background: var(--stretto-accent-soft);
-  border: 1px solid var(--stretto-accent-graphic);
-  box-shadow: inset 3px 0 0 var(--stretto-accent-graphic);
+  background: var(--hoist-accent-soft);
+  border: 1px solid var(--hoist-accent-graphic);
+  box-shadow: inset 3px 0 0 var(--hoist-accent-graphic);
 }
 
 .key-shadow {
-  border: 1px dashed var(--stretto-accent-graphic);
+  border: 1px dashed var(--hoist-accent-graphic);
 }
 
 .key-back {
-  border: 1px solid var(--stretto-border-strong);
-  background: var(--stretto-surface-2);
+  border: 1px solid var(--hoist-border-strong);
+  background: var(--hoist-surface-2);
 }
 
 .tl-expand {
@@ -130,17 +130,17 @@ function toggleAll() {
   gap: 6px;
   height: 30px;
   padding: 0 10px;
-  border: 1px solid var(--stretto-border);
+  border: 1px solid var(--hoist-border);
   border-radius: 8px;
-  background: var(--stretto-surface);
-  color: var(--stretto-text-muted);
+  background: var(--hoist-surface);
+  color: var(--hoist-text-muted);
   font-size: 12.5px;
   font-weight: 500;
 }
 
 .tl-expand:hover {
-  color: var(--stretto-text);
-  background: var(--stretto-surface-2);
+  color: var(--hoist-text);
+  background: var(--hoist-surface-2);
 }
 
 .tl-list {
@@ -170,7 +170,7 @@ function toggleAll() {
   bottom: -16px;
   width: 2px;
   border-radius: 1px;
-  background: var(--stretto-border);
+  background: var(--hoist-border);
 }
 
 .tl-entry:first-child .tl-gutter::before {
@@ -189,14 +189,14 @@ function toggleAll() {
   height: 12px;
   margin-top: 6px;
   border-radius: 50%;
-  background: var(--stretto-surface);
-  border: 2px solid var(--stretto-border-strong);
+  background: var(--hoist-surface);
+  border: 2px solid var(--hoist-border-strong);
 }
 
 .tl-turn .tl-dot {
-  background: var(--stretto-text);
-  border-color: var(--stretto-text);
-  box-shadow: 0 0 0 3px var(--stretto-bg);
+  background: var(--hoist-text);
+  border-color: var(--hoist-text);
+  box-shadow: 0 0 0 3px var(--hoist-bg);
 }
 
 .tl-body {
@@ -220,7 +220,7 @@ function toggleAll() {
 .tl-turn-name {
   font-size: 12.5px;
   font-weight: 600;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .tl-calls {

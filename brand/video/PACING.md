@@ -1,6 +1,6 @@
 # Pacing: notes from Auracle's films
 
-stretto's explainer was rebuilt in October 2026 on the model of the films of [Auracle](https://github.com/alexnodeland/auracle) (`www/video/`), a sibling project whose illustrated films (launch, engine, math, dsp, taste) are paced well. These notes record what those films do, measured from their `timeline.json` and `script.json`, and how the explainer applies it. They hold for any narrated video in this kit.
+Hoist's explainer was rebuilt in October 2026 on the model of the films of [Auracle](https://github.com/alexnodeland/auracle) (`www/video/`), a sibling project whose illustrated films (launch, engine, math, dsp, taste) are paced well. These notes record what those films do, measured from their `timeline.json` and `script.json`, and how the explainer applies it. They hold for any narrated video in this kit.
 
 ## What the Auracle films measure
 
@@ -12,7 +12,7 @@ stretto's explainer was rebuilt in October 2026 on the model of the films of [Au
 | dsp | 169 s | 32 | 11 | 390 | 83% | 167 | 139 | 12.5 | 0.40 s |
 | taste | 109 s | 17 | 10 | 276 | 82% | 185 | 153 | 14 | 1.02 s |
 
-The old stretto explainer, for comparison: 166 s, **11 lines** of up to **61 words** each, one line a scene, 386 words. The words a minute were about the same (140). The difference was the grain: a scene held one long paragraph while the picture tried to keep up, and the captions changed once every 15 seconds.
+The old Hoist explainer, for comparison: 166 s, **11 lines** of up to **61 words** each, one line a scene, 386 words. The words a minute were about the same (140). The difference was the grain: a scene held one long paragraph while the picture tried to keep up, and the captions changed once every 15 seconds.
 
 ## The rules the films follow
 
@@ -33,7 +33,7 @@ From Auracle's `www/brand/voice.md` (the spoken voice) and its timelines:
 - **Voice:** Kokoro `af_heart` (`narrate.py`), the same model and voice as Auracle, checked line by line by faster-whisper. At 0.9 its short lines ran at 179 words a minute while speaking, brisker than Auracle's films for engineers (156 to 167), so it speaks at 0.85: 170 words a minute.
 - **Script:** `explainer/narration.json` is a list of chapters (`beats`), each with its lines, a `lead` before its first line, a `post` pause after each line and a `tail` after its last. Every line is one or two sentences of at most 16 words. Its 37 lines run at 170 words a minute while speaking. Its chapters run longer than Auracle's, 12.6 to 24.0 seconds (median 18.8), since each holds three or four lines about one diagram; the diagram changes with each line instead.
 - **Picture:** one diagram per chapter on a still stage, built up as the words name its parts (`film.js`, timed by the voice's own words). The captions are set at the foot of the frame and lit word by word. What is shown is the real thing: the proxy's own wording for the reads it adds to a result, τ²-bench retail's tools, the counts of a flow in `docs/examples/`, and the console's own screens.
-- **Opening:** stretto's films open on the lockup, not cold. Auracle's films open on a wordless moment before the title; in stretto's, the same moment read as a stray section before the film began, so each film starts on the mark and the title, and the first line comes 2.6 s in. The explainer's opening moment is kept for the README's teaser.
+- **Opening:** Hoist's films open on the lockup, not cold. Auracle's films open on a wordless moment before the title; in Hoist's, the same moment read as a stray section before the film began, so each film starts on the mark and the title, and the first line comes 2.6 s in. The explainer's opening moment is kept for the README's teaser.
 - **Sound:** the voice and the music bed from `music.py`, with the mark's three entries at the start and the closing motif at the end. No effects.
 
 ## The deep dives

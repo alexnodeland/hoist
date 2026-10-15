@@ -2,7 +2,7 @@
 
 No LLM runs. Each recorded conversation is written to a fresh episode as it
 happened, and each of the agent's recorded calls goes through `tau2_mcp.py`
-(over MCP, as the agent's would) with `stretto flow-serve` behind it. A
+(over MCP, as the agent's would) with `hoist flow-serve` behind it. A
 recorded call is skipped when a flow lookup answers it, as an agent that
 reads the flow's results would skip it: the same tool and arguments, a
 lookup no recorded call has used yet, that returned what the recorded call
@@ -38,9 +38,9 @@ nothing), and counts that lookup as used rather than as a detour. Each such
 pair goes to `same-result.json` in the episode's folder. Exploration labels
 stay exact.
 
-`--explore EPSILON` serves the flow exploring (`stretto serve --explore`)
+`--explore EPSILON` serves the flow exploring (`hoist serve --explore`)
 and writes every decision with each option's outcome to `decisions.jsonl`,
-for `stretto evaluate` and `scripts/calibration.py`: `used` if the agent
+for `hoist evaluate` and `scripts/calibration.py`: `used` if the agent
 makes the lookup later, before its next write, and it is not made yet;
 `detour` if it does not; `turn`, one over the calls of the recorded turn the
 lookup spares a call of; and `next` if it is the agent's very next call.
@@ -222,7 +222,7 @@ def exploring(args) -> bool:
 def label(answer: dict, made: set, recorded: set, turn_of: dict, name: str,
           ahead: set | None = None, following: tuple | None = None,
           at: int | None = None, calls_at: dict | None = None) -> dict:
-    """A flow answer with each option's outcome, for `stretto evaluate`:
+    """A flow answer with each option's outcome, for `hoist evaluate`:
     `used` if the agent makes the lookup later and it is not made yet; with
     `ahead` (the agent's calls before its next write) only those count, as
     §2.2's replay rule has it. `next` if it is the agent's very next call.
@@ -517,10 +517,10 @@ def main() -> None:
         "--flow-decider", default="arbiter", choices=["arbiter", "habit", "reach"],
         help="`habit`: the habit alone, never asking the System-One model (arm C)",
     )
-    parser.add_argument("--flow", type=Path, help="a compiled flow (`stretto compile`), else compiled here")
+    parser.add_argument("--flow", type=Path, help="a compiled flow (`hoist compile`), else compiled here")
     parser.add_argument(
         "--flow-surprise", metavar="off|NATS",
-        help="serve the flow with this surprise threshold, or without its gate (`stretto serve --surprise`)",
+        help="serve the flow with this surprise threshold, or without its gate (`hoist serve --surprise`)",
     )
     parser.add_argument(
         "--explore", type=float, metavar="EPSILON",

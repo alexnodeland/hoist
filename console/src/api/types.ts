@@ -2,7 +2,7 @@
  * The console API's types.
  *
  * The server's DTOs are generated into `./generated/` by ts-rs, from
- * `crates/stretto-console` (`make types`), and re-exported here as they are:
+ * `crates/hoist-console` (`make types`), and re-exported here as they are:
  * snake_case fields, timestamps in unix milliseconds (`*_unix_ms`), sizes in
  * bytes, probabilities from 0 to 1. What follows the re-export is the UI's
  * own: names for parts of the generated unions, and the shape of a query.

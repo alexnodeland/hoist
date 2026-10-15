@@ -112,7 +112,7 @@ describe('the server form’s checks', () => {
       checkServer({ ...base, listen: { addr, token_file } }).listen
     expect(listen('127.0.0.1:8931')).toBeUndefined()
     expect(listen('[::1]:8931')).toBeUndefined()
-    expect(listen('0.0.0.0:8931', '~/.stretto/proxy-token')).toBeUndefined()
+    expect(listen('0.0.0.0:8931', '~/.hoist/proxy-token')).toBeUndefined()
     expect(listen('0.0.0.0:8931')).toMatch(/only on a loopback address/)
     expect(listen('127.0.0.1:0')).toMatch(/not 0/)
     for (const bad of ['localhost:8931', '127.0.0.1', '127.0.0.1:99999', '127.0.0.256:80']) {

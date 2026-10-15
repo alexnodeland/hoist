@@ -6,8 +6,8 @@ name: Release
 # v<the version in Cargo.toml> first. Run by hand as a dry run (the
 # default), it builds and packages every target and uploads what the
 # release would carry as the workflow's artifact `release`, and publishes
-# nothing. The release carries the binaries for five targets (stretto,
-# stretto-proxy, stretto-procedure, stretto-mcp-demo, and stretto-console
+# nothing. The release carries the binaries for five targets (Hoist,
+# hoist-mcp, hoist-procedure, hoist-mcp-demo, and hoist-console
 # with its UI built in), an archive each with LICENSE and README.md, their
 # SHA256SUMS, install.sh, install.ps1 and a Homebrew formula with the
 # checksums filled in. A tag with a hyphen
@@ -71,7 +71,7 @@ jobs:
           if-no-files-found: error
 
   # The console's UI (console/dist), built once: every target's
-  # stretto-console embeds the same files.
+  # hoist-console embeds the same files.
   ui:
     runs-on: ubuntu-latest
     steps:
@@ -124,23 +124,23 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          # stretto-console embeds console/dist; without it, it would build with no UI.
+          # hoist-console embeds console/dist; without it, it would build with no UI.
           test -f console/dist/index.html
-          cargo build --locked --release --target "$TARGET" -p stretto-report -p stretto-proxy -p stretto-console
+          cargo build --locked --release --target "$TARGET" -p hoist-report -p hoist-mcp -p hoist-console
       - name: Package
         shell: bash
         run: |
-          name=stretto-$TARGET
+          name=hoist-$TARGET
           exe=
           case $TARGET in *-windows-*) exe=.exe ;; esac
           mkdir "$name"
-          for bin in stretto stretto-proxy stretto-procedure stretto-mcp-demo stretto-console; do
+          for bin in hoist hoist-mcp hoist-procedure hoist-mcp-demo hoist-console; do
             cp "target/$TARGET/release/$bin$exe" "$name/"
           done
           cp LICENSE README.md "$name/"
           # Each binary answers --version, where the runner can run it.
           if [ "$TARGET" != x86_64-apple-darwin ]; then
-            for bin in stretto stretto-proxy stretto-procedure stretto-mcp-demo stretto-console; do
+            for bin in hoist hoist-mcp hoist-procedure hoist-mcp-demo hoist-console; do
               "./$name/$bin$exe" --version
             done
           fi
@@ -151,8 +151,8 @@ jobs:
           fi
       - uses: actions/upload-artifact@v4
         with:
-          name: stretto-${{ matrix.target }}
-          path: stretto-${{ matrix.target }}.*
+          name: hoist-${{ matrix.target }}
+          path: hoist-${{ matrix.target }}.*
           if-no-files-found: error
 
   release:
@@ -169,7 +169,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           path: dist
-          pattern: stretto-*
+          pattern: hoist-*
           merge-multiple: true
       - uses: actions/download-artifact@v4
         with:
@@ -178,10 +178,10 @@ jobs:
       - name: Checksums, the installers and the Homebrew formula
         working-directory: dist
         run: |
-          sha256sum stretto-*.tar.gz stretto-*.zip > SHA256SUMS
+          sha256sum hoist-*.tar.gz hoist-*.zip > SHA256SUMS
           cat SHA256SUMS
           cp ../install.sh ../install.ps1 .
-          sh ../packaging/homebrew/fill.sh "$TAG" SHA256SUMS > stretto.rb
+          sh ../packaging/homebrew/fill.sh "$TAG" SHA256SUMS > hoist.rb
       - name: What the release would carry, on a dry run
         if: github.event_name == 'workflow_dispatch' && inputs.dry_run
         uses: actions/upload-artifact@v4
@@ -192,15 +192,15 @@ jobs:
       - name: Create the release
         if: github.event_name == 'push' || !inputs.dry_run
         run: |
-          set -- --title "stretto $TAG" --notes-file dist/notes.md
+          set -- --title "Hoist $TAG" --notes-file dist/notes.md
           case $TAG in *-*) set -- "$@" --prerelease ;; esac
           if [ "$GITHUB_EVENT_NAME" = push ]; then
             set -- "$@" --verify-tag
           else
             set -- "$@" --target "$GITHUB_SHA"
           fi
-          gh release create "$TAG" "$@" dist/stretto-*.tar.gz dist/stretto-*.zip \
-            dist/SHA256SUMS dist/install.sh dist/install.ps1 dist/stretto.rb
+          gh release create "$TAG" "$@" dist/hoist-*.tar.gz dist/hoist-*.zip \
+            dist/SHA256SUMS dist/install.sh dist/install.ps1 dist/hoist.rb
       # A tag that the workflow's own token creates starts no other workflow,
       # so when run by hand, start the container workflow on the new tag.
       - name: The container image, when run by hand

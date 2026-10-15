@@ -1,14 +1,14 @@
-"""Build stretto's logo files in brand/logo/ from one set of constants.
+"""Build hoist's logo files in brand/logo/ from one set of constants.
 
     python3 brand/tools/build_logo.py
 
-The mark is a stretto of three entries: the same bar (the subject) enters
+The mark is a hoist of three entries: the same bar (the subject) enters
 three times, each entry before the last one ends, and each sooner than the
 one before (offsets of 6, then 4, on a 32-unit grid). The first entry is ink,
 the agent's own call; the two that overlap it are petrol, the reads that run
 ahead of it.
 
-The wordmark is "stretto" in Inter Display SemiBold (Inter 4.001 at wght 600,
+The wordmark is "hoist" in Inter Display SemiBold (Inter 4.001 at wght 600,
 opsz 32), shaped with HarfBuzz (Inter's kerning joins the crossbars of "tt"),
 tracked tighter, and converted to outlines, so no font is needed to show it.
 It is read from brand/fonts/Inter-Variable.subset.woff2 (SIL OFL 1.1).
@@ -47,7 +47,7 @@ TILE_BARS = [(4, 6, 14, 4), (10, 14, 14, 4), (14, 22, 14, 4)]
 TILE_BAR_RADIUS = 1
 APP_ICON_SCALE = 0.8
 
-WORD = "stretto"
+WORD = "hoist"
 WGHT, OPSZ = 600, 32
 TRACKING = -0.02  # em, added after each letter but the last
 T_HEIGHT = 1344  # the top of Inter's "t", in font units (2048 per em)
@@ -55,7 +55,7 @@ T_HEIGHT = 1344  # the top of Inter's "t", in font units (2048 per em)
 LOCKUP_SCALE = 1.0  # the mark's bars span this many "t" heights
 LOCKUP_GAP = 0.42  # the space between mark and wordmark, in mark heights
 
-TITLE = "stretto"
+TITLE = "hoist"
 
 
 def fmt(v: float) -> str:
@@ -116,8 +116,8 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
 
     # The mark.
-    (OUT / "stretto-mark.svg").write_text(svg(32, 32, bars_svg(BARS, [INK, PETROL_LIGHT, PETROL_LIGHT], RADIUS)))
-    (OUT / "stretto-mark-dark.svg").write_text(svg(32, 32, bars_svg(BARS, [PAPER, PETROL_DARK, PETROL_DARK], RADIUS)))
+    (OUT / "hoist-mark.svg").write_text(svg(32, 32, bars_svg(BARS, [INK, PETROL_LIGHT, PETROL_LIGHT], RADIUS)))
+    (OUT / "hoist-mark-dark.svg").write_text(svg(32, 32, bars_svg(BARS, [PAPER, PETROL_DARK, PETROL_DARK], RADIUS)))
 
     # The favicon: a petrol tile with paper bars, legible on light and dark tab bars.
     tile = f'<rect width="32" height="32" rx="{TILE_RADIUS}" fill="{PETROL}"/>'
@@ -139,8 +139,8 @@ def main() -> None:
     group = lambda color: (
         f'<path fill="{color}" transform="translate({fmt(pad - x0 * s)} {fmt(pad - y0 * s)}) scale({s:.6f})" d="{d}"/>'
     )
-    (OUT / "stretto-wordmark.svg").write_text(svg(w, h, group(INK)))
-    (OUT / "stretto-wordmark-dark.svg").write_text(svg(w, h, group(PAPER)))
+    (OUT / "hoist-wordmark.svg").write_text(svg(w, h, group(INK)))
+    (OUT / "hoist-wordmark-dark.svg").write_text(svg(w, h, group(PAPER)))
 
     # The lockup: the mark's bars span the wordmark's "t", from its top to the
     # baseline, and a gap of LOCKUP_GAP mark heights separates the two.
@@ -167,8 +167,8 @@ def main() -> None:
             + f'<path fill="{word}" transform="translate({fmt(word_x)} {fmt(-top)}) scale({s:.6f})" d="{d}"/>',
         )
 
-    (OUT / "stretto-lockup.svg").write_text(lockup(INK, PETROL_LIGHT, INK))
-    (OUT / "stretto-lockup-dark.svg").write_text(lockup(PAPER, PETROL_DARK, PAPER))
+    (OUT / "hoist-lockup.svg").write_text(lockup(INK, PETROL_LIGHT, INK))
+    (OUT / "hoist-lockup-dark.svg").write_text(lockup(PAPER, PETROL_DARK, PAPER))
     for f in sorted(OUT.glob("*.svg")):
         print(f"{f.relative_to(BRAND.parent)}: {f.stat().st_size} bytes")
 

@@ -101,17 +101,17 @@ const factors = computed(() =>
 .dr {
   list-style: none;
   border-radius: 10px;
-  border: 1px solid var(--stretto-border);
-  background: var(--stretto-surface);
+  border: 1px solid var(--hoist-border);
+  background: var(--hoist-surface);
 }
 
 .dr-made {
-  border-color: color-mix(in oklab, var(--stretto-accent-graphic) 55%, var(--stretto-border));
-  box-shadow: inset 3px 0 0 var(--stretto-accent-graphic);
+  border-color: color-mix(in oklab, var(--hoist-accent-graphic) 55%, var(--hoist-border));
+  box-shadow: inset 3px 0 0 var(--hoist-accent-graphic);
 }
 
 .dr-shadow {
-  border: 1px dashed var(--stretto-accent-graphic);
+  border: 1px dashed var(--hoist-accent-graphic);
   background: transparent;
 }
 
@@ -139,13 +139,13 @@ const factors = computed(() =>
 
 .dr-made .dr-icon,
 .dr-shadow .dr-icon {
-  background: var(--stretto-accent-soft);
-  color: var(--stretto-accent);
+  background: var(--hoist-accent-soft);
+  color: var(--hoist-accent);
 }
 
 .dr-back .dr-icon {
-  background: var(--stretto-surface-2);
-  color: var(--stretto-text-subtle);
+  background: var(--hoist-surface-2);
+  color: var(--hoist-text-subtle);
 }
 
 .dr-main {
@@ -163,20 +163,20 @@ const factors = computed(() =>
 }
 
 .dr-back .dr-title {
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .dr-args {
   font-size: 12px;
   font-weight: 400;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
   overflow-wrap: anywhere;
 }
 
 .dr-sub {
   margin-top: 2px;
   font-size: 12px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
   overflow-wrap: anywhere;
 }
 
@@ -194,7 +194,7 @@ const factors = computed(() =>
 
 .dr-factors {
   font-size: 11.5px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .dr-toggle {
@@ -206,7 +206,7 @@ const factors = computed(() =>
   border: 0;
   border-radius: 7px;
   background: none;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .dr-toggle-space {
@@ -216,7 +216,7 @@ const factors = computed(() =>
 
 .dr-toggle:hover {
   background: var(--c-hover);
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .dr-toggle svg {

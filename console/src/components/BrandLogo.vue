@@ -1,9 +1,9 @@
 <script setup lang="ts">
 /** The brand's logo files, as they come: ink and petrol on light, paper and light petrol on dark. */
-import lockup from '@brand/logo/stretto-lockup.svg'
-import lockupDark from '@brand/logo/stretto-lockup-dark.svg'
-import mark from '@brand/logo/stretto-mark.svg'
-import markDark from '@brand/logo/stretto-mark-dark.svg'
+import lockup from '@brand/logo/hoist-lockup.svg'
+import lockupDark from '@brand/logo/hoist-lockup-dark.svg'
+import mark from '@brand/logo/hoist-mark.svg'
+import markDark from '@brand/logo/hoist-mark-dark.svg'
 
 withDefaults(defineProps<{ variant?: 'lockup' | 'mark'; height?: number }>(), {
   variant: 'lockup',
@@ -16,13 +16,13 @@ withDefaults(defineProps<{ variant?: 'lockup' | 'mark'; height?: number }>(), {
     <img
       class="logo-light"
       :src="variant === 'mark' ? mark : lockup"
-      alt="stretto"
+      alt="hoist"
       :height="height"
     />
     <img
       class="logo-dark"
       :src="variant === 'mark' ? markDark : lockupDark"
-      alt="stretto"
+      alt="hoist"
       :height="height"
     />
   </span>

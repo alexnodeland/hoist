@@ -2,7 +2,7 @@ import { test as base, expect, type Page } from '@playwright/test'
 
 /**
  * The tests against the real console share its data directory, a copy of
- * crates/stretto-console/tests/fixtures/home: six sessions of the shop
+ * crates/hoist-console/tests/fixtures/home: six sessions of the shop
  * recorded by the quickstart, two served with its flow, three in shadow, one
  * of the retail domain with a failed call, the shop's flow and its promotion,
  * and two servers (shop over stdio, orders over Streamable HTTP).

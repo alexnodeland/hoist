@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""BFCL's multi-turn tasks as τ²-bench episodes, so stretto's tools read them.
+"""BFCL's multi-turn tasks as τ²-bench episodes, so Hoist's tools read them.
 
 The Berkeley Function Calling Leaderboard's multi-turn categories give, for
 each task, the user's turns, the APIs in play (a file system, messaging, a
@@ -8,7 +8,7 @@ state, and the calls that answer each turn. This runs those calls against
 BFCL's own Python backends, turn by turn, and writes each task as one episode
 in τ²-bench's results format: the user's message, one assistant turn per call
 with what it returned, and a short reply that closes the turn. It also writes
-a checkout-shaped folder that stretto reads as τ²-bench's: the tools, each
+a checkout-shaped folder that Hoist reads as τ²-bench's: the tools, each
 marked a read or a write, and a train/test split by task.
 
     bfcl_to_tau2.py --bfcl DIR --out DIR [--categories base long_context] [--test-share 0.4]

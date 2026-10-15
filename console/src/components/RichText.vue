@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/** Text from the server, with its `backticked` words set as code, as stretto's own messages mark them. */
+/** Text from the server, with its `backticked` words set as code, as Hoist's own messages mark them. */
 import { computed } from 'vue'
 
 const props = defineProps<{ text: string }>()
@@ -28,8 +28,8 @@ const parts = computed(() =>
 .rich-code {
   padding: 0 4px;
   border-radius: 4px;
-  background: var(--stretto-surface-2);
-  border: 1px solid var(--stretto-border);
+  background: var(--hoist-surface-2);
+  border: 1px solid var(--hoist-border);
   font-size: 0.88em;
 }
 </style>

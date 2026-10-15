@@ -80,22 +80,22 @@ const sorted = computed(() =>
 }
 
 .may {
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
 }
 
 .never {
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .write .never {
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   font-weight: 500;
 }
 
 .summary {
   min-width: 280px;
   max-width: 560px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
   font-size: 13px;
 }
 
@@ -107,7 +107,7 @@ const sorted = computed(() =>
 .args summary {
   width: fit-content;
   cursor: pointer;
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
   font-weight: 500;
   border-radius: 4px;
 }
@@ -121,13 +121,13 @@ const sorted = computed(() =>
 }
 
 .args .mono {
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   font-size: 11.5px;
 }
 
 .contract {
   font-size: 11.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
   white-space: nowrap;
 }
 </style>

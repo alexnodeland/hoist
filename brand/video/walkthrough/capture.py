@@ -4,10 +4,10 @@ write what it prints, with timing, as an asciicast (v2) file.
 
     python3 brand/video/walkthrough/capture.py --bin DIR [--work DIR] [--out FILE]
 
---bin is the directory with the stretto binaries (stretto, stretto-proxy,
-stretto-procedure, stretto-mcp-demo). Every command in script.sh runs for
-real, in a fresh working directory that is also HOME, so `stretto doctor` and
-~/.stretto see a new installation: the binaries are copied into its
+--bin is the directory with the hoist binaries (hoist, hoist-mcp,
+hoist-procedure, hoist-mcp-demo). Every command in script.sh runs for
+real, in a fresh working directory that is also HOME, so `hoist doctor` and
+~/.hoist see a new installation: the binaries are copied into its
 .cargo/bin, where `cargo install` puts them. The commands get a small
 environment: PATH, HOME, locale, terminal size, proxy settings and npm's cache
 (so npx finds the filesystem server it already has); no other variable of
@@ -47,7 +47,7 @@ KEEP = {"LANG", "LC_ALL", "LC_CTYPE", "TMPDIR", "USER", "LOGNAME", "SHELL",
         "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS", "REQUESTS_CA_BUNDLE", "NPM_CONFIG_CACHE"}
 
 
-BINARIES = ("stretto", "stretto-proxy", "stretto-procedure", "stretto-mcp-demo")
+BINARIES = ("hoist", "hoist-mcp", "hoist-procedure", "hoist-mcp-demo")
 
 
 def environment(bin_dir: Path, work: Path) -> dict:
@@ -60,7 +60,7 @@ def environment(bin_dir: Path, work: Path) -> dict:
         "PATH": f"{bin_dir}:{os.environ.get('PATH', '/usr/bin:/bin')}",
         "TERM": "xterm-256color", "COLUMNS": str(COLS), "LINES": str(ROWS),
         "LANG": env.get("LANG", "C.UTF-8"),
-        "STRETTO_CAPTURE": "1", "STRETTO_WORK": str(work), "STRETTO_BIN": str(bin_dir),
+        "HOIST_CAPTURE": "1", "HOIST_WORK": str(work), "HOIST_BIN": str(bin_dir),
         "PS1": "$ ",
     })
     return env
@@ -68,7 +68,7 @@ def environment(bin_dir: Path, work: Path) -> dict:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--bin", required=True, type=Path, help="directory with stretto and stretto-proxy")
+    ap.add_argument("--bin", required=True, type=Path, help="directory with hoist and hoist-mcp")
     ap.add_argument("--work", type=Path, help="working directory (default: a new temporary one)")
     ap.add_argument("--out", type=Path, default=HERE / "walkthrough.cast")
     ap.add_argument("--script", type=Path, default=HERE / "script.sh")
@@ -78,7 +78,7 @@ def main() -> None:
     for name in BINARIES:
         if not (source / name).exists():
             sys.exit(f"capture: no {name} in {source}")
-    work = (args.work or Path(tempfile.mkdtemp(prefix="stretto-walkthrough-"))).resolve()
+    work = (args.work or Path(tempfile.mkdtemp(prefix="hoist-walkthrough-"))).resolve()
     if work.exists():
         shutil.rmtree(work)
     bin_dir = work / ".cargo" / "bin"
@@ -86,7 +86,7 @@ def main() -> None:
     for name in BINARIES:
         shutil.copy2(source / name, bin_dir / name)
     env = environment(bin_dir, work)
-    version = subprocess.run([str(bin_dir / "stretto"), "--version"], capture_output=True, text=True, env=env).stdout.strip()
+    version = subprocess.run([str(bin_dir / "hoist"), "--version"], capture_output=True, text=True, env=env).stdout.strip()
 
     pid, fd = pty.fork()
     if pid == 0:
@@ -164,9 +164,9 @@ def main() -> None:
     header = {
         "version": 2, "width": COLS, "height": ROWS,
         "timestamp": int(time.time()),
-        "title": "stretto: the walkthrough",
+        "title": "hoist: the walkthrough",
         "env": {"SHELL": "/bin/bash", "TERM": "xterm-256color"},
-        "stretto": {
+        "hoist": {
             "version": version,
             "script": "brand/video/walkthrough/script.sh",
             "note": f"The capture's working directory was HOME, and its paths are shown under {DISPLAY_HOME}; "

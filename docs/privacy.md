@@ -1,22 +1,22 @@
 # Privacy
 
-A deployment records what its tools read and return, and what its customers say. This page lists what each file stretto writes holds, what is sent off the machine, and how to keep less of it: retention, and pseudonymized copies to share.
+A deployment records what its tools read and return, and what its customers say. This page lists what each file Hoist writes holds, what is sent off the machine, and how to keep less of it: retention, and pseudonymized copies to share.
 
 ## What each file holds
 
 | File | Written by | What it holds |
 |---|---|---|
-| Session log, `<dir>/<session>.jsonl` | `stretto-proxy --record <dir>` | A header: the session id, start time, domain, agent model, the host session (`STRETTO_SESSION` as the host set it, or the host's process id), the server's name, and the server's command with credential-looking arguments replaced by `<redacted>`. Then every JSON-RPC message in both directions, verbatim: `tools/list`, each tool call's arguments and result, notifications and errors. With `--context`, the conversation, as `context` entries. The proxy's own lookups, as `proxy` entries. **Everything the tools read or return, and everything the customer said.** |
-| Flow log, `<session>.flow.jsonl` beside it, or `--flow-log` | `stretto-proxy --flow` | One line per decision: the site, what the flow did (a lookup's tool and arguments, or why it handed back, or why the proxy withheld the lookup), the arbiter's probabilities, the System-One model's answer and the predicates', the answer's cache key, and timing. With `--flow-explore`, also every lookup the site offered, with its bound arguments. **Argument values, such as ids.** Then one line per run: the tool called before it, and each decision and outcome as a number or a yes/no with its score. No results or messages. |
-| Confirmation log, `<session>.confirm.jsonl` beside it, or `--confirm-log` | `stretto-proxy --confirm-judge` | One line per judged write: the tool and its full arguments, the word list's verdict, the judge's probabilities, the proposal check's flagged values, cache keys and timing. **A write's arguments,** such as an address or a payment method. |
-| Answer cache, `<dir>/<ab>/<key>.json` | `--oracle-cache` (the proxy's default is `~/.stretto/oracle-cache`) | One file per question asked, named by the SHA-256 of the whole request: the model version that answered, the answers (a probability for each option) and token usage. **Never the request's state.** The live flow's options are tool names. The offline argument questions (`stretto phase0 --oracle`) have argument values as options, so their answers hold those values. |
-| Request dump, `--oracle-dump <file>` | `stretto` commands that ask questions | Every request in full, state included. **As sensitive as the session logs.** It exists for inspection; don't keep or share it. |
-| Flow, `*.flow.json` | `stretto compile`, `stretto learn` | Tool names and their documentation, argument names, JSON paths, counts and question texts. **`map.ids` holds values copied from training outputs** ([formats](formats.md)); `compile --no-features` leaves it empty. `flow-show` counts them but doesn't print them. |
-| Arbiter, `*.arbiter.json` | `stretto export-arbiter`, `fit-arbiter` | Weights, the predicates' texts, the model's name and the flow it came from. No session data. |
-| Answer bundle, `answers-*.jsonl.gz` | `stretto export-answers` | Request keys and answers, as in the cache. No states. |
-| Server registry, `servers.json` | `stretto-console` | Each server's name, its command or URL, the *names* of the environment variables and headers it needs (never their values), its mode, flow, decider and threshold; the guards, the confirmation judge and the path of the conversation file it reads, `stretto_commit`, and how many days the proxy keeps what it records. |
-| Jobs, `console/jobs/<id>.json` and `<id>.log` | `stretto-console` | Each job's parameters, its command line and exit code, and everything the `stretto` CLI printed. The reports jobs write (an audit's, a promotion's) are beside them. |
-| Trash, `console/trash/<time>/` | `stretto-console` | Sessions and flows deleted from the console, whole, at their paths. **As sensitive as what they were**, until you empty it. |
+| Session log, `<dir>/<session>.jsonl` | `hoist-mcp --record <dir>` | A header: the session id, start time, domain, agent model, the host session (`HOIST_SESSION` as the host set it, or the host's process id), the server's name, and the server's command with credential-looking arguments replaced by `<redacted>`. Then every JSON-RPC message in both directions, verbatim: `tools/list`, each tool call's arguments and result, notifications and errors. With `--context`, the conversation, as `context` entries. The proxy's own lookups, as `proxy` entries. **Everything the tools read or return, and everything the customer said.** |
+| Flow log, `<session>.flow.jsonl` beside it, or `--flow-log` | `hoist-mcp --flow` | One line per decision: the site, what the flow did (a lookup's tool and arguments, or why it handed back, or why the proxy withheld the lookup), the arbiter's probabilities, the System-One model's answer and the predicates', the answer's cache key, and timing. With `--flow-explore`, also every lookup the site offered, with its bound arguments. **Argument values, such as ids.** Then one line per run: the tool called before it, and each decision and outcome as a number or a yes/no with its score. No results or messages. |
+| Confirmation log, `<session>.confirm.jsonl` beside it, or `--confirm-log` | `hoist-mcp --confirm-judge` | One line per judged write: the tool and its full arguments, the word list's verdict, the judge's probabilities, the proposal check's flagged values, cache keys and timing. **A write's arguments,** such as an address or a payment method. |
+| Answer cache, `<dir>/<ab>/<key>.json` | `--oracle-cache` (the proxy's default is `~/.hoist/oracle-cache`) | One file per question asked, named by the SHA-256 of the whole request: the model version that answered, the answers (a probability for each option) and token usage. **Never the request's state.** The live flow's options are tool names. The offline argument questions (`hoist phase0 --oracle`) have argument values as options, so their answers hold those values. |
+| Request dump, `--oracle-dump <file>` | `hoist` commands that ask questions | Every request in full, state included. **As sensitive as the session logs.** It exists for inspection; don't keep or share it. |
+| Flow, `*.flow.json` | `hoist compile`, `hoist learn` | Tool names and their documentation, argument names, JSON paths, counts and question texts. **`map.ids` holds values copied from training outputs** ([formats](formats.md)); `compile --no-features` leaves it empty. `flow-show` counts them but doesn't print them. |
+| Arbiter, `*.arbiter.json` | `hoist export-arbiter`, `fit-arbiter` | Weights, the predicates' texts, the model's name and the flow it came from. No session data. |
+| Answer bundle, `answers-*.jsonl.gz` | `hoist export-answers` | Request keys and answers, as in the cache. No states. |
+| Server registry, `servers.json` | `hoist-console` | Each server's name, its command or URL, the *names* of the environment variables and headers it needs (never their values), its mode, flow, decider and threshold; the guards, the confirmation judge and the path of the conversation file it reads, `hoist_commit`, and how many days the proxy keeps what it records. |
+| Jobs, `console/jobs/<id>.json` and `<id>.log` | `hoist-console` | Each job's parameters, its command line and exit code, and everything the `hoist` CLI printed. The reports jobs write (an audit's, a promotion's) are beside them. |
+| Trash, `console/trash/<time>/` | `hoist-console` | Sessions and flows deleted from the console, whole, at their paths. **As sensitive as what they were**, until you empty it. |
 
 ## What leaves the machine
 
@@ -25,7 +25,7 @@ The logs, the cache and the flows stay where they are written. The proxy talks t
 Questions go to Jev (TypeSafe's `POST /v1/systemone`) only on a cache miss, and only when:
 
 - the proxy serves a flow with its arbiter (`--flow-decider arbiter`, the default for a flow that has one; `reach` and `habit` ask nothing), or runs the confirmation judge (`--confirm-judge`), with `--oracle jev`; or
-- an offline command asks: `stretto phase0 --oracle`, `learn` or `compile` fitting an arbiter, `confirm`, `match`, `ask`.
+- an offline command asks: `hoist phase0 --oracle`, `learn` or `compile` fitting an arbiter, `confirm`, `match`, `ask`.
 
 A flow's question at a site carries this state:
 
@@ -44,11 +44,11 @@ The confirmation judge's question carries the end of the agent's last message (`
 
 Offline, `phase0` sends the same state for recorded episodes. Its argument questions add the pending call's other arguments, with the candidate values as options.
 
-What TypeSafe keeps of a request is governed by your agreement with TypeSafe, not by stretto. To send nothing, serve flows with the habit alone and leave the confirmation judge off. Leaving fields out of the state is not built yet ([#24](https://github.com/alexnodeland/stretto/issues/24)).
+What TypeSafe keeps of a request is governed by your agreement with TypeSafe, not by Hoist. To send nothing, serve flows with the habit alone and leave the confirmation judge off. Leaving fields out of the state is not built yet ([#24](https://github.com/alexnodeland/hoist/issues/24)).
 
 ## Keeping less: `--retain-days`
 
-`stretto-proxy --retain-days N` deletes, when it starts, the `.jsonl` and `.json` files last modified more than N days ago under `--record` and under `--oracle-cache`. That covers the session logs, the flow and confirmation logs kept beside them, and the cached answers.
+`hoist-mcp --retain-days N` deletes, when it starts, the `.jsonl` and `.json` files last modified more than N days ago under `--record` and under `--oracle-cache`. That covers the session logs, the flow and confirmation logs kept beside them, and the cached answers.
 
 It does not cover:
 
@@ -58,14 +58,14 @@ It does not cover:
 
 It prunes at start only, so a proxy that runs for weeks prunes at its next start. A deleted answer is paid for again if the question comes back.
 
-## Sharing sessions: `stretto redact`
+## Sharing sessions: `hoist redact`
 
-`stretto redact` writes a pseudonymized copy of recorded sessions, from which `stretto learn` learns the same flow:
+`hoist redact` writes a pseudonymized copy of recorded sessions, from which `hoist learn` learns the same flow:
 
 ```sh
 # Keep the salt secret. Reuse it when two batches' hashes must match.
-export STRETTO_REDACT_SALT="$(openssl rand -hex 16)"
-stretto redact --sessions ~/.stretto/logs --out shared/logs \
+export HOIST_REDACT_SALT="$(openssl rand -hex 16)"
+hoist redact --sessions ~/.hoist/logs --out shared/logs \
   --hash-field user_id,email,name,address,payment_method_id,orders,order_id
 ```
 
@@ -79,7 +79,7 @@ What it keeps: tool names, JSON structure, `initialize` and `tools/list`, timing
 
 The rule:
 
-- **Rare values are hashed.** A value that fewer than `--keep-shared` sessions contain (3 by default) becomes `h_` and 12 hex digits of SHA-256 of the salt and the value. It is the same hash wherever the value appears, in any of the sessions. The logs one host session left with several servers count as one session, as `stretto learn` reads them.
+- **Rare values are hashed.** A value that fewer than `--keep-shared` sessions contain (3 by default) becomes `h_` and 12 hex digits of SHA-256 of the salt and the value. It is the same hash wherever the value appears, in any of the sessions. The logs one host session left with several servers count as one session, as `hoist learn` reads them.
 - **Shared values are kept.** A status, a reason, a product type or a field name appears in many sessions and says nothing about one person.
 - **Named fields are always hashed.** A value that many sessions share is not always shared by many people: a customer with several sessions shares their own id among them. `--hash-field` names fields (JSON keys, at any depth of the arguments and results) whose values, and each word of them, are hashed however many sessions share them.
 - **Declared names are always kept.** The tools' names, and the property names and enum values of their schemas in `tools/list`, are kept even when few sessions use them, so a rarely called tool's argument names survive.
@@ -111,7 +111,7 @@ The kept ids and payment methods belong to customers with three or more sessions
 ### Caveats
 
 - **Pseudonymization, not anonymization.** A hash links one person's sessions to each other; that is what learning needs. Anyone who holds the salt can hash a guess and look for it, so keep the salt secret. Free text can still identify someone, for example a unique story in the conversation.
-- **Keys can be data.** Some tools key records by id, such as a customer's payment methods, so JSON keys are hashed like values. The keys of a tool called in fewer than `--keep-shared` sessions are hashed too. A binding whose path runs through such a key would differ. Before relying on a copy, learn from both and compare with `stretto flow-diff`.
+- **Keys can be data.** Some tools key records by id, such as a customer's payment methods, so JSON keys are hashed like values. The keys of a tool called in fewer than `--keep-shared` sessions are hashed too. A binding whose path runs through such a key would differ. Before relying on a copy, learn from both and compare with `hoist flow-diff`.
 - **Code features read values.** A code feature over a named field's values would hold hashes, which never match a live value. Name only fields that identify people.
 - **Only session logs are rewritten.** Flow and confirmation logs, the answer cache and request dumps are not. Don't share them.
 

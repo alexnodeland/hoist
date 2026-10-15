@@ -1,12 +1,12 @@
 ---
 layout: home
-title: stretto
+title: Hoist
 titleTemplate: Fewer LLM turns for tool-using agents
 
 hero:
-  name: stretto
+  name: Hoist
   text: Read ahead of your agent.
-  tagline: stretto learns, from your agent's recorded tool calls, which reads come next and where their arguments come from. An MCP proxy then makes those reads for it, in the same tool result.
+  tagline: Hoist learns, from your agent's recorded tool calls, which reads come next and where their arguments come from. An MCP proxy then makes those reads for it, in the same tool result.
   image:
     light: /logo.svg
     dark: /logo-dark.svg
@@ -19,7 +19,7 @@ hero:
       text: Get started
       link: /guide/quick-start
     - theme: alt
-      text: Why stretto?
+      text: Why Hoist?
       link: /guide/why
 
 film:
@@ -27,7 +27,7 @@ film:
 
 features:
   - title: Any MCP server, any host
-    details: stretto-proxy takes the server's place in your host's configuration, and runs it as a command or reaches it over Streamable HTTP. It forwards every message and records each session.
+    details: hoist-mcp takes the server's place in your host's configuration, and runs it as a command or reaches it over Streamable HTTP. It forwards every message and records each session.
     link: /integrations/
     linkText: Integrations
   - title: Reads only, so the worst case is a detour
@@ -43,18 +43,18 @@ features:
     link: /guide/concepts/audit-and-review
     linkText: Audit and review
   - title: Shadow first, then promote
-    details: In shadow mode a flow decides and logs, but looks nothing up. stretto promote then keeps it to the sites where its lookups were the agent's own.
+    details: In shadow mode a flow decides and logs, but looks nothing up. hoist promote then keeps it to the sites where its lookups were the agent's own.
     link: /guide/concepts/shadow-and-promotion
     linkText: Shadow mode
   - title: Compile once where no user speaks
-    details: stretto-procedure runs a compiled workflow, writes included, with no model, and hands back what its outcome check cannot confirm. On τ²-bench's solo telecom tasks, 39 of 40 held-out tasks passed with a model on its 4 hand-backs.
+    details: hoist-procedure runs a compiled workflow, writes included, with no model, and hands back what its outcome check cannot confirm. On τ²-bench's solo telecom tasks, 39 of 40 held-out tasks passed with a model on its 4 hand-backs.
     link: /guide/concepts/procedures
     linkText: Procedures
 ---
 
 ## How it works
 
-<p class="home-lead">stretto sits where MCP already puts a server. It records what your agent does, learns which reads follow which calls, and serves those reads behind the agent's own calls.</p>
+<p class="home-lead">Hoist sits where MCP already puts a server. It records what your agent does, learns which reads follow which calls, and serves those reads behind the agent's own calls.</p>
 
 <HowItWorks />
 
@@ -79,10 +79,10 @@ The agent made 1 call where it had made 3. [The walkthrough](/guide/walkthrough)
 
 ## See it in the console
 
-<p class="home-lead">The console is a web app on your machine, over the files stretto writes. It shows each session as a timeline, with the reads stretto made after each call and why, and each flow as a graph you can try at another threshold. It also has your servers with their host configuration, and the CLI's jobs, run from the page.</p>
+<p class="home-lead">The console is a web app on your machine, over the files Hoist writes. It shows each session as a timeline, with the reads Hoist made after each call and why, and each flow as a graph you can try at another threshold. It also has your servers with their host configuration, and the CLI's jobs, run from the page.</p>
 
-![A served session in the console: the customer's request, the agent's first call, and the three lookups stretto read ahead after it, each with its probability against the threshold](../brand/media/console/session-light.png#gh-light-mode-only)
-![A served session in the console: the customer's request, the agent's first call, and the three lookups stretto read ahead after it, each with its probability against the threshold](../brand/media/console/session-dark.png#gh-dark-mode-only)
+![A served session in the console: the customer's request, the agent's first call, and the three lookups Hoist read ahead after it, each with its probability against the threshold](../brand/media/console/session-light.png#gh-light-mode-only)
+![A served session in the console: the customer's request, the agent's first call, and the three lookups Hoist read ahead after it, each with its probability against the threshold](../brand/media/console/session-dark.png#gh-dark-mode-only)
 
 [The console's guide](/guide/console) shows how to run it, from a checkout or in a container.
 
@@ -109,4 +109,4 @@ The agent made 1 call where it had made 3. [The walkthrough](/guide/walkthrough)
   </a>
 </div>
 
-Read [why stretto](/guide/why) for where these come from and what they do not show, or [the paper](/research/paper) ([PDF](/paper/stretto.pdf)) for the model behind them.
+Read [why Hoist](/guide/why) for where these come from and what they do not show, or [the paper](/research/paper) ([PDF](/paper/hoist.pdf)) for the model behind them.

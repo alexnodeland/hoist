@@ -19,7 +19,7 @@ faster, which is enough to change Kokoro's take. The clips are written:
 
 A clip whose words and settings have not changed is kept. Text on screen is
 written for reading: a line's `say`, and SAY below, give what the voice says.
-"stretto" is said the American way, STRED-oh, which misaki (Kokoro's
+"hoist" is said the American way, STRED-oh, which misaki (Kokoro's
 grapheme-to-phoneme front end) gives it from its own rules; LEXICON pins it
 anyway, with any other word whose reading must not drift.
 
@@ -59,7 +59,7 @@ SPEED = 0.85  # between Auracle's launch film (0.82) and its films for engineers
 RETRY_SPEEDS = [0.83, 0.87, 0.81]  # a take that fails its check is spoken again at these
 # Words whose reading is pinned, in misaki's phoneme alphabet (US voices).
 LEXICON = {
-    "stretto": "stɹˈɛTO",
+    "hoist": "stɹˈɛTO",
     "Dirichlet": "dˌɪɹɪklˈA",  # deer-ih-KLAY; misaki's dictionary lacks it
     "nats": "nˈæts",  # the unit, not an acronym
 }
@@ -78,7 +78,7 @@ SAY = [
     (r"\bLLM\b", "L L M"),
     (r"\bMCP\b", "M C P"),
     (r"\bmcp\b", "M C P"),
-    (r"stretto-proxy", "stretto proxy"),
+    (r"hoist-mcp", "hoist proxy"),
     (r"flow-show", "flow show"),
     (r"flow-diff", "flow diff"),
     (r"--habit-only", "habit only"),
@@ -173,7 +173,7 @@ class Voice:
         """Transcribes the clip and compares it with what it should say: (how far off, its words, what was heard).
 
         How far off is the share of words missing, added or changed, plus one if
-        a phrase was dropped or "stretto" was not heard; under PASS, the take passes."""
+        a phrase was dropped or "hoist" was not heard; under PASS, the take passes."""
         import numpy as np
         import soundfile as sf
 
@@ -197,13 +197,13 @@ class Voice:
         # small.en hears "tau two bench" as "how to bench", whoever says it.
         if "tau two bench" in say.lower():
             wer = max(0.0, wer - 2 / max(1, len(ref)))
-        return wer + ("stretto" in ref and "stretto" not in hyp), words, heard
+        return wer + ("hoist" in ref and "hoist" not in hyp), words, heard
 
 
 PASS = 0.12
 CHECK_PAD = 0.3  # seconds of silence before a clip, as it is checked
-# How small.en writes the coined "stretto" when it is said right.
-STRETTO_HEARD = {"stretto", "stredo", "streddo", "stretoh", "strato", "stretteau", "streto", "stretta"}
+# How small.en writes the coined "hoist" when it is said right.
+HOIST_HEARD = {"hoist", "stredo", "streddo", "stretoh", "strato", "stretteau", "streto", "stretta"}
 NUMBERS = {"zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8,
            "nine": 9, "ten": 10, "eleven": 11, "twelve": 12, "thirteen": 13, "fourteen": 14, "fifteen": 15,
            "sixteen": 16, "seventeen": 17, "eighteen": 18, "nineteen": 19, "twenty": 20, "thirty": 30, "forty": 40,
@@ -212,7 +212,7 @@ NUMBERS = {"zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six
 
 # How small.en writes a few of the scripts' words, whoever says them.
 HEARD_AS = [(r"\bin it\b", "init"), (r"\bfile system\b", "filesystem"), (r"\b(clod|clawed)\b", "claude"),
-            (r"\bwalk ?throughs\b", "walkthrough's"), (r"\bwalk through\b", "walkthrough"), (r"\bstrato ?proxy\b", "stretto proxy"),
+            (r"\bwalk ?throughs\b", "walkthrough's"), (r"\bwalk through\b", "walkthrough"), (r"\bstrato ?proxy\b", "hoist proxy"),
             (r"\breeds\b", "reads"), (r"\breed's\b", "read's"), (r"\btao ?2\b", "tau two"), (r"\bdiraclet\b", "dirichlet")]
 
 
@@ -238,8 +238,8 @@ def comparable(text: str) -> list[str]:
                 j += 1
             out.append("".join(words[i:j]))
             i = j - 1
-        elif w in STRETTO_HEARD:
-            out.append("stretto")
+        elif w in HOIST_HEARD:
+            out.append("hoist")
         elif w not in ("percent", "point"):
             out.append(w)
         i += 1

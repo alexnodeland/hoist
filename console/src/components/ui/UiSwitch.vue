@@ -44,16 +44,16 @@ const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>()
   margin-top: 1px;
   padding: 0;
   border-radius: 999px;
-  border: 1px solid var(--stretto-border-strong);
-  background: var(--stretto-surface-2);
+  border: 1px solid var(--hoist-border-strong);
+  background: var(--hoist-surface-2);
   transition:
     background-color 0.15s var(--c-ease),
     border-color 0.15s var(--c-ease);
 }
 
 .switch[aria-checked='true'] {
-  background: var(--stretto-accent-fill);
-  border-color: var(--stretto-accent-fill);
+  background: var(--hoist-accent-fill);
+  border-color: var(--hoist-accent-fill);
 }
 
 .switch-thumb {
@@ -63,14 +63,14 @@ const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>()
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: var(--stretto-surface);
+  background: var(--hoist-surface);
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
   transition: transform 0.15s var(--c-ease);
 }
 
 .switch[aria-checked='true'] .switch-thumb {
   transform: translateX(16px);
-  background: var(--stretto-on-accent);
+  background: var(--hoist-on-accent);
 }
 
 .switch-text {
@@ -86,6 +86,6 @@ const emit = defineEmits<{ 'update:modelValue': [value: boolean] }>()
 
 .switch-hint {
   font-size: 12.5px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 </style>

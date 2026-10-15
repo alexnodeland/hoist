@@ -51,7 +51,7 @@ const themeChoice = computed({
   set: (v: ThemeChoice) => setTheme(v),
 })
 
-const PRIVACY = 'https://github.com/alexnodeland/stretto/blob/main/docs/privacy.md'
+const PRIVACY = 'https://github.com/alexnodeland/hoist/blob/main/docs/privacy.md'
 
 /** What `--version` printed, without the binary's name before it. */
 function versionOf(b: BinaryStatus): string {
@@ -71,8 +71,8 @@ async function leave() {
 <template>
   <div class="page">
     <UiPageHeader title="Settings"
-      >The console’s data, installation and access. It is set when stretto-console starts: these
-      show what it runs with.</UiPageHeader
+      >The console’s data, installation and access. It is set when hoist-console starts: these show
+      what it runs with.</UiPageHeader
     >
 
     <div v-if="settings.error.value" class="card">
@@ -87,7 +87,7 @@ async function leave() {
       <div class="stack">
         <UiCard
           title="Data"
-          caption="The directory the console reads: --data, else $STRETTO_HOME, else ~/.stretto"
+          caption="The directory the console reads: --data, else $HOIST_HOME, else ~/.hoist"
         >
           <template v-if="s">
             <div class="dir">
@@ -266,8 +266,8 @@ async function leave() {
   gap: 10px;
   padding: 8px 8px 8px 12px;
   border-radius: 8px;
-  background: var(--stretto-surface-2);
-  border: 1px solid var(--stretto-border);
+  background: var(--hoist-surface-2);
+  border: 1px solid var(--hoist-border);
 }
 
 .dir .mono {
@@ -280,11 +280,11 @@ async function leave() {
 .counts {
   margin: 14px 0 12px;
   font-size: 13.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .counts strong {
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   font-weight: 600;
 }
 
@@ -310,14 +310,14 @@ async function leave() {
 
 .disk-bytes {
   flex: none;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .disk-track {
   height: 8px;
   border-radius: 4px;
-  background: var(--stretto-surface-2);
-  box-shadow: inset 0 0 0 1px var(--stretto-border);
+  background: var(--hoist-surface-2);
+  box-shadow: inset 0 0 0 1px var(--hoist-border);
   overflow: hidden;
 }
 
@@ -325,7 +325,7 @@ async function leave() {
   display: block;
   height: 100%;
   border-radius: 4px;
-  background: var(--stretto-accent-graphic);
+  background: var(--hoist-accent-graphic);
 }
 
 .binary {
@@ -351,7 +351,7 @@ async function leave() {
   flex-direction: column;
   gap: 6px;
   padding-left: 18px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .privacy .mono {

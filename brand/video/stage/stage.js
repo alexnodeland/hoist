@@ -200,7 +200,7 @@
     return `<svg width="${w}" height="${h}" viewBox="0 0 31 30" style="display:block"><rect x="0" y="0.5" width="20" height="7" rx="1.5" fill="${ink}"/><rect x="6" y="11.5" width="20" height="7" rx="1.5" fill="${acc}"/><rect x="11" y="22.5" width="20" height="7" rx="1.5" fill="${acc}"/></svg>`;
   };
   const wordmarkSvg = (h, fill = '#eceff0') => {
-    const W = window.STRETTO_WORDMARK;
+    const W = window.HOIST_WORDMARK;
     const [, , vw, vh] = W.viewBox.split(' ').map(Number);
     return `<svg width="${(h * vw) / vh}" height="${h}" viewBox="${W.viewBox}" style="display:block"><path fill="${fill}" transform="${W.transform}" d="${W.d}"/></svg>`;
   };

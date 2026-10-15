@@ -9,4 +9,4 @@ make install-dev-tools
 cargo fetch --locked
 (cd website && npm ci --no-audit --no-fund)
 
-echo "stretto dev container ready: make help lists the targets."
+echo "Hoist dev container ready: make help lists the targets."

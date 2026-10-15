@@ -54,7 +54,7 @@ guards: boolean,
  */
 judge: Judge | null, 
 /**
- * Offer `stretto_commit`, several calls in one (`--commit`).
+ * Offer `hoist_commit`, several calls in one (`--commit`).
  */
 commit: boolean, 
 /**

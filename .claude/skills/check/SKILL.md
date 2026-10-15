@@ -1,6 +1,6 @@
 ---
 name: check
-description: Run exactly what stretto's CI runs (formatting, clippy, tests and doctests, rustdoc, and the end-to-end walkthrough job when it applies) and interpret any failure. Use before committing or pushing, before opening or updating a pull request, or to reproduce a failed CI job locally.
+description: Run exactly what Hoist's CI runs (formatting, clippy, tests and doctests, rustdoc, and the end-to-end walkthrough job when it applies) and interpret any failure. Use before committing or pushing, before opening or updating a pull request, or to reproduce a failed CI job locally.
 ---
 
 # Check before pushing
@@ -13,14 +13,14 @@ CI is `.github/workflows/ci.yml` (jobs `check`, `ui`, `msrv`, `walkthrough` and 
 make ci    # make check lint test types doc
 ```
 
-That is `cargo fmt --all -- --check`, `cargo clippy --all-targets -- -D warnings` (and again on `stretto-console --features ts`), `cargo test --all-targets`, `cargo test --doc`, the TypeScript drift test (`cargo test -p stretto-console --features ts --lib api::typescript`) and `RUSTDOCFLAGS="-D warnings" cargo doc --no-deps`, as CI runs them.
+That is `cargo fmt --all -- --check`, `cargo clippy --all-targets -- -D warnings` (and again on `hoist-console --features ts`), `cargo test --all-targets`, `cargo test --doc`, the TypeScript drift test (`cargo test -p hoist-console --features ts --lib api::typescript`) and `RUSTDOCFLAGS="-D warnings" cargo doc --no-deps`, as CI runs them.
 
 The drift test rewrites `console/src/api/generated/` when a type the API serves changed: commit what it wrote, and it passes on the next run.
 
 ## 2. When the proxy, the CLI, an example or a script changed: the walkthrough job
 
 ```bash
-cargo build -p stretto-report -p stretto-proxy
+cargo build -p hoist-report -p hoist-mcp
 BIN=${CARGO_TARGET_DIR:-target}/debug
 sh examples/quickstart/run.sh --bin "$BIN"         # no key, no network
 sh packaging/test-install.sh                        # install.sh against a local release
@@ -58,7 +58,7 @@ A change to a type the API serves needs `make types` first, and the TypeScript i
 |---|---|---|
 | `cargo fmt` prints a diff | Code is not formatted | `make fmt` |
 | A clippy lint | Warnings are errors | Fix the code. Add an `#[allow]` only with a comment saying why |
-| `docs/cli.md is out of date for stretto` (or `stretto-proxy`, `stretto-procedure`) | A command, option or help text changed | `make bless`, read the diff of `docs/cli.md`, commit it |
+| `docs/cli.md is out of date for hoist` (or `hoist-mcp`, `hoist-procedure`) | A command, option or help text changed | `make bless`, read the diff of `docs/cli.md`, commit it |
 | `docs/review.md is out of date` | `flow-show` or `flow-diff` output changed | `make bless`, read the diff, commit it |
 | `docs/formats.md does not name [...]` | A flow or arbiter file gained a field | Document the field in `docs/formats.md` |
 | A rustdoc error such as `links to private item` or an unresolved link | The public docs link to what they cannot reach | Fix the path, or make a private item a code span |

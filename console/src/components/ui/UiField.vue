@@ -41,18 +41,18 @@ const describedby = computed(
 .field-label {
   font-size: 13px;
   font-weight: 500;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .field-optional {
   margin-left: 6px;
   font-weight: 400;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .field-hint {
   font-size: 12.5px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .field-error {

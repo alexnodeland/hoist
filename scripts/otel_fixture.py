@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Record docs/examples/pydantic-ai-shop.otlp.jsonl: an agent's OpenTelemetry
-spans, as OTLP JSON, for `stretto learn --otel`.
+spans, as OTLP JSON, for `hoist learn --otel`.
 
 The agent is a Pydantic AI agent with the demo shop's four tools
-(`stretto-mcp-demo --world retail`'s). For each of eight customers it finds
+(`hoist-mcp-demo --world retail`'s). For each of eight customers it finds
 them by email, reads their details, reads both of their orders in one turn,
 and cancels the order they asked it to. Its model is scripted (Pydantic
 AI's `FunctionModel`), so no LLM is called and every run writes the same

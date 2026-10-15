@@ -1,6 +1,6 @@
 ---
-title: stretto-console
-description: How stretto-console serves the console - its JSON API over the data directory, its jobs, its security, where its files are, and how it embeds the UI.
+title: hoist-console
+description: How hoist-console serves the console - its JSON API over the data directory, its jobs, its security, where its files are, and how it embeds the UI.
 ---
 
-<!--@include: ../../crates/stretto-console/README.md-->
+<!--@include: ../../crates/hoist-console/README.md-->

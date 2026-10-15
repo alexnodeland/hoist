@@ -4,6 +4,7 @@
 - **Authors:** @alexnodeland (drafted with Claude Code)
 - **Created:** 2026-09-23
 - **Updated:** 2026-09-28
+- **Name:** the project was called stretto when this RFC was written and is now Hoist (2026-10-15). The body keeps the name it was written under; its URLs for the old repository redirect.
 - **Supersedes / Related:**
   - runnable spike, in fugue: [`docs/decisions/rfc/001-habit-compiler/spike/`](https://github.com/alexnodeland/fugue/tree/main/docs/decisions/rfc/001-habit-compiler/spike);
   - fugue's side of this RFC: [fugue's RFC-001](https://github.com/alexnodeland/fugue/blob/main/docs/decisions/rfc/001-habit-compiler.md), with the six changes to `fugue-ppl` tracked in [fugue#61](https://github.com/alexnodeland/fugue/issues/61);

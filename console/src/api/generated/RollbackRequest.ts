@@ -6,6 +6,6 @@
 export type RollbackRequest = { 
 /**
  * The version to restore; by default the one before the committed
- * flow, as `stretto flow-rollback` chooses it.
+ * flow, as `hoist flow-rollback` chooses it.
  */
 to?: number | null, note?: string | null, };

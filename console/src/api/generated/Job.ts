@@ -4,7 +4,7 @@ import type { JobKind } from "./JobKind";
 import type { JobStatus } from "./JobStatus";
 
 /**
- * A run of the `stretto` CLI.
+ * A run of the `hoist` CLI.
  */
 export type Job = { id: string, kind: JobKind, title: string, 
 /**
@@ -12,7 +12,7 @@ export type Job = { id: string, kind: JobKind, title: string,
  */
 params: unknown, status: JobStatus, created_unix_ms: number, started_unix_ms: number | null, finished_unix_ms: number | null, exit_code: number | null, 
 /**
- * Whether it ended with an alarm, which is not a failure: `stretto
+ * Whether it ended with an alarm, which is not a failure: `hoist
  * drift` found the agent changed under the flow.
  */
 alarm: boolean, 

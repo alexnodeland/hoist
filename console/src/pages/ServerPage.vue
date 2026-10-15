@@ -140,7 +140,7 @@ async function remove() {
         <div class="stack">
           <UiCard
             title="Host configuration"
-            caption="What stretto init prints: paste it into your MCP host, in place of the server’s own entry"
+            caption="What hoist init prints: paste it into your MCP host, in place of the server’s own entry"
           >
             <HostConfigTabs v-if="server" :name="name" :env="env" />
             <UiSkeleton v-else :lines="6" />
@@ -215,7 +215,7 @@ async function remove() {
                 </template>
                 <span v-else class="subtle">off</span>
               </dd>
-              <dt><span class="mono">stretto_commit</span></dt>
+              <dt><span class="mono">hoist_commit</span></dt>
               <dd>
                 <template v-if="server.commit">offered</template>
                 <span v-else class="subtle">not offered</span>
@@ -224,7 +224,7 @@ async function remove() {
               <dd class="mono small">
                 {{
                   server.record_dir ??
-                  `~/.stretto/${server.mode === 'shadow' ? 'shadow' : 'logs'}/${server.name}`
+                  `~/.hoist/${server.mode === 'shadow' ? 'shadow' : 'logs'}/${server.name}`
                 }}
               </dd>
               <dt>Keeps sessions</dt>
@@ -271,7 +271,7 @@ async function remove() {
           <UiCard title="The proxy’s command line" caption="What the host runs, for every host">
             <UiCode
               v-if="server"
-              :code="commandText(['stretto-proxy', ...server.proxy_args])"
+              :code="commandText(['hoist-mcp', ...server.proxy_args])"
               language="shell"
               what="Command"
               wrap

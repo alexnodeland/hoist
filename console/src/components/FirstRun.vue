@@ -10,7 +10,7 @@ const props = defineProps<{ totals: Totals; readOnly: boolean }>()
 const steps = computed(() => [
   {
     title: 'Add a server',
-    body: 'Register the MCP server your agent uses. The console prints the configuration for your host, with stretto-proxy in front.',
+    body: 'Register the MCP server your agent uses. The console prints the configuration for your host, with hoist-mcp in front.',
     done: props.totals.servers > 0,
   },
   {
@@ -91,10 +91,10 @@ const next = computed(() => steps.value.findIndex((s) => !s.done))
   background:
     radial-gradient(
       120% 140% at 100% 0%,
-      color-mix(in oklab, var(--stretto-accent-soft) 80%, transparent) 0%,
+      color-mix(in oklab, var(--hoist-accent-soft) 80%, transparent) 0%,
       transparent 55%
     ),
-    var(--stretto-surface);
+    var(--hoist-surface);
 }
 
 .fr-head {
@@ -110,8 +110,8 @@ const next = computed(() => steps.value.findIndex((s) => !s.done))
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: var(--stretto-accent-soft);
-  color: var(--stretto-accent);
+  background: var(--hoist-accent-soft);
+  color: var(--hoist-accent);
   flex: none;
 }
 
@@ -131,13 +131,13 @@ const next = computed(() => steps.value.findIndex((s) => !s.done))
   gap: 12px;
   padding: 14px;
   border-radius: 10px;
-  border: 1px solid var(--stretto-border);
-  background: var(--stretto-surface);
+  border: 1px solid var(--hoist-border);
+  background: var(--hoist-surface);
 }
 
 .fr-step.current {
-  border-color: color-mix(in oklab, var(--stretto-accent-graphic) 55%, var(--stretto-border));
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--stretto-accent-graphic) 12%, transparent);
+  border-color: color-mix(in oklab, var(--hoist-accent-graphic) 55%, var(--hoist-border));
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--hoist-accent-graphic) 12%, transparent);
 }
 
 .fr-num {
@@ -147,21 +147,21 @@ const next = computed(() => steps.value.findIndex((s) => !s.done))
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: 1px solid var(--stretto-border-strong);
+  border: 1px solid var(--hoist-border-strong);
   font-size: 12px;
   font-weight: 600;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .done .fr-num {
-  border-color: var(--stretto-accent-fill);
-  background: var(--stretto-accent-fill);
-  color: var(--stretto-on-accent);
+  border-color: var(--hoist-accent-fill);
+  background: var(--hoist-accent-fill);
+  color: var(--hoist-on-accent);
 }
 
 .current .fr-num {
-  border-color: var(--stretto-accent-graphic);
-  color: var(--stretto-accent);
+  border-color: var(--hoist-accent-graphic);
+  color: var(--hoist-accent);
 }
 
 .fr-text {
@@ -174,13 +174,13 @@ const next = computed(() => steps.value.findIndex((s) => !s.done))
 }
 
 .done .fr-step-title {
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .fr-body {
   margin-top: 4px;
   font-size: 13px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .fr-action {

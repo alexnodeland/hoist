@@ -7,12 +7,12 @@ import { handle, MOCK_TOKEN } from './api.ts'
 
 export function mockApi(): Plugin {
   return {
-    name: 'stretto-console-mock-api',
+    name: 'hoist-console-mock-api',
     configureServer(server) {
       server.middlewares.use((req, res, next) => void handle(req, res, next))
       server.httpServer?.once('listening', () => {
         const auth = process.env.MOCK_AUTH === '1' ? ` (auth on: the token is ${MOCK_TOKEN})` : ''
-        server.config.logger.info(`  stretto console: mock API on /api${auth}`)
+        server.config.logger.info(`  Hoist console: mock API on /api${auth}`)
       })
     },
     configurePreviewServer(server) {

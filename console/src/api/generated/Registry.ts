@@ -4,4 +4,4 @@ import type { ServerEntry } from "./ServerEntry";
 /**
  * `servers.json`.
  */
-export type Registry = { stretto_servers: number, servers: Array<ServerEntry>, };
+export type Registry = { hoist_servers: number, servers: Array<ServerEntry>, };

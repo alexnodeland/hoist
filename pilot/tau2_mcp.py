@@ -9,7 +9,7 @@ episodes.
 
 With `--read-only-hints`, `tools/list` marks each tool as a real server
 would: `readOnlyHint: true` for τ²-bench's read tools and `false` for its
-writes (its other tools get no hint). `stretto learn --sessions` then takes
+writes (its other tools get no hint). `hoist learn --sessions` then takes
 the tools' kinds from the recorded session, with no `--manifest`. It is off
 by default, so the pilots' agents saw the same tool list throughout.
 
@@ -21,13 +21,13 @@ are refused. `--prefix FILE` makes the calls in FILE (a JSON list of
 workflow's calls, handed back with their effects in place.
 
 With `--flow-address`, a read-only flow runs after each of the agent's calls
-(the flows arm): the server asks `stretto flow-serve` what to do next, makes
+(the flows arm): the server asks `hoist flow-serve` what to do next, makes
 the lookup it names, records it like any other call, and asks again, until
 the flow hands back. The agent gets its own result followed by the flow's
 lookups and their results, in the same tool response, so the lookups cost
 it no turns.
 
-Usage (normally started by the agent, behind `stretto-proxy`):
+Usage (normally started by the agent, behind `hoist-mcp`):
 
     python tau2_mcp.py --domain retail --task-id 0 --episode-dir DIR \
         [--read-only-hints] [--flow-address HOST:PORT] [--solo [--prefix FILE]]
@@ -168,7 +168,7 @@ class Episode:
 
     def execute(self, name: str, arguments: dict, call_id: str | None = None) -> tuple[str, bool]:
         """Run one call against the environment and record it, with `call_id`
-        (the flow's lookups are `stretto-N`, as stretto-proxy numbers its
+        (the flow's lookups are `hoist-N`, as hoist-mcp numbers its
         own), or a fresh id."""
         call = ToolCall(
             id=call_id or f"call_{uuid.uuid4().hex[:12]}",
@@ -242,7 +242,7 @@ class Episode:
                 break
             tool, args = answer["tool"], answer.get("arguments") or {}
             self.flow_lookups += 1
-            result, failed = self.execute(tool, args, f"stretto-{self.flow_lookups}")
+            result, failed = self.execute(tool, args, f"hoist-{self.flow_lookups}")
             done.append((tool, args, result, failed))
         return done
 
@@ -272,7 +272,7 @@ def main() -> None:
     parser.add_argument("--task-id", required=True)
     parser.add_argument("--episode-dir", required=True, type=Path)
     parser.add_argument("--max-calls", type=int, default=60)
-    parser.add_argument("--flow-address", help="stretto flow-serve's HOST:PORT (flows arm)")
+    parser.add_argument("--flow-address", help="hoist flow-serve's HOST:PORT (flows arm)")
     parser.add_argument("--flow-max", type=int, default=8, help="flow lookups per agent call")
     parser.add_argument("--flow-budget", type=int, default=40, help="flow lookups per episode")
     parser.add_argument(

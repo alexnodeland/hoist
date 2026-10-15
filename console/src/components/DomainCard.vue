@@ -124,27 +124,27 @@ const segments = computed(() => {
   gap: 4px;
   font-size: 14px;
   font-weight: 700;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .dc-name:hover {
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
 }
 
 .dc-name svg {
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .dc-count {
   font-size: 13px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .dc-count strong {
   font-size: 22px;
   font-weight: 600;
   letter-spacing: -0.02em;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   margin-right: 2px;
 }
 
@@ -161,21 +161,21 @@ const segments = computed(() => {
 }
 
 .seg-served {
-  background: var(--stretto-chart-accent);
+  background: var(--hoist-chart-accent);
 }
 
 .seg-shadow {
   background: transparent;
-  box-shadow: inset 0 0 0 1.5px var(--stretto-chart-accent);
+  box-shadow: inset 0 0 0 1.5px var(--hoist-chart-accent);
   background-image: repeating-linear-gradient(
     135deg,
-    color-mix(in oklab, var(--stretto-chart-accent) 45%, transparent) 0 2px,
+    color-mix(in oklab, var(--hoist-chart-accent) 45%, transparent) 0 2px,
     transparent 2px 5px
   );
 }
 
 .seg-recorded {
-  background: var(--stretto-chart-baseline);
+  background: var(--hoist-chart-baseline);
 }
 
 .dc-legend {
@@ -184,7 +184,7 @@ const segments = computed(() => {
   gap: 4px 14px;
   list-style: none;
   font-size: 12.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .dc-legend li {
@@ -205,7 +205,7 @@ const segments = computed(() => {
   gap: 6px;
   margin-top: 4px;
   padding-top: 12px;
-  border-top: 1px solid var(--stretto-border);
+  border-top: 1px solid var(--hoist-border);
   font-size: 13px;
 }
 
@@ -218,7 +218,7 @@ const segments = computed(() => {
 .dc-links dt {
   display: flex;
   padding-top: 2px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .dc-links dd {

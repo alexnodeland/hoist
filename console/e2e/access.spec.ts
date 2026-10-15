@@ -12,7 +12,7 @@ test('without the token, the console asks for it; the right one signs in', async
   await expect(page.getByRole('heading', { name: 'Flows', level: 1 })).toBeVisible()
   await expect(page).toHaveURL(/\/flows$/)
   const cookies = await page.context().cookies()
-  expect(cookies.find((c) => c.name === 'stretto_console')?.httpOnly).toBe(true)
+  expect(cookies.find((c) => c.name === 'hoist_console')?.httpOnly).toBe(true)
 })
 
 test('signing out asks for the token again', async ({ page }) => {
@@ -32,7 +32,7 @@ test('read-only: the badge shows, and writes are off', async ({ page }) => {
   await expect(page.getByTestId('probe')).toBeDisabled()
   const response = await page.request.post('/api/jobs', {
     data: { kind: 'doctor' },
-    headers: { 'X-Stretto-Console': '1' },
+    headers: { 'X-Hoist-Console': '1' },
   })
   expect(response.status()).toBe(403)
 })
@@ -40,5 +40,5 @@ test('read-only: the badge shows, and writes are off', async ({ page }) => {
 test('the API refuses a write without the console’s header', async ({ page }) => {
   const response = await page.request.post('/api/jobs', { data: { kind: 'doctor' } })
   expect(response.status()).toBe(403)
-  expect((await response.json()).error).toMatch(/X-Stretto-Console/)
+  expect((await response.json()).error).toMatch(/X-Hoist-Console/)
 })

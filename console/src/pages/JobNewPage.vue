@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/** Start a job: learn a flow, promote it, audit it, stage its next version, redact sessions to share, or run stretto doctor. */
+/** Start a job: learn a flow, promote it, audit it, stage its next version, redact sessions to share, or run hoist doctor. */
 import { computed, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
@@ -233,7 +233,7 @@ const halfLife = computed(() => (typeof stage.half_life === 'number' ? stage.hal
 const stageSessions = computed(
   () => stage.sessions || (flowOf(stage.flow) ? `logs/${flowOf(stage.flow)!.domain}` : ''),
 )
-/** The flow's sessions as the proxy serves it: where `stretto init` records them. */
+/** The flow's sessions as the proxy serves it: where `hoist init` records them. */
 const driftSessions = computed(
   () => drift.sessions || (flowOf(drift.flow) ? `logs/${flowOf(drift.flow)!.domain}` : ''),
 )
@@ -359,7 +359,7 @@ const preview = computed(() => {
   switch (b.kind) {
     case 'learn':
       return commandText([
-        'stretto',
+        'hoist',
         'learn',
         '--sessions',
         b.sessions || '<dir>',
@@ -372,7 +372,7 @@ const preview = computed(() => {
       ])
     case 'promote':
       return commandText([
-        'stretto',
+        'hoist',
         'promote',
         '--flow',
         flowPath(b.flow),
@@ -392,7 +392,7 @@ const preview = computed(() => {
       ])
     case 'audit':
       return commandText([
-        'stretto',
+        'hoist',
         'audit',
         '--flow',
         flowPath(b.flow),
@@ -404,7 +404,7 @@ const preview = computed(() => {
       ])
     case 'stage':
       return commandText([
-        'stretto',
+        'hoist',
         'stage',
         '--flow',
         flowPath(b.flow),
@@ -418,7 +418,7 @@ const preview = computed(() => {
       ])
     case 'drift':
       return commandText([
-        'stretto',
+        'hoist',
         'drift',
         '--flow',
         flowPath(b.flow),
@@ -434,7 +434,7 @@ const preview = computed(() => {
       ])
     case 'redact':
       return commandText([
-        'stretto',
+        'hoist',
         'redact',
         '--sessions',
         b.sessions || '<dir>',
@@ -445,7 +445,7 @@ const preview = computed(() => {
         ...(b.hash_fields?.length ? ['--hash-field', b.hash_fields.join(',')] : []),
       ])
     default:
-      return 'stretto doctor'
+      return 'hoist doctor'
   }
 })
 
@@ -482,8 +482,8 @@ async function submit() {
 <template>
   <div class="page narrow">
     <UiPageHeader title="New job" :back="{ name: 'jobs' }" back-label="Jobs">
-      Runs the stretto CLI in the data dir,
-      <span class="mono">{{ meta?.data_dir ?? '~/.stretto' }}</span
+      Runs the Hoist CLI in the data dir,
+      <span class="mono">{{ meta?.data_dir ?? '~/.hoist' }}</span
       >. Paths are relative to it, or start with <span class="mono">~/</span>.
     </UiPageHeader>
 
@@ -1015,15 +1015,15 @@ async function submit() {
           </UiField>
         </div>
         <p class="caption">
-          The salt comes from STRETTO_REDACT_SALT in the console’s environment. Keep it secret, and
+          The salt comes from HOIST_REDACT_SALT in the console’s environment. Keep it secret, and
           the same for copies whose hashes should match.
         </p>
       </template>
 
       <p v-else class="muted">
-        Checks the versions of stretto-proxy, stretto-procedure and stretto-mcp-demo, whether the
-        data dir is writable, whether a key is set (never its value), and the flows and sessions in
-        the data dir. It makes no network request.
+        Checks the versions of hoist-mcp, hoist-procedure and hoist-mcp-demo, whether the data dir
+        is writable, whether a key is set (never its value), and the flows and sessions in the data
+        dir. It makes no network request.
       </p>
 
       <div class="runs">
@@ -1072,9 +1072,9 @@ async function submit() {
   gap: 4px;
   padding: 12px 14px;
   border-radius: 12px;
-  border: 1px solid var(--stretto-border);
-  background: var(--stretto-surface);
-  color: var(--stretto-text-muted);
+  border: 1px solid var(--hoist-border);
+  background: var(--hoist-surface);
+  color: var(--hoist-text-muted);
   cursor: pointer;
   transition:
     border-color 0.12s var(--c-ease),
@@ -1082,30 +1082,30 @@ async function submit() {
 }
 
 .kind:hover {
-  border-color: color-mix(in oklab, var(--stretto-border-strong) 55%, var(--stretto-border));
+  border-color: color-mix(in oklab, var(--hoist-border-strong) 55%, var(--hoist-border));
 }
 
 .kind.on {
-  border-color: var(--stretto-accent-graphic);
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--stretto-accent-graphic) 16%, transparent);
-  background: color-mix(in oklab, var(--stretto-accent-soft) 45%, var(--stretto-surface));
-  color: var(--stretto-accent);
+  border-color: var(--hoist-accent-graphic);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--hoist-accent-graphic) 16%, transparent);
+  background: color-mix(in oklab, var(--hoist-accent-soft) 45%, var(--hoist-surface));
+  color: var(--hoist-accent);
 }
 
 .kind:has(input:focus-visible) {
-  outline: 2px solid var(--stretto-focus);
+  outline: 2px solid var(--hoist-focus);
   outline-offset: 2px;
 }
 
 .kind-label {
   font-size: 14px;
   font-weight: 600;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .kind-body {
   font-size: 12.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .jf {
@@ -1133,7 +1133,7 @@ async function submit() {
   gap: 10px;
   margin: 0;
   padding: 14px;
-  border: 1px solid var(--stretto-border);
+  border: 1px solid var(--hoist-border);
   border-radius: 10px;
   min-width: 0;
 }
@@ -1168,7 +1168,7 @@ async function submit() {
   border: 0;
   border-radius: 4px;
   background: none;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .runs {

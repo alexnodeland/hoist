@@ -1,6 +1,6 @@
 /**
  * The mock console server: every endpoint of the spec over the mock world,
- * with the real server's rules (the token cookie, the X-Stretto-Console
+ * with the real server's rules (the token cookie, the X-Hoist-Console
  * header on writes, read-only, 404/409/400 with `{"error"}`), live updates
  * over SSE, and jobs that run and write their output line by line.
  *
@@ -46,7 +46,7 @@ import {
 } from './derive.ts'
 import texts from './fixtures/data/texts.json' with { type: 'json' }
 
-export const MOCK_TOKEN = 'stretto-mock-token'
+export const MOCK_TOKEN = 'hoist-mock-token'
 
 /** When the mock started: the world is built around it, so a reset gives the same sessions and ids. */
 const ANCHOR = Date.now()
@@ -164,7 +164,7 @@ function cookie(req: IncomingMessage, name: string): string | null {
 function authorized(req: IncomingMessage): boolean {
   if (!state.options.auth) return true
   const bearer = /^Bearer (.+)$/.exec(req.headers.authorization ?? '')?.[1]
-  return cookie(req, 'stretto_console') === MOCK_TOKEN || bearer === MOCK_TOKEN
+  return cookie(req, 'hoist_console') === MOCK_TOKEN || bearer === MOCK_TOKEN
 }
 
 function sessionRecord(key: string) {
@@ -241,7 +241,7 @@ function note(text: unknown): string | null {
   return typeof text === 'string' && text.trim() ? text.trim() : null
 }
 
-/** `POST /api/flows/:key/commit`, as `stretto flow-commit` does it. */
+/** `POST /api/flows/:key/commit`, as `hoist flow-commit` does it. */
 function commitFlow(key: string, body: unknown) {
   const paths = stagePaths(key)
   const world = state.world
@@ -249,7 +249,7 @@ function commitFlow(key: string, body: unknown) {
   if (!staged)
     throw new HttpError(
       409,
-      `there is no staged flow at ${world.dataDir}/${paths.staged}: stretto stage learns it`,
+      `there is no staged flow at ${world.dataDir}/${paths.staged}: hoist stage learns it`,
     )
   let record = stageOf(key)
   if (!record) {
@@ -293,7 +293,7 @@ function commitFlow(key: string, body: unknown) {
   return record.versions[record.versions.length - 1]!.view
 }
 
-/** `POST /api/flows/:key/rollback`, as `stretto flow-rollback` does it. */
+/** `POST /api/flows/:key/rollback`, as `hoist flow-rollback` does it. */
 function rollbackFlow(key: string, body: unknown) {
   const paths = stagePaths(key)
   const world = state.world
@@ -487,7 +487,7 @@ function checkPath(path: unknown, what: string): string {
   if (path.startsWith('/') && !path.startsWith(state.world.dataDir))
     throw new HttpError(400, `${what} ${path}: a path must be inside the data dir or start with ~/`)
   return path
-    .replace(/^~\/\.stretto\//, '')
+    .replace(/^~\/\.hoist\//, '')
     .replace(new RegExp(`^${state.world.dataDir}/`), '')
     .replace(/\/$/, '')
 }
@@ -604,7 +604,7 @@ function startJob(input: unknown): Job {
     } else {
       const tools = sessions[0]!.detail.tools.length
       lines = [
-        `stretto: learned the ${req.domain} flow from ${sessions.length} sessions (${tools} tools) and wrote ${world.dataDir}/${out}`,
+        `hoist: learned the ${req.domain} flow from ${sessions.length} sessions (${tools} tools) and wrote ${world.dataDir}/${out}`,
       ]
       const base = world.flows.find((f) => f.summary.key === 'shop')!
       const key = out.replace(/^.*\//, '').replace(/\.flow\.json$/, '')
@@ -670,7 +670,7 @@ function startJob(input: unknown): Job {
     const before = record?.last?.sessions ?? 0
     const fresh = Math.max(0, sessions.length - before)
     lines = [
-      `stretto: staged ${world.dataDir}/${paths.staged} from ${sessions.length} sessions, ${fresh} of them new`,
+      `hoist: staged ${world.dataDir}/${paths.staged} from ${sessions.length} sessions, ${fresh} of them new`,
     ]
     const base = world.flows.find((f) => f.summary.path === paths.staged) ?? flowRecord(req.flow)
     const now = Date.now()
@@ -724,13 +724,13 @@ function startJob(input: unknown): Job {
     if (!state.options.redactSalt)
       throw new HttpError(
         400,
-        'set STRETTO_REDACT_SALT in the console’s environment to redact: without a salt, anyone could hash guesses and match them',
+        'set HOIST_REDACT_SALT in the console’s environment to redact: without a salt, anyone could hash guesses and match them',
       )
     const dir = checkPath(req.sessions, 'sessions')
     const out = checkPath(req.out, 'out')
     const n = world.sessions.filter((s) => s.summary.path.startsWith(dir + '/')).length
     lines = [
-      `stretto: redacted ${n} sessions into ${world.dataDir}/${out}; values fewer than ${req.keep_shared} of them share are hashed`,
+      `hoist: redacted ${n} sessions into ${world.dataDir}/${out}; values fewer than ${req.keep_shared} of them share are hashed`,
     ]
     artifacts.push({ kind: 'dir', path: out, key: null })
   } else {
@@ -760,7 +760,7 @@ function startJob(input: unknown): Job {
   timers.start = setTimeout(() => {
     job.status = 'running'
     job.started_unix_ms = Date.now()
-    job.output = `$ stretto ${commandLine(req)}\n`
+    job.output = `$ hoist ${commandLine(req)}\n`
     send('job', job)
     changed('jobs', [id])
     let i = 0
@@ -773,7 +773,7 @@ function startJob(input: unknown): Job {
       clearInterval(tick)
       jobTimers.delete(id)
       job.status = fail ? 'failed' : 'succeeded'
-      // `stretto drift` exits with 1 while its alarm sounds.
+      // `hoist drift` exits with 1 while its alarm sounds.
       job.exit_code = fail || alarm ? 1 : 0
       job.alarm = !fail && alarm
       job.finished_unix_ms = Date.now()
@@ -815,7 +815,7 @@ function startJob(input: unknown): Job {
 
 /**
  * `POST /api/jobs/:id/cancel`, as the console does it: a queued job is
- * cancelled at once; a running one's `stretto` is killed, and it ends a
+ * cancelled at once; a running one's `hoist` is killed, and it ends a
  * moment later, with the exit code of a SIGKILL.
  */
 function cancelJob(id: string): Job {
@@ -837,11 +837,11 @@ function cancelJob(id: string): Job {
     changed('jobs', [id])
   }
   if (job.status === 'queued') {
-    end('stretto-console: cancelled before it started\n', null)
+    end('hoist-console: cancelled before it started\n', null)
     return job
   }
   const now = { ...job }
-  setTimeout(() => end('stretto-console: cancelled\n', 137), 300)
+  setTimeout(() => end('hoist-console: cancelled\n', 137), 300)
   return now
 }
 
@@ -886,8 +886,8 @@ const routes: [string, RegExp, Handler][] = [
       read_only: state.options.readOnly,
       auth: state.options.auth,
       key_set: state.options.keySet,
-      stretto: { path: '/home/me/.cargo/bin/stretto', version: 'stretto 0.1.0' },
-      proxy: { path: '/home/me/.cargo/bin/stretto-proxy', version: 'stretto-proxy 0.1.0' },
+      hoist: { path: '/home/me/.cargo/bin/hoist', version: 'hoist 0.1.0' },
+      proxy: { path: '/home/me/.cargo/bin/hoist-mcp', version: 'hoist-mcp 0.1.0' },
     }),
   ],
   ['GET', /^\/api\/overview$/, () => overview(state.world, state.options, state.world.jobs)],
@@ -1124,7 +1124,7 @@ const routes: [string, RegExp, Handler][] = [
     'POST',
     /^\/api\/logout$/,
     ({ res }) => {
-      res.setHeader('Set-Cookie', 'stretto_console=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0')
+      res.setHeader('Set-Cookie', 'hoist_console=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0')
       return { ok: true }
     },
   ],
@@ -1189,7 +1189,7 @@ export async function handle(
       res.statusCode = 302
       res.setHeader(
         'Set-Cookie',
-        `stretto_console=${encodeURIComponent(token)}; HttpOnly; SameSite=Strict; Path=/`,
+        `hoist_console=${encodeURIComponent(token)}; HttpOnly; SameSite=Strict; Path=/`,
       )
       res.setHeader('Location', `${url.pathname}${url.search}${url.hash}`)
       res.end()
@@ -1205,10 +1205,10 @@ export async function handle(
       return
     }
     if (path !== '/api/health' && !authorized(req))
-      throw new HttpError(401, 'sign in: open the link stretto-console printed, or paste its token')
+      throw new HttpError(401, 'sign in: open the link hoist-console printed, or paste its token')
     if (req.method !== 'GET') {
-      if (req.headers['x-stretto-console'] !== '1')
-        throw new HttpError(403, 'a write needs the X-Stretto-Console: 1 header')
+      if (req.headers['x-hoist-console'] !== '1')
+        throw new HttpError(403, 'a write needs the X-Hoist-Console: 1 header')
       if (state.options.readOnly && path !== '/api/logout')
         throw new HttpError(
           403,

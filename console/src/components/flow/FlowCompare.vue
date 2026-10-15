@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/** What changed from another flow to this one, as `stretto flow-diff` lists it for a pull request. */
+/** What changed from another flow to this one, as `hoist flow-diff` lists it for a pull request. */
 import { computed, ref, watch } from 'vue'
 import { ArrowRightLeft, GitCompareArrows } from '@lucide/vue'
 import UiSegmented from '../ui/UiSegmented.vue'
@@ -135,20 +135,20 @@ const names = computed(() => {
   gap: 6px;
   height: 36px;
   padding: 0 12px;
-  border: 1px solid var(--stretto-border);
+  border: 1px solid var(--hoist-border);
   border-radius: 8px;
-  background: var(--stretto-surface);
-  color: var(--stretto-text-muted);
+  background: var(--hoist-surface);
+  color: var(--hoist-text-muted);
   font-size: 13px;
 }
 
 .cmp-swap .mono {
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   font-size: 12px;
 }
 
 .cmp-swap:hover {
-  background: var(--stretto-surface-2);
+  background: var(--hoist-surface-2);
 }
 
 .pad {

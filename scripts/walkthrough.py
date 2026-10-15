@@ -4,10 +4,10 @@ for an LLM host.
 
     python3 scripts/walkthrough.py [--bin target/debug] [--work DIR] [--server CMD]
 
-It builds a small notes folder, records sessions through stretto-proxy,
-learns a flow with no key (`stretto learn --habit-only`), shows it for review
-(`stretto flow-show`), audits it on sessions it never saw, serves it, then
-learns it again from every session and reviews the change (`stretto
+It builds a small notes folder, records sessions through hoist-mcp,
+learns a flow with no key (`hoist learn --habit-only`), shows it for review
+(`hoist flow-show`), audits it on sessions it never saw, serves it, then
+learns it again from every session and reviews the change (`hoist
 flow-diff`). It prints what each step shows and exits non-zero if a step
 does not do what the walkthrough says. CI runs it, so the walkthrough cannot
 drift from the code.
@@ -72,7 +72,7 @@ def fail(msg: str) -> None:
 
 
 class Session:
-    """One MCP session through stretto-proxy, as a host would run it."""
+    """One MCP session through hoist-mcp, as a host would run it."""
 
     def __init__(self, proxy: list[str], server: list[str], root: Path, context: Path):
         self.context = context
@@ -171,13 +171,13 @@ def agent(s: Session, root: Path, request: str, pattern, pick) -> dict:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--bin", default="target/debug", help="directory with stretto and stretto-proxy")
+    ap.add_argument("--bin", default="target/debug", help="directory with hoist and hoist-mcp")
     ap.add_argument("--work", help="working directory (default: a temporary one)")
     ap.add_argument("--server", default=SERVER, help="the filesystem server's command")
     args = ap.parse_args()
     bin_dir = Path(args.bin).resolve()
-    stretto, proxy = str(bin_dir / "stretto"), str(bin_dir / "stretto-proxy")
-    work = Path(args.work or tempfile.mkdtemp(prefix="stretto-walkthrough-")).resolve()
+    hoist, proxy = str(bin_dir / "hoist"), str(bin_dir / "hoist-mcp")
+    work = Path(args.work or tempfile.mkdtemp(prefix="hoist-walkthrough-")).resolve()
     if work.exists():
         shutil.rmtree(work)
     root = work / "notes"
@@ -210,10 +210,10 @@ def main() -> None:
 
     # 3. Learn a flow with no key.
     flow_path = work / "notes.flow.json"
-    out = subprocess.run([stretto, "learn", "--sessions", str(logs), "--domain", "notes", "--habit-only",
+    out = subprocess.run([hoist, "learn", "--sessions", str(logs), "--domain", "notes", "--habit-only",
                           "--out", str(flow_path)], capture_output=True, text=True)
     if out.returncode:
-        fail(f"stretto learn: {out.stderr}")
+        fail(f"hoist learn: {out.stderr}")
     print("3. " + out.stderr.strip().splitlines()[-1])
     flow = json.loads(flow_path.read_text())
     reads = sorted(t for t, k in flow["manifest"]["tools"].items() if k == "read")
@@ -225,9 +225,9 @@ def main() -> None:
     print(f"   read_text_file's path came from: {found}")
     if [["search_files", "$[*]"]] != [f[0] for f in found if f[0][1] == "$[*]"]:
         fail("the flow did not learn to read the files a search lists")
-    out = subprocess.run([stretto, "flow-show", str(flow_path)], capture_output=True, text=True)
+    out = subprocess.run([hoist, "flow-show", str(flow_path)], capture_output=True, text=True)
     if out.returncode:
-        fail(f"stretto flow-show: {out.stderr}")
+        fail(f"hoist flow-show: {out.stderr}")
     shown = out.stdout
     (work / "notes.flow.md").write_text(shown)
     for line in shown.splitlines():
@@ -240,11 +240,11 @@ def main() -> None:
     new_logs = work / "logs-new"
     record(NEW, new_logs)
     audit = work / "audit.json"
-    out = subprocess.run([stretto, "audit", "--flow", str(flow_path), "--sessions", str(new_logs),
+    out = subprocess.run([hoist, "audit", "--flow", str(flow_path), "--sessions", str(new_logs),
                           "--json", str(audit), "--out", str(work / "audit.md")],
                          capture_output=True, text=True)
     if out.returncode:
-        fail(f"stretto audit: {out.stderr}")
+        fail(f"hoist audit: {out.stderr}")
     a = json.loads(audit.read_text())
     print(f"4. audit ({a['decider']}): {a['decisions']} decisions in {a['episodes']} new sessions, "
           f"agreement {a['agreement']:.0%}, {-a['mean_log_prob']:.2f} nats per decision")
@@ -270,11 +270,11 @@ def main() -> None:
     for log in [*logs.glob("*.jsonl"), *new_logs.glob("*.jsonl")]:
         shutil.copy(log, both / log.name)
     again = work / "notes-2.flow.json"
-    out = subprocess.run([stretto, "learn", "--sessions", str(both), "--domain", "notes", "--habit-only",
+    out = subprocess.run([hoist, "learn", "--sessions", str(both), "--domain", "notes", "--habit-only",
                           "--out", str(again)], capture_output=True, text=True)
     if out.returncode:
-        fail(f"stretto learn: {out.stderr}")
-    out = subprocess.run([stretto, "flow-diff", str(flow_path), str(again)], capture_output=True, text=True)
+        fail(f"hoist learn: {out.stderr}")
+    out = subprocess.run([hoist, "flow-diff", str(flow_path), str(again)], capture_output=True, text=True)
     (work / "flow-diff.md").write_text(out.stdout)
     print(f"6. flow-diff exited with {out.returncode}:")
     for line in out.stdout.splitlines():

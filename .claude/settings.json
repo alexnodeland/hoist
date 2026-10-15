@@ -96,8 +96,8 @@
     "deny": [
       "Read(.env)",
       "Read(.env.*)",
-      "Read(~/.stretto/**/*key*)",
-      "Read(//tmp/stretto-jev-*)",
+      "Read(~/.hoist/**/*key*)",
+      "Read(//tmp/hoist-jev-*)",
       "Read(~/.glm-claude/**)",
       "Read(~/.claude-agent/**)",
       "Read(~/.ssh/**)",

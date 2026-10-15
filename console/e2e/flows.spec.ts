@@ -35,7 +35,7 @@ test('the flow page has its bindings, tools, review, raw JSON and a comparison',
   await page.getByRole('tab', { name: 'Review' }).click()
   await expect(page.getByRole('heading', { name: 'Flow: shop' })).toBeVisible()
   await page.getByRole('tab', { name: 'Raw JSON' }).click()
-  await expect(page.getByText('stretto_flow')).toBeVisible()
+  await expect(page.getByText('hoist_flow')).toBeVisible()
   await page.getByRole('tab', { name: 'Compare' }).click()
   await page.getByTestId('compare-select').selectOption('retail')
   await expect(page.getByText('Nothing needs review')).toBeVisible()
@@ -52,7 +52,7 @@ test('promote and audit start from the flow', async ({ page }) => {
   await expect(page).toHaveURL(/\/jobs\/new\?kind=promote&flow=shop/)
   await expect(page.getByTestId('job-flow')).toHaveValue('shop')
   await expect(
-    page.getByText('stretto promote --flow shop.flow.json --sessions shadow/shop'),
+    page.getByText('hoist promote --flow shop.flow.json --sessions shadow/shop'),
   ).toBeVisible()
 })
 
@@ -60,7 +60,7 @@ test('a drift alarm shows on its flow, and a drift job starts from there', async
   await page.goto('/flows/shop-promoted')
   const alarm = page.getByTestId('drift-alarm')
   await expect(alarm).toContainText(
-    'The agent may have changed under this flow: stretto drift sounded its alarm',
+    'The agent may have changed under this flow: hoist drift sounded its alarm',
   )
   await expect(alarm).toContainText('a change likeliest 3 sessions ago, at 78%')
   await expect(alarm).toContainText('get_order_details, find_user_id_by_email')
@@ -74,7 +74,7 @@ test('a drift alarm shows on its flow, and a drift job starts from there', async
   await expect(page.getByTestId('job-flow')).toHaveValue('shop')
   await expect(
     page.getByText(
-      'stretto drift --flow shop.flow.json --sessions logs/shop --window 10 --threshold 0.5',
+      'hoist drift --flow shop.flow.json --sessions logs/shop --window 10 --threshold 0.5',
     ),
   ).toBeVisible()
   await page.getByTestId('job-window').fill('2')
@@ -139,9 +139,7 @@ test('a flow with nothing staged is staged by a job', async ({ page }) => {
   await expect(page).toHaveURL(/\/jobs\/new\?kind=stage&flow=retail/)
   await expect(page.getByTestId('job-flow')).toHaveValue('retail')
   await expect(
-    page.getByText(
-      'stretto stage --flow flows/retail.flow.json --sessions logs/retail --window 50',
-    ),
+    page.getByText('hoist stage --flow flows/retail.flow.json --sessions logs/retail --window 50'),
   ).toBeVisible()
   await page.getByTestId('job-start').click()
   await expect(page).toHaveURL(/\/jobs\/j-\d+/)

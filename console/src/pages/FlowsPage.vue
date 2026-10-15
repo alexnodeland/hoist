@@ -206,7 +206,7 @@ function learned(f: FlowSummary): string {
 }
 
 .flow:not(.broken):hover {
-  border-color: color-mix(in oklab, var(--stretto-border-strong) 45%, var(--stretto-border));
+  border-color: color-mix(in oklab, var(--hoist-border-strong) 45%, var(--hoist-border));
   box-shadow: var(--c-shadow-md);
 }
 
@@ -220,7 +220,7 @@ function learned(f: FlowSummary): string {
 .flow-name {
   font-size: 15px;
   font-weight: 700;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   overflow-wrap: anywhere;
 }
 
@@ -241,7 +241,7 @@ a.flow-name::after {
 }
 
 a.flow-name:hover {
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
 }
 
 .flow-path {
@@ -255,7 +255,7 @@ a.flow-name:hover {
 
 .flow-learned {
   font-size: 13.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .flow-domain {
@@ -263,10 +263,10 @@ a.flow-name:hover {
   margin-right: 4px;
   padding: 0 6px;
   border-radius: 5px;
-  background: var(--stretto-surface-2);
-  border: 1px solid var(--stretto-border);
+  background: var(--hoist-surface-2);
+  border: 1px solid var(--hoist-border);
   font-size: 12px;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .flow-nums {
@@ -274,12 +274,12 @@ a.flow-name:hover {
   flex-wrap: wrap;
   gap: 8px 28px;
   padding: 10px 0 2px;
-  border-top: 1px solid var(--stretto-border);
+  border-top: 1px solid var(--hoist-border);
 }
 
 .flow-nums dt {
   font-size: 12px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .flow-nums dd {
@@ -295,7 +295,7 @@ a.flow-name:hover {
   gap: 6px 10px;
   margin-top: auto;
   padding-top: 10px;
-  border-top: 1px solid var(--stretto-border);
+  border-top: 1px solid var(--hoist-border);
 }
 
 .served {

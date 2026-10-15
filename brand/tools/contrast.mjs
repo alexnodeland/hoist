@@ -25,7 +25,7 @@ function block(selector) {
 }
 function tokens(body) {
   const out = {};
-  for (const m of body.matchAll(/--stretto-([a-z0-9-]+)\s*:\s*(#[0-9a-fA-F]{6})\s*;/g)) out[m[1]] = m[2].toLowerCase();
+  for (const m of body.matchAll(/--hoist-([a-z0-9-]+)\s*:\s*(#[0-9a-fA-F]{6})\s*;/g)) out[m[1]] = m[2].toLowerCase();
   return out;
 }
 
@@ -36,9 +36,9 @@ const dark = { ...light, ...darkMedia };
 
 let failed = false;
 for (const [k, v] of Object.entries(darkMedia)) {
-  if (darkAttr[k] !== v) { console.error(`dark tokens differ: --stretto-${k} is ${v} in the media query and ${darkAttr[k]} under [data-theme="dark"]`); failed = true; }
+  if (darkAttr[k] !== v) { console.error(`dark tokens differ: --hoist-${k} is ${v} in the media query and ${darkAttr[k]} under [data-theme="dark"]`); failed = true; }
 }
-for (const k of Object.keys(darkAttr)) if (!(k in darkMedia)) { console.error(`--stretto-${k} is set only under [data-theme="dark"]`); failed = true; }
+for (const k of Object.keys(darkAttr)) if (!(k in darkMedia)) { console.error(`--hoist-${k} is set only under [data-theme="dark"]`); failed = true; }
 
 function lum(hex) {
   const c = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255)
@@ -67,7 +67,7 @@ for (const [theme, t] of [['light', light], ['dark', dark]]) {
     const r = ratio(t[fg], t[bg]);
     const ok = r >= min;
     if (!ok) failed = true;
-    rows.push(`| ${theme} | \`--stretto-${fg}\` ${t[fg]} | \`--stretto-${bg}\` ${t[bg]} | ${kind} | ${r.toFixed(2)}:1 | ${min}:1 | ${ok ? 'pass' : 'FAIL'} |`);
+    rows.push(`| ${theme} | \`--hoist-${fg}\` ${t[fg]} | \`--hoist-${bg}\` ${t[bg]} | ${kind} | ${r.toFixed(2)}:1 | ${min}:1 | ${ok ? 'pass' : 'FAIL'} |`);
   }
 }
 // The logo files use fixed colors, whatever the page's theme.

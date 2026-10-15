@@ -1,5 +1,5 @@
 {
-  "about": "The math film's script: what stretto estimates and why, the rule that decides a lookup, the counts behind it, alpha's posterior as a fugue program, the bindings, and how the estimate behaved: calibration, the threshold sweep, the ceiling, live turns and learning. Chapters (`beats`) of lines, as the explainer's: `text` is the caption, `say` what the voice says, `em` the phrases lit in petrol, `post` the pause after a line. Every formula is the paper's (paper/stretto.md) or the code's; every number is the paper's, the claims ledger's, the walkthrough's, a published row's (data/results.py) or fugue's own run on the console's fixtures (data/), with its scope on screen. narrate.py voices it (math-video).",
+  "about": "The math film's script: what hoist estimates and why, the rule that decides a lookup, the counts behind it, alpha's posterior as a fugue program, the bindings, and how the estimate behaved: calibration, the threshold sweep, the ceiling, live turns and learning. Chapters (`beats`) of lines, as the explainer's: `text` is the caption, `say` what the voice says, `em` the phrases lit in petrol, `post` the pause after a line. Every formula is the paper's (paper/hoist.md) or the code's; every number is the paper's, the claims ledger's, the walkthrough's, a published row's (data/results.py) or fugue's own run on the console's fixtures (data/), with its scope on screen. narrate.py voices it (math-video).",
   "beats": [
     {
       "key": "title",
@@ -8,7 +8,7 @@
       "lines": [
         {
           "key": "title1",
-          "text": "The math inside stretto, as the code computes it.",
+          "text": "The math inside hoist, as the code computes it.",
           "em": [
             "as the code computes it."
           ],
@@ -236,7 +236,7 @@
       "lines": [
         {
           "key": "fugue1",
-          "text": "Alpha sets how fast the counts outweigh the prior. stretto doesn't tune it by hand.",
+          "text": "Alpha sets how fast the counts outweigh the prior. hoist doesn't tune it by hand.",
           "em": [
             "Alpha"
           ],
@@ -294,7 +294,7 @@
       "lines": [
         {
           "key": "bind1",
-          "text": "A lookup also needs its arguments. stretto counts where each one came from.",
+          "text": "A lookup also needs its arguments. hoist counts where each one came from.",
           "em": [
             "where each one came from."
           ],

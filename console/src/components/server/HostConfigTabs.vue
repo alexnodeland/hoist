@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/** The host's configuration for a server, a tab per host, as `stretto init` prints it: the snippet, where it goes, and the next steps. */
+/** The host's configuration for a server, a tab per host, as `hoist init` prints it: the snippet, where it goes, and the next steps. */
 import { ref } from 'vue'
 import UiTabs from '../ui/UiTabs.vue'
 import UiCode from '../ui/UiCode.vue'
@@ -11,7 +11,7 @@ import type { HostName } from '@/api/types'
 import { useResource } from '@/composables/useResource'
 
 const props = defineProps<{ name: string; env: string[] }>()
-const HOST_KEY = 'stretto-console:host'
+const HOST_KEY = 'hoist-console:host'
 const hosts: { id: HostName; label: string }[] = [
   { id: 'claude-code', label: 'Claude Code' },
   { id: 'claude-desktop', label: 'Claude Desktop' },
@@ -110,14 +110,14 @@ const config = useResource((o) => api.serverConfig(props.name, host.value, o), {
 
 .hc-place {
   font-size: 13.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .hc-steps summary {
   cursor: pointer;
   font-size: 13.5px;
   font-weight: 500;
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
   width: fit-content;
   border-radius: 4px;
 }

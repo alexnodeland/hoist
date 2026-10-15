@@ -2,7 +2,7 @@
 import type { ConfigLanguage } from "./ConfigLanguage";
 
 /**
- * What to give an MCP host: `stretto init`'s output for the server.
+ * What to give an MCP host: `hoist init`'s output for the server.
  */
 export type HostConfig = { 
 /**

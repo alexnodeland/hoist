@@ -1,11 +1,11 @@
 """Drift alarms on τ²-bench agents spliced together (issue #18).
 
-    python3 scripts/drift_splices.py --tau2 DIR [--stretto BIN] [--orders 20]
+    python3 scripts/drift_splices.py --tau2 DIR [--hoist BIN] [--orders 20]
         [--domains retail airline] [--out FILE.json]
 
 For each domain, and each agent A with results in the checkout, a flow of
 the habit alone is learned from A's episodes on the training tasks
-(`stretto learn --habit-only`). Then, on the test tasks, in `--orders`
+(`hoist learn --habit-only`). Then, on the test tasks, in `--orders`
 random orders:
 
 - A alone: A's test episodes, shuffled. Any alarm is a false one.
@@ -15,7 +15,7 @@ random orders:
   than two sessions before the splice, detects it, and the sessions from
   the splice to the alarm are its delay.
 
-Each run is `stretto drift --json` with its default settings. The mean
+Each run is `hoist drift --json` with its default settings. The mean
 surprise of A's and B's test episodes under A's flow says how far B moved.
 Prints a Markdown table and writes every run to `--out`.
 """
@@ -52,8 +52,8 @@ def shuffled(results: dict, tasks: set[str], seed: int, path: Path) -> Path:
     return path
 
 
-def drift(stretto: str, flow: Path, files: list[Path], out: Path) -> dict:
-    args = [stretto, "drift", "--flow", str(flow), "--json", str(out), "--out", "/dev/null"]
+def drift(hoist: str, flow: Path, files: list[Path], out: Path) -> dict:
+    args = [hoist, "drift", "--flow", str(flow), "--json", str(out), "--out", "/dev/null"]
     for f in files:
         args += ["--results", str(f)]
     done = subprocess.run(args, capture_output=True, text=True)
@@ -65,7 +65,7 @@ def drift(stretto: str, flow: Path, files: list[Path], out: Path) -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--tau2", type=Path, required=True)
-    ap.add_argument("--stretto", default="target/debug/stretto")
+    ap.add_argument("--hoist", default="target/debug/hoist")
     ap.add_argument("--orders", type=int, default=20)
     ap.add_argument("--domains", nargs="+", default=["retail", "airline"])
     ap.add_argument("--jobs", type=int, default=4)
@@ -80,7 +80,7 @@ def main() -> None:
         for ref, ref_file in files.items():
             flow = tmp / f"{domain}-{ref}.flow.json"
             subprocess.run(
-                [a.stretto, "learn", "--domain", domain, "--habit-only", "--tau2", str(a.tau2),
+                [a.hoist, "learn", "--domain", domain, "--habit-only", "--tau2", str(a.tau2),
                  "--results", str(ref_file), "--out", str(flow)],
                 check=True, capture_output=True,
             )
@@ -92,7 +92,7 @@ def main() -> None:
                 if other != ref:
                     inputs.append(shuffled(loaded[other], tasks, seed + 1000, tmp / f"{domain}-{ref}-{other}-{seed}-b.json"))
                 out = tmp / f"{domain}-{ref}-{other}-{seed}.drift.json"
-                d = drift(a.stretto, flow, inputs, out)
+                d = drift(a.hoist, flow, inputs, out)
                 # Each copy is megabytes: keep only the scores.
                 for f in [*inputs, out]:
                     f.unlink()

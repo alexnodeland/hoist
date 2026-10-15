@@ -4,20 +4,20 @@ description: Learn the next version of a deployment's flow as sessions arrive, s
 
 # Staged flows
 
-The proxy loads its flow when it starts, and the flow does not change by itself. As sessions arrive, `stretto stage` learns the next version beside it, the **staged** flow, and scores it against the **committed** flow, the one the proxy serves. Nothing reaches the proxy until you commit.
+The proxy loads its flow when it starts, and the flow does not change by itself. As sessions arrive, `hoist stage` learns the next version beside it, the **staged** flow, and scores it against the **committed** flow, the one the proxy serves. Nothing reaches the proxy until you commit.
 
 ## 1. Stage
 
 ```sh
-stretto stage --flow ~/.stretto/orders.flow.json --sessions ~/.stretto/logs/orders
+hoist stage --flow ~/.hoist/orders.flow.json --sessions ~/.hoist/logs/orders
 ```
 
-- **It learns as `learn` does.** The staged flow is learned from every session in the directory, as `stretto learn --habit-only` would learn it from them. It is written beside the committed flow as `orders.staged.flow.json`.
+- **It learns as `learn` does.** The staged flow is learned from every session in the directory, as `hoist learn --habit-only` would learn it from them. It is written beside the committed flow as `orders.staged.flow.json`.
   - It keeps what the committed flow has that it does not learn: its arbiter, its promotion and its per-site thresholds.
   - `--half-life` makes older sessions count less, as for `learn`.
   - The committed flow need not exist yet: give `--domain`, and the first commit makes it.
 - **It learns from served sessions as they are.** The flow's lookups count as the agent's steps. That teaches a flow as much as sessions recorded without one ([results](../../../docs/results/served-sessions-2026-09-26.md)).
-- **It scores each new session first.** A session that is new since the last run is scored before the staged flow learns from it, as `stretto promote` scores a flow as it is served. It is scored twice: by the committed flow, and by the staged flow as it was before the session arrived. So the comparison is out of sample for both flows.
+- **It scores each new session first.** A session that is new since the last run is scored before the staged flow learns from it, as `hoist promote` scores a flow as it is served. It is scored twice: by the committed flow, and by the staged flow as it was before the session arrived. So the comparison is out of sample for both flows.
 - **Served lookups count as neither used nor a detour.** In a session the committed flow served, its lookups are there already, and the agent had no reason to make them again. A lookup the proxy made counts as *served*, for either flow.
   - The comparison is exact on sessions recorded in [shadow](./shadow-and-promotion).
   - In served sessions, it is exact wherever the flow handed back.
@@ -28,12 +28,12 @@ The report compares the two flows on the last sessions both were scored on (`--w
 - how many of them the agent made later, with a 90% interval on the share;
 - the detours.
 
-It then lists what committing the staged flow would change, as `stretto flow-diff` lists it.
+It then lists what committing the staged flow would change, as `hoist flow-diff` lists it.
 
 ## 2. Commit
 
 ```sh
-stretto flow-commit --flow ~/.stretto/orders.flow.json --note "reads the order after the account"
+hoist flow-commit --flow ~/.hoist/orders.flow.json --note "reads the order after the account"
 ```
 
 - **The staged flow replaces the committed one whole.** A proxy that starts reads the old flow or the new one, never part of each. An MCP host starts its servers, and so the proxy, for each session, so the next session is served the new flow.
@@ -43,9 +43,9 @@ stretto flow-commit --flow ~/.stretto/orders.flow.json --note "reads the order a
 ## 3. Look back, and roll back
 
 ```sh
-stretto flow-log --flow ~/.stretto/orders.flow.json
-stretto flow-rollback --flow ~/.stretto/orders.flow.json
-stretto flow-rollback --flow ~/.stretto/orders.flow.json --to 3
+hoist flow-log --flow ~/.hoist/orders.flow.json
+hoist flow-rollback --flow ~/.hoist/orders.flow.json
+hoist flow-rollback --flow ~/.hoist/orders.flow.json --to 3
 ```
 
 - **`flow-log`** lists the versions, the latest first.
@@ -62,7 +62,7 @@ A staged flow is not better by default, so commit on the comparison, not on a sc
 - committing only when it did better on the batch almost never committed;
 - committing when its used lookups less its detours were higher took most of the gain, for fewer detours.
 
-In airline there was nothing to gain. After a new agent took over, relearning from every session did not help, since the old agent's sessions outnumbered the new one's. The drift alarm is the signal there ([`stretto drift`](/reference/cli#stretto-drift)). Learn a fresh flow from the new agent's sessions, or with a half-life, and review it before it is committed.
+In airline there was nothing to gain. After a new agent took over, relearning from every session did not help, since the old agent's sessions outnumbered the new one's. The drift alarm is the signal there ([`hoist drift`](/reference/cli#hoist-drift)). Learn a fresh flow from the new agent's sessions, or with a half-life, and review it before it is committed.
 
 ## Why it learns again, rather than update
 
@@ -79,4 +79,4 @@ Learning the staged flow again keeps it the flow `learn` would write from the sa
 
 - [Shadow mode and promotion](./shadow-and-promotion)
 - [Audit and review](./audit-and-review)
-- [`stretto stage`](/reference/cli#stretto-stage), [`flow-commit`](/reference/cli#stretto-flow-commit), [`flow-rollback`](/reference/cli#stretto-flow-rollback) and [`flow-log`](/reference/cli#stretto-flow-log)
+- [`hoist stage`](/reference/cli#hoist-stage), [`flow-commit`](/reference/cli#hoist-flow-commit), [`flow-rollback`](/reference/cli#hoist-flow-rollback) and [`flow-log`](/reference/cli#hoist-flow-log)

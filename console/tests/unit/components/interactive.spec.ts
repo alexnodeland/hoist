@@ -125,7 +125,7 @@ describe('the sign-in screen', () => {
     expect(await auth.signOut(here)).toBeNull()
     expect(calls[0]!.url).toBe('/api/logout')
     expect(calls[0]!.init.method).toBe('POST')
-    expect((calls[0]!.init.headers as Record<string, string>)['X-Stretto-Console']).toBe('1')
+    expect((calls[0]!.init.headers as Record<string, string>)['X-Hoist-Console']).toBe('1')
     expect(here.assign).toHaveBeenCalledWith('/')
   })
 })

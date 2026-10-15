@@ -37,7 +37,7 @@ const title = computed(
     :path="path[0]"
     :marker-end="`url(#${data.acts ? 'fg-arrow-acts' : 'fg-arrow'})`"
     :style="{
-      stroke: data.acts ? 'var(--stretto-chart-accent)' : 'var(--stretto-border-strong)',
+      stroke: data.acts ? 'var(--hoist-chart-accent)' : 'var(--hoist-border-strong)',
       strokeWidth: data.width,
       strokeLinecap: 'round',
     }"
@@ -64,24 +64,24 @@ const title = computed(
   gap: 6px;
   padding: 2px 7px;
   border-radius: 999px;
-  background: var(--stretto-surface);
-  border: 1px solid var(--stretto-border);
+  background: var(--hoist-surface);
+  border: 1px solid var(--hoist-border);
   font-size: 11px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
   pointer-events: all;
   white-space: nowrap;
 }
 
 .elabel strong {
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   font-weight: 600;
 }
 
 .elabel.acts {
-  border-color: color-mix(in oklab, var(--stretto-accent-graphic) 55%, var(--stretto-border));
+  border-color: color-mix(in oklab, var(--hoist-accent-graphic) 55%, var(--hoist-border));
 }
 
 .elabel.acts strong {
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
 }
 </style>

@@ -16,11 +16,11 @@ test('adding a server checks the form, then gives each host’s configuration', 
   await page.getByTestId('server-save').click()
   await expect(page.getByText('Use lowercase letters, digits, - and _.')).toBeVisible()
   await page.getByTestId('server-name').fill('demo')
-  await page.getByTestId('server-command').fill('stretto-mcp-demo --world retail')
-  await expect(page.locator('.words .chip')).toHaveText(['stretto-mcp-demo', '--world', 'retail'])
+  await page.getByTestId('server-command').fill('hoist-mcp-demo --world retail')
+  await expect(page.locator('.words .chip')).toHaveText(['hoist-mcp-demo', '--world', 'retail'])
   await expect(
     page.getByText(
-      'stretto-proxy --record ~/.stretto/logs/demo --domain demo -- stretto-mcp-demo --world retail',
+      'hoist-mcp --record ~/.hoist/logs/demo --domain demo -- hoist-mcp-demo --world retail',
     ),
   ).toBeVisible()
   await page.getByTestId('server-save').click()
@@ -29,7 +29,7 @@ test('adding a server checks the form, then gives each host’s configuration', 
   await expect(page.getByText('Server demo added')).toBeVisible()
   const snippet = page.getByTestId('host-snippet')
   await expect(snippet).toContainText(
-    'claude mcp add demo -- stretto-proxy --record ~/.stretto/logs/demo',
+    'claude mcp add demo -- hoist-mcp --record ~/.hoist/logs/demo',
   )
   await page.getByRole('tab', { name: 'Cursor' }).click()
   await expect(snippet).toContainText('"mcpServers"')
@@ -41,7 +41,7 @@ test('adding a server checks the form, then gives each host’s configuration', 
   expect(copied).toContain('"servers"')
 })
 
-test('a retail server takes the guards, the judge, stretto_commit and retention', async ({
+test('a retail server takes the guards, the judge, hoist_commit and retention', async ({
   page,
 }) => {
   await page.goto('/servers/new')
@@ -49,19 +49,19 @@ test('a retail server takes the guards, the judge, stretto_commit and retention'
   await page.getByTestId('server-command').fill('retail-mcp')
   await page.getByTestId('server-guards').check()
   await page.getByTestId('server-judge').selectOption('log')
-  await page.getByTestId('server-context').fill('~/.stretto/context/retail.jsonl')
+  await page.getByTestId('server-context').fill('~/.hoist/context/retail.jsonl')
   await page.getByTestId('server-commit').check()
   await page.getByTestId('server-retain').fill('30')
   await expect(
     page.getByText(
-      'stretto-proxy --record ~/.stretto/logs/retail --domain retail --retain-days 30 --guards --confirm-judge log --context ~/.stretto/context/retail.jsonl --commit -- retail-mcp',
+      'hoist-mcp --record ~/.hoist/logs/retail --domain retail --retain-days 30 --guards --confirm-judge log --context ~/.hoist/context/retail.jsonl --commit -- retail-mcp',
     ),
   ).toBeVisible()
   await page.getByTestId('server-save').click()
 
   await expect(page).toHaveURL(/\/servers\/retail$/)
   await expect(page.getByTestId('server-guards')).toContainText(
-    'on, with the confirmation judge (log) reading ~/.stretto/context/retail.jsonl',
+    'on, with the confirmation judge (log) reading ~/.hoist/context/retail.jsonl',
   )
   await expect(page.getByTestId('server-retain')).toHaveText('30 days')
   await expect(page.getByTestId('host-snippet')).toContainText(
@@ -105,37 +105,37 @@ test('hosts connect by URL to one proxy, with a token beyond loopback', async ({
   await expect(
     page.getByText('Without a token file, the proxy listens only on a loopback address.'),
   ).toBeVisible()
-  await page.getByTestId('server-listen-token').fill('~/.stretto/proxy-token')
+  await page.getByTestId('server-listen-token').fill('~/.hoist/proxy-token')
   await expect(
     page.getByText(
-      'stretto-proxy --record ~/.stretto/logs/desk --domain desk --listen 0.0.0.0:8931 --listen-token-file ~/.stretto/proxy-token -- desk-mcp',
+      'hoist-mcp --record ~/.hoist/logs/desk --domain desk --listen 0.0.0.0:8931 --listen-token-file ~/.hoist/proxy-token -- desk-mcp',
     ),
   ).toBeVisible()
   await page.getByTestId('server-save').click()
 
   await expect(page).toHaveURL(/\/servers\/desk$/)
   await expect(page.getByTestId('server-listen')).toHaveText(
-    'by URL, to one proxy at http://127.0.0.1:8931/mcp, with the token in ~/.stretto/proxy-token',
+    'by URL, to one proxy at http://127.0.0.1:8931/mcp, with the token in ~/.hoist/proxy-token',
   )
   const snippet = page.getByTestId('host-snippet')
   await expect(snippet).toContainText(
-    'claude mcp add --transport http desk http://127.0.0.1:8931/mcp --header "Authorization: Bearer $(cat ~/.stretto/proxy-token)"',
+    'claude mcp add --transport http desk http://127.0.0.1:8931/mcp --header "Authorization: Bearer $(cat ~/.hoist/proxy-token)"',
   )
   await page.getByText('Next steps from here').click()
   await expect(page.getByText('Start the proxy, and keep it running')).toBeVisible()
   await page.getByRole('tab', { name: 'Cursor' }).click()
   await expect(snippet).toContainText('"url": "http://127.0.0.1:8931/mcp"')
-  await expect(snippet).toContainText('Bearer ${env:STRETTO_PROXY_TOKEN}')
+  await expect(snippet).toContainText('Bearer ${env:HOIST_PROXY_TOKEN}')
   await expect(page.getByText("puts this one's name in the URL", { exact: false })).toBeVisible()
   await page.getByRole('tab', { name: 'Claude Desktop' }).click()
-  await expect(snippet).toContainText('"command": "stretto-proxy"')
+  await expect(snippet).toContainText('"command": "hoist-mcp"')
   await expect(snippet).not.toContainText('--listen')
 })
 
 test('testing the connection lists the tools and their kinds', async ({ page }) => {
   await page.goto('/servers/shop')
   await page.getByTestId('probe').click()
-  await expect(page.getByTestId('probe-ok')).toContainText('stretto-mcp-demo 0.1.0')
+  await expect(page.getByTestId('probe-ok')).toContainText('hoist-mcp-demo 0.1.0')
   await expect(page.getByRole('cell', { name: 'cancel_pending_order' })).toBeVisible()
   await expect(page.locator('.probe-tools tbody tr')).toHaveCount(4)
   await expect(page.locator('.probe-tools').getByText('write')).toBeVisible()
@@ -143,7 +143,7 @@ test('testing the connection lists the tools and their kinds', async ({ page }) 
 
 test('a server that cannot be reached says why', async ({ page }) => {
   await page.goto('/servers/orders-api')
-  await expect(page.getByText('flow not found: ~/.stretto/orders.flow.json')).toBeVisible()
+  await expect(page.getByText('flow not found: ~/.hoist/orders.flow.json')).toBeVisible()
   await page.getByTestId('probe').click()
   await expect(page.getByTestId('probe-failed')).toContainText('ORDERS_AUTH, which is not set')
 })
@@ -166,7 +166,7 @@ test('editing keeps the name, and the server refuses a duplicate', async ({ page
   await expect(page.getByText('Server notes saved')).toBeVisible()
 
   await page.goto('/servers/new?domain=shop')
-  await page.getByTestId('server-command').fill('stretto-mcp-demo')
+  await page.getByTestId('server-command').fill('hoist-mcp-demo')
   await page.getByTestId('server-save').click()
   await expect(page.getByText('A server named shop exists.')).toBeVisible()
 })

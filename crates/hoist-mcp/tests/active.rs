@@ -1,0 +1,1375 @@
+//! Active mode end to end: a host drives the demo's retail world through the
+//! proxy, with a flow learned from synthetic sessions, the retail guards,
+//! the commit tool and a conversation file.
+
+use fugue::runtime::handler::run as interpret;
+use fugue::{addr, ChoiceValue, ScoreGivenTrace, Trace};
+use hoist_oracle::MockOracle;
+use hoist_report::flow::Flow;
+use hoist_report::phase0::{compile_flow_from_episodes, compile_habit_flow_from_episodes, Config};
+use hoist_report::program::FlowProgram;
+use hoist_report::shadow::{OracleKind, QuestionSet, ShadowConfig};
+use hoist_trace::mcp::{episode, read_log};
+use hoist_trace::{Episode, Event, ToolCall, ToolKind, ToolManifest};
+use serde_json::{json, Value};
+use std::collections::BTreeMap;
+use std::fs;
+use std::io::{BufRead, BufReader, Write};
+use std::path::{Path, PathBuf};
+use std::process::{Child, ChildStdin, Command, Stdio};
+use std::sync::mpsc::{self, Receiver};
+use std::thread;
+use std::time::Duration;
+
+const PROXY: &str = env!("CARGO_BIN_EXE_hoist-mcp");
+const DEMO: &str = env!("CARGO_BIN_EXE_hoist-mcp-demo");
+const PATIENCE: Duration = Duration::from_secs(30);
+
+fn manifest() -> ToolManifest {
+    ToolManifest {
+        domain: "retail".to_string(),
+        tools: BTreeMap::from([
+            ("find_user_id_by_email".to_string(), ToolKind::Read),
+            ("get_user_details".to_string(), ToolKind::Read),
+            ("get_order_details".to_string(), ToolKind::Read),
+            ("cancel_pending_order".to_string(), ToolKind::Write),
+        ]),
+        docs: BTreeMap::new(),
+    }
+}
+
+fn call(id: &str, name: &str, arguments: Value) -> Event {
+    Event::Assistant {
+        text: None,
+        calls: vec![ToolCall {
+            id: id.to_string(),
+            name: name.to_string(),
+            arguments,
+        }],
+        usage: None,
+    }
+}
+
+fn result(id: &str, name: &str, content: Value) -> Event {
+    Event::ToolResult {
+        call_id: id.to_string(),
+        name: name.to_string(),
+        error: false,
+        content: match content {
+            Value::String(s) => s,
+            other => other.to_string(),
+        },
+    }
+}
+
+fn say(text: &str) -> Event {
+    Event::Assistant {
+        text: Some(text.to_string()),
+        calls: Vec::new(),
+        usage: None,
+    }
+}
+
+fn order(n: usize, which: char) -> Value {
+    json!({"order_id": format!("#W{n}{which}"), "user_id": format!("user_{n}"), "status": "pending"})
+}
+
+/// Customer `n` is found by email; the agent reads their details and both
+/// orders, then cancels the first once they agree.
+fn session(n: usize) -> Episode {
+    let user = format!("user_{n}");
+    Episode {
+        id: format!("session-{n}"),
+        task_id: String::new(),
+        trial: 0,
+        domain: "retail".to_string(),
+        agent_model: "agent".to_string(),
+        reward: 1.0,
+        events: vec![
+            Event::User {
+                text: format!("Hi, I'm c{n}@example.com and I want to cancel an order."),
+            },
+            call(
+                "1",
+                "find_user_id_by_email",
+                json!({"email": format!("c{n}@example.com")}),
+            ),
+            result("1", "find_user_id_by_email", json!(user)),
+            call("2", "get_user_details", json!({"user_id": user})),
+            result(
+                "2",
+                "get_user_details",
+                json!({"user_id": user, "orders": [format!("#W{n}a"), format!("#W{n}b")]}),
+            ),
+            call(
+                "3",
+                "get_order_details",
+                json!({"order_id": format!("#W{n}a")}),
+            ),
+            result("3", "get_order_details", order(n, 'a')),
+            call(
+                "4",
+                "get_order_details",
+                json!({"order_id": format!("#W{n}b")}),
+            ),
+            result("4", "get_order_details", order(n, 'b')),
+            say("Both orders are pending. Cancel the first, as no longer needed?"),
+            Event::User {
+                text: "Yes, please.".to_string(),
+            },
+            call(
+                "5",
+                "cancel_pending_order",
+                json!({"order_id": format!("#W{n}a"), "reason": "no longer needed"}),
+            ),
+            result(
+                "5",
+                "cancel_pending_order",
+                json!({"order_id": format!("#W{n}a"), "status": "cancelled"}),
+            ),
+            say("Done."),
+        ],
+    }
+}
+
+/// A flow learned from sixty such sessions, saved to `dir`.
+fn learned_flow(dir: &Path) -> PathBuf {
+    let episodes: Vec<Episode> = (0..60).map(session).collect();
+    let mut config = Config::new(PathBuf::new());
+    config.alpha_samples = 0;
+    let mut sc = ShadowConfig::new(OracleKind::Mock);
+    sc.questions = QuestionSet::V2;
+    config.shadow = Some(sc);
+    let oracle = MockOracle {
+        confidence: 0.6,
+        noul: 0.5,
+    };
+    let flow = compile_flow_from_episodes(&config, &episodes, &manifest(), &oracle).unwrap();
+    let path = dir.join("retail.flow.json");
+    flow.save(&path).unwrap();
+    path
+}
+
+struct Host {
+    child: Child,
+    stdin: Option<ChildStdin>,
+    lines: Receiver<String>,
+}
+
+impl Host {
+    fn start(args: &[&str]) -> Host {
+        Host::start_without(args, &[])
+    }
+
+    /// Start the proxy with `unset` removed from its environment.
+    fn start_without(args: &[&str], unset: &[&str]) -> Host {
+        let mut command = Command::new(PROXY);
+        for var in unset {
+            command.env_remove(var);
+        }
+        let mut child = command
+            .args(args)
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::inherit())
+            .spawn()
+            .unwrap();
+        let stdout = BufReader::new(child.stdout.take().unwrap());
+        let (tx, lines) = mpsc::channel();
+        thread::spawn(move || {
+            for line in stdout.lines() {
+                let Ok(line) = line else { return };
+                if tx.send(line).is_err() {
+                    return;
+                }
+            }
+        });
+        let stdin = child.stdin.take();
+        Host {
+            child,
+            stdin,
+            lines,
+        }
+    }
+
+    fn send(&mut self, message: Value) {
+        let stdin = self.stdin.as_mut().unwrap();
+        writeln!(stdin, "{message}").unwrap();
+        stdin.flush().unwrap();
+    }
+
+    /// The next message from the proxy.
+    fn recv(&self) -> Value {
+        let line = self
+            .lines
+            .recv_timeout(PATIENCE)
+            .expect("the proxy answers");
+        serde_json::from_str(&line).unwrap()
+    }
+
+    /// Call a tool and return its result.
+    fn call(&mut self, id: u64, name: &str, arguments: Value) -> Value {
+        self.send(json!({"jsonrpc": "2.0", "id": id, "method": "tools/call",
+                         "params": {"name": name, "arguments": arguments}}));
+        let response = self.recv();
+        assert_eq!(response["id"], id, "{response}");
+        response["result"].clone()
+    }
+
+    fn finish(mut self) -> i32 {
+        drop(self.stdin.take());
+        self.child.wait().unwrap().code().unwrap()
+    }
+}
+
+fn texts(result: &Value) -> Vec<String> {
+    result["content"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|c| c["text"].as_str().unwrap().to_string())
+        .collect()
+}
+
+#[test]
+fn flows_guards_and_commit_through_the_proxy() {
+    let dir = std::env::temp_dir().join(format!("hoist-active-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(&dir).unwrap();
+    let flow = learned_flow(&dir);
+    let logs = dir.join("logs");
+    let context = dir.join("context.jsonl");
+
+    let mut host = Host::start(&[
+        "--record",
+        logs.to_str().unwrap(),
+        "--domain",
+        "retail",
+        "--flow",
+        flow.to_str().unwrap(),
+        "--oracle",
+        "mock",
+        "--guards",
+        "--commit",
+        "--context",
+        context.to_str().unwrap(),
+        "--",
+        DEMO,
+        "--world",
+        "retail",
+    ]);
+    host.send(
+        json!({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
+        "protocolVersion": "2025-06-18", "capabilities": {},
+        "clientInfo": {"name": "hoist-test-host", "version": "0"}}}),
+    );
+    assert_eq!(host.recv()["id"], 1);
+    host.send(json!({"jsonrpc": "2.0", "method": "notifications/initialized"}));
+
+    // The commit tool is listed after the server's own.
+    host.send(json!({"jsonrpc": "2.0", "id": 2, "method": "tools/list"}));
+    let listed = host.recv();
+    let names: Vec<&str> = listed["result"]["tools"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter_map(|t| t["name"].as_str())
+        .collect();
+    assert_eq!(names.last(), Some(&"hoist_commit"), "{names:?}");
+    assert_eq!(names.len(), 5);
+
+    // The host hands over what the customer said.
+    fs::write(
+        &context,
+        "{\"role\":\"user\",\"content\":\"Hi, I'm c7@example.com and I want to cancel an order.\"}\n",
+    )
+    .unwrap();
+
+    // The agent finds the user; the flow reads their details in the same
+    // response, with the id bound from the first result.
+    let found = host.call(
+        3,
+        "find_user_id_by_email",
+        json!({"email": "c7@example.com"}),
+    );
+    let parts = texts(&found);
+    assert_eq!(parts[0], "user_7");
+    assert_eq!(parts.len(), 2, "{parts:?}");
+    assert!(parts[1].starts_with(hoist_mcp::APPENDIX), "{}", parts[1]);
+    assert!(
+        parts[1].contains("\n\nget_user_details {\"user_id\":\"user_7\"}:\n"),
+        "{}",
+        parts[1]
+    );
+    // A flow never writes.
+    assert!(!parts[1].contains("cancel_pending_order"), "{}", parts[1]);
+
+    // A cancellation for a reason the policy does not accept is refused,
+    // and never reaches the server.
+    let refused = host.call(
+        4,
+        "cancel_pending_order",
+        json!({"order_id": "#W7a", "reason": "found it cheaper"}),
+    );
+    assert_eq!(refused["isError"], true);
+    let why = &texts(&refused)[0];
+    assert!(why.contains("retail.cancel_reason"), "{why}");
+
+    // The customer confirms; one commit checks the status and cancels.
+    fs::write(
+        &context,
+        "{\"role\":\"user\",\"content\":\"Hi, I'm c7@example.com and I want to cancel an order.\"}\n\
+         {\"role\":\"user\",\"content\":\"Yes, cancel #W7a, I no longer need it.\"}\n",
+    )
+    .unwrap();
+    let committed = host.call(
+        5,
+        "hoist_commit",
+        json!({"calls": [
+            {"name": "get_order_details", "arguments": {"order_id": "#W7a"}},
+            {"name": "cancel_pending_order", "arguments": {"order_id": "#W7a", "reason": "no longer needed"}}
+        ]}),
+    );
+    assert_eq!(committed["isError"], false, "{committed}");
+    let report = &texts(&committed)[0];
+    assert!(report.contains("\"status\":\"cancelled\""), "{report}");
+
+    // A commit stops at the first refusal and says what did not run.
+    let stopped = host.call(
+        6,
+        "hoist_commit",
+        json!({"calls": [
+            {"name": "cancel_pending_order", "arguments": {"order_id": "#W7b", "reason": "found it cheaper"}},
+            {"name": "get_order_details", "arguments": {"order_id": "#W7b"}}
+        ]}),
+    );
+    assert_eq!(stopped["isError"], true);
+    let report = &texts(&stopped)[0];
+    assert!(
+        report.contains("was refused by the policy check"),
+        "{report}"
+    );
+    assert!(
+        report.contains("get_order_details {\"order_id\":\"#W7b\"} was not run"),
+        "{report}"
+    );
+
+    assert_eq!(host.finish(), 0);
+
+    // The log holds the whole session: the conversation, the flow's own
+    // calls, the refusal as the refused call's result, and the commit.
+    let mut sessions: Vec<PathBuf> = fs::read_dir(&logs)
+        .unwrap()
+        .map(|e| e.unwrap().path())
+        .collect();
+    sessions.sort();
+    let (flow_logs, session_logs): (Vec<PathBuf>, Vec<PathBuf>) = sessions
+        .into_iter()
+        .partition(|p| p.to_string_lossy().ends_with(".flow.jsonl"));
+    assert_eq!(session_logs.len(), 1);
+    assert_eq!(flow_logs.len(), 1);
+    // Each run of the flow after one of the agent's calls is the flow's
+    // fugue program: its decisions are the program's decision sites, in
+    // order, and the run's own entry holds its trace.
+    let entries: Vec<Value> = fs::read_to_string(&flow_logs[0])
+        .unwrap()
+        .lines()
+        .map(|l| serde_json::from_str(l).unwrap())
+        .collect();
+    let (runs, decisions): (Vec<&Value>, Vec<&Value>) =
+        entries.iter().partition(|e| e.get("run").is_some());
+    assert!(!runs.is_empty());
+    let program = FlowProgram::new(&Flow::load(&flow).unwrap()).unwrap();
+    let mut outcomes = 0;
+    for entry in &runs {
+        let run = &entry["run"];
+        let decided: Vec<&str> = decisions
+            .iter()
+            .filter(|d| d["after"] == entry["after"])
+            .map(|d| d["address"].as_str().unwrap())
+            .collect();
+        let expected: Vec<String> = (0..decided.len()).map(|i| format!("decide#{i}")).collect();
+        assert_eq!(decided, expected);
+        let mut trace = Trace::default();
+        for site in run["sites"].as_array().unwrap() {
+            let (name, i) = site[0].as_str().unwrap().split_once('#').unwrap();
+            let value = match &site[1] {
+                Value::Bool(ok) => ChoiceValue::Bool(*ok),
+                v => ChoiceValue::Usize(v.as_u64().unwrap() as usize),
+            };
+            let address = addr!(name, i.parse::<usize>().unwrap());
+            trace.insert_choice(address, value, site[2].as_f64().unwrap());
+        }
+        let sites: Vec<String> = run["sites"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|s| s[0].as_str().unwrap().to_string())
+            .filter(|a| a.starts_with("decide#"))
+            .collect();
+        assert_eq!(sites, decided);
+        // Audited under the flow's program with the run's data, each
+        // outcome scores as the proxy scored the server's answer, and the
+        // surprise is theirs.
+        let (_, audited) = interpret(
+            ScoreGivenTrace {
+                base: trace.clone(),
+                trace: Trace::default(),
+            },
+            program.run(
+                run["call"].as_str().unwrap(),
+                run["failed"].as_bool().unwrap(),
+                run["max_lookups"].as_u64().unwrap() as usize,
+            ),
+        );
+        assert_eq!(audited.choices.len(), trace.choices.len());
+        let mut surprise = 0.0;
+        for (address, choice) in &trace.choices {
+            if address.to_string().starts_with("outcome#") {
+                assert!((audited.choices[address].logp - choice.logp).abs() < 1e-12);
+                surprise -= choice.logp;
+                outcomes += 1;
+            }
+        }
+        assert!((run["surprise"].as_f64().unwrap() - surprise).abs() < 1e-12);
+    }
+    assert!(outcomes > 0, "{runs:?}");
+    let log = read_log(&session_logs[0]).unwrap();
+    let ep = episode(&log);
+    let said: Vec<&str> = ep
+        .events
+        .iter()
+        .filter_map(|e| match e {
+            Event::User { text } => Some(text.as_str()),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(said.len(), 2, "{said:?}");
+    let calls: Vec<(&str, &str)> = ep
+        .events
+        .iter()
+        .flat_map(|e| match e {
+            Event::Assistant { calls, .. } => calls
+                .iter()
+                .map(|c| (c.id.as_str(), c.name.as_str()))
+                .collect(),
+            _ => Vec::new(),
+        })
+        .collect();
+    assert!(
+        calls
+            .iter()
+            .any(|(id, name)| id.starts_with("hoist-") && *name == "get_user_details"),
+        "{calls:?}"
+    );
+    let refusal = ep.events.iter().find_map(|e| match e {
+        Event::ToolResult {
+            call_id,
+            error,
+            content,
+            ..
+        } if call_id == "4" => Some((*error, content.clone())),
+        _ => None,
+    });
+    let (error, content) = refusal.expect("the refused call has a result");
+    assert!(
+        error && content.contains("retail.cancel_reason"),
+        "{content}"
+    );
+    // The server saw exactly one cancellation: the committed one.
+    let cancels = log
+        .messages()
+        .filter(|(from, m)| {
+            *from != hoist_trace::mcp::Peer::Client
+                && m.get("method").and_then(Value::as_str) == Some("tools/call")
+                && m.pointer("/params/name").and_then(Value::as_str) == Some("cancel_pending_order")
+        })
+        .count();
+    assert_eq!(cancels, 1);
+
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+/// Start a session: initialize, then list the tools.
+fn open_session(host: &mut Host) {
+    host.send(
+        json!({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
+        "protocolVersion": "2025-06-18", "capabilities": {},
+        "clientInfo": {"name": "hoist-test-host", "version": "0"}}}),
+    );
+    assert_eq!(host.recv()["id"], 1);
+    host.send(json!({"jsonrpc": "2.0", "method": "notifications/initialized"}));
+    host.send(json!({"jsonrpc": "2.0", "id": 2, "method": "tools/list"}));
+    assert_eq!(host.recv()["id"], 2);
+}
+
+/// Say `text` as the customer, in the conversation file the host keeps.
+fn say_to(context: &Path, text: &str) {
+    let mut file = fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(context)
+        .unwrap();
+    writeln!(file, "{}", json!({"role": "user", "content": text})).unwrap();
+}
+
+/// Record, learn, serve: sessions recorded through the proxy teach a flow,
+/// which the proxy then runs on a new customer.
+#[test]
+fn sessions_recorded_through_the_proxy_teach_the_flow_it_serves() {
+    let dir = std::env::temp_dir().join(format!("hoist-loop-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    let logs = dir.join("logs");
+    fs::create_dir_all(&logs).unwrap();
+
+    // Forty agents' sessions, as the agents ran them, with the conversation.
+    for n in 0..40 {
+        let context = dir.join(format!("context-{n}.jsonl"));
+        let mut host = Host::start(&[
+            "--record",
+            logs.to_str().unwrap(),
+            "--domain",
+            "retail",
+            "--context",
+            context.to_str().unwrap(),
+            "--",
+            DEMO,
+            "--world",
+            "retail",
+        ]);
+        open_session(&mut host);
+        say_to(
+            &context,
+            &format!("Hi, I'm c{n}@example.com and I want to cancel an order."),
+        );
+        let user = host.call(
+            3,
+            "find_user_id_by_email",
+            json!({"email": format!("c{n}@example.com")}),
+        );
+        assert_eq!(texts(&user), [format!("user_{n}")]);
+        host.call(
+            4,
+            "get_user_details",
+            json!({"user_id": format!("user_{n}")}),
+        );
+        host.call(
+            5,
+            "get_order_details",
+            json!({"order_id": format!("#W{n}a")}),
+        );
+        host.call(
+            6,
+            "get_order_details",
+            json!({"order_id": format!("#W{n}b")}),
+        );
+        say_to(&context, "Yes, please cancel the first one.");
+        let cancelled = host.call(
+            7,
+            "cancel_pending_order",
+            json!({"order_id": format!("#W{n}a"), "reason": "no longer needed"}),
+        );
+        assert_eq!(cancelled["isError"], false);
+        assert_eq!(host.finish(), 0);
+    }
+
+    // Learn as `hoist learn` does: the tools from the sessions' own
+    // tools/list, every session counted as a success.
+    let sessions = hoist_trace::mcp::read_sessions(&logs).unwrap();
+    assert_eq!(sessions.len(), 40);
+    let manifest = hoist_trace::mcp::manifest_of(&sessions, "retail");
+    assert_eq!(manifest.tools["get_user_details"], ToolKind::Read);
+    assert_eq!(manifest.tools["cancel_pending_order"], ToolKind::Write);
+    let episodes: Vec<Episode> = sessions
+        .iter()
+        .map(|log| {
+            let mut ep = episode(log);
+            ep.reward = 1.0;
+            ep
+        })
+        .collect();
+    assert!(episodes
+        .iter()
+        .all(|ep| matches!(&ep.events[0], Event::User { text } if text.starts_with("Hi, I'm"))));
+
+    // Redacted, the sessions teach the same flow. Every value only one
+    // session holds (an email, a user id, an order) becomes a salted hash,
+    // the same wherever it appears, so the sites and bindings do not change.
+    let redacted = hoist_trace::redact::redact(&sessions, "a secret salt", 3, &[]);
+    let all = |logs: &[hoist_trace::mcp::McpLog]| -> String {
+        logs.iter().map(|l| l.to_jsonl()).collect()
+    };
+    let text = all(&redacted);
+    for private in ["c7@example.com", "user_7", "#W7a", "credit_card_7"] {
+        assert!(!text.contains(private), "{private} survived redaction");
+    }
+    for shared in ["no longer needed", "pending", "get_user_details"] {
+        assert!(text.contains(shared), "{shared} was redacted");
+    }
+    let learn = |logs: &[hoist_trace::mcp::McpLog]| {
+        let episodes: Vec<Episode> = logs
+            .iter()
+            .map(|log| {
+                let mut ep = episode(log);
+                ep.reward = 1.0;
+                ep
+            })
+            .collect();
+        let mut config = Config::new(PathBuf::new());
+        config.alpha_samples = 0;
+        let manifest = hoist_trace::mcp::manifest_of(logs, "retail");
+        compile_habit_flow_from_episodes(&config, &episodes, &manifest).unwrap()
+    };
+    let (raw, pseudonymous) = (learn(&sessions), learn(&redacted));
+    assert_eq!(
+        hoist_report::review::show(&raw, 0.3),
+        hoist_report::review::show(&pseudonymous, 0.3)
+    );
+    assert!(hoist_report::review::diff(&raw, &pseudonymous, 0.0, 0.3)
+        .needs_review
+        .is_empty());
+    let mut config = Config::new(PathBuf::new());
+    config.alpha_samples = 0;
+    let mut sc = ShadowConfig::new(OracleKind::Mock);
+    sc.questions = QuestionSet::V2;
+    config.shadow = Some(sc);
+    let oracle = MockOracle {
+        confidence: 0.6,
+        noul: 0.5,
+    };
+    let flow = compile_flow_from_episodes(&config, &episodes, &manifest, &oracle).unwrap();
+    let path = dir.join("learned.flow.json");
+    flow.save(&path).unwrap();
+
+    // Serve it: a new customer's first lookup brings their details along.
+    let context = dir.join("context-new.jsonl");
+    say_to(
+        &context,
+        "Hi, I'm c123@example.com and I want to cancel an order.",
+    );
+    let mut host = Host::start(&[
+        "--domain",
+        "retail",
+        "--flow",
+        path.to_str().unwrap(),
+        "--oracle",
+        "mock",
+        "--context",
+        context.to_str().unwrap(),
+        "--",
+        DEMO,
+        "--world",
+        "retail",
+    ]);
+    open_session(&mut host);
+    let found = host.call(
+        3,
+        "find_user_id_by_email",
+        json!({"email": "c123@example.com"}),
+    );
+    let parts = texts(&found);
+    assert_eq!(parts.len(), 2, "{parts:?}");
+    assert!(
+        parts[1].contains("get_user_details {\"user_id\":\"user_123\"}"),
+        "{}",
+        parts[1]
+    );
+    assert_eq!(host.finish(), 0);
+
+    // The habit alone serves the same lookup, and asks no one: it needs no
+    // key, even with the Jev oracle named.
+    let mut host = Host::start_without(
+        &[
+            "--domain",
+            "retail",
+            "--flow",
+            path.to_str().unwrap(),
+            "--oracle",
+            "jev",
+            "--flow-decider",
+            "habit",
+            "--context",
+            context.to_str().unwrap(),
+            "--",
+            DEMO,
+            "--world",
+            "retail",
+        ],
+        &["TYPESAFE_API_KEY"],
+    );
+    open_session(&mut host);
+    let found = host.call(
+        3,
+        "find_user_id_by_email",
+        json!({"email": "c123@example.com"}),
+    );
+    let parts = texts(&found);
+    assert_eq!(parts.len(), 2, "{parts:?}");
+    assert!(
+        parts[1].contains("get_user_details {\"user_id\":\"user_123\"}"),
+        "{}",
+        parts[1]
+    );
+    assert_eq!(host.finish(), 0);
+
+    // A flow learned with no model is served, unless a decider is named,
+    // with `reach`: the proxy needs no key and no --flow-decider.
+    let habit = dir.join("habit.flow.json");
+    raw.save(&habit).unwrap();
+    let log = dir.join("habit.decisions.jsonl");
+    let mut host = Host::start_without(
+        &[
+            "--domain",
+            "retail",
+            "--flow",
+            habit.to_str().unwrap(),
+            "--flow-log",
+            log.to_str().unwrap(),
+            "--context",
+            context.to_str().unwrap(),
+            "--",
+            DEMO,
+            "--world",
+            "retail",
+        ],
+        &["TYPESAFE_API_KEY"],
+    );
+    open_session(&mut host);
+    let found = host.call(
+        3,
+        "find_user_id_by_email",
+        json!({"email": "c123@example.com"}),
+    );
+    let parts = texts(&found);
+    assert_eq!(parts.len(), 2, "{parts:?}");
+    assert!(
+        parts[1].contains("get_user_details {\"user_id\":\"user_123\"}"),
+        "{}",
+        parts[1]
+    );
+    assert_eq!(host.finish(), 0);
+    // `reach` gives handing back no probability of its own; the habit, which
+    // smooths every option, never gives it 0.
+    let logged = fs::read_to_string(&log).unwrap();
+    assert!(logged.contains("\"respond\":0.0"), "{logged}");
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+/// Say `text` as the agent, in the conversation file the host keeps.
+fn agent_says(context: &Path, text: &str) {
+    let mut file = fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(context)
+        .unwrap();
+    writeln!(file, "{}", json!({"role": "assistant", "content": text})).unwrap();
+}
+
+/// The confirmation judge asks the questions `hoist confirm` asks, logs
+/// each judgment, refuses in enforce mode a write it fails, refuses nothing
+/// when it cannot answer, and never refuses in log mode.
+#[test]
+fn the_confirmation_judge_refuses_writes_the_customer_did_not_confirm() {
+    use hoist_oracle::{Answer, ReplayCache, Response};
+    use hoist_report::confirm;
+
+    let dir = std::env::temp_dir().join(format!("hoist-judge-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(&dir).unwrap();
+    let cache = dir.join("cache");
+    // The judge's answers, seeded for the exact questions the proxy will ask.
+    let seed = |proposal: &str, customer: &str, order: &str, p: f64| {
+        let call = ToolCall {
+            id: "pending".to_string(),
+            name: "cancel_pending_order".to_string(),
+            arguments: json!({"order_id": order, "reason": "no longer needed"}),
+        };
+        let request = confirm::request("jev-latest", proposal, customer, &call);
+        let response = Response {
+            model: "jev-test".to_string(),
+            answers: BTreeMap::from([(confirm::QUESTION.to_string(), Answer::Noul { noul: p })]),
+            usage: Default::default(),
+        };
+        ReplayCache::<MockOracle>::new(&cache, None)
+            .insert(&hoist_oracle::request_key(&request), &response)
+            .unwrap();
+    };
+    let offer = "I can cancel order #W7a because you no longer need it. Shall I go ahead?";
+    let yes = "Yes, please go ahead.";
+    let done = "Done: #W7a is cancelled. Anything else?";
+    let also = "Also cancel #W7b.";
+    seed(offer, yes, "#W7a", 0.92);
+    seed(done, also, "#W7b", 0.15);
+
+    for mode in ["enforce", "log"] {
+        let logs = dir.join(format!("logs-{mode}"));
+        let context = dir.join(format!("context-{mode}.jsonl"));
+        let mut host = Host::start_without(
+            &[
+                "--record",
+                logs.to_str().unwrap(),
+                "--domain",
+                "retail",
+                "--guards",
+                "--context",
+                context.to_str().unwrap(),
+                "--confirm-judge",
+                mode,
+                "--oracle",
+                "replay",
+                "--oracle-cache",
+                cache.to_str().unwrap(),
+                "--",
+                DEMO,
+                "--world",
+                "retail",
+            ],
+            &["TYPESAFE_DEFAULT_MODEL"],
+        );
+        open_session(&mut host);
+        say_to(
+            &context,
+            "Hi, I'm c7@example.com and I want to cancel two orders.",
+        );
+        host.call(
+            3,
+            "find_user_id_by_email",
+            json!({"email": "c7@example.com"}),
+        );
+        host.call(4, "get_order_details", json!({"order_id": "#W7a"}));
+        host.call(5, "get_order_details", json!({"order_id": "#W7b"}));
+
+        // Confirmed: the judge says yes, so the write goes through.
+        agent_says(&context, offer);
+        say_to(&context, yes);
+        let first = host.call(
+            6,
+            "cancel_pending_order",
+            json!({"order_id": "#W7a", "reason": "no longer needed"}),
+        );
+        assert_eq!(first["isError"], false, "{first}");
+
+        // A request, not a confirmation: the judge says no.
+        agent_says(&context, done);
+        say_to(&context, also);
+        let second = host.call(
+            7,
+            "cancel_pending_order",
+            json!({"order_id": "#W7b", "reason": "no longer needed"}),
+        );
+        if mode == "enforce" {
+            assert_eq!(second["isError"], true, "{second}");
+            let why = &texts(&second)[0];
+            assert!(why.contains("confirmation judge: p_yes 0.15"), "{why}");
+
+            // An exchange the cache has no answer for: the judge cannot
+            // answer, so it refuses nothing. (In log mode #W7b is already
+            // cancelled, and the policy check refuses before the judge asks.)
+            agent_says(
+                &context,
+                "Shall I cancel order #W7b because you no longer need it?",
+            );
+            say_to(&context, "Yes, cancel it.");
+            let third = host.call(
+                8,
+                "cancel_pending_order",
+                json!({"order_id": "#W7b", "reason": "no longer needed"}),
+            );
+            assert_eq!(third["isError"], false, "{third}");
+        } else {
+            assert_eq!(second["isError"], false, "{second}");
+        }
+        assert_eq!(host.finish(), 0);
+
+        let judged: Vec<Value> = fs::read_dir(&logs)
+            .unwrap()
+            .map(|e| e.unwrap().path())
+            .filter(|p| p.to_string_lossy().ends_with(".confirm.jsonl"))
+            .flat_map(|p| {
+                fs::read_to_string(p)
+                    .unwrap()
+                    .lines()
+                    .map(|l| serde_json::from_str(l).unwrap())
+                    .collect::<Vec<Value>>()
+            })
+            .collect();
+        assert_eq!(
+            judged.len(),
+            if mode == "enforce" { 3 } else { 2 },
+            "{judged:?}"
+        );
+        assert_eq!(judged[0]["p_yes"], 0.92);
+        assert_eq!(judged[0]["fails"], false);
+        assert_eq!(judged[1]["p_yes"], 0.15);
+        assert_eq!(judged[1]["fails"], true);
+        assert_eq!(judged[1]["enforced"], mode == "enforce");
+        if mode == "enforce" {
+            assert!(judged[2]["error"].is_string(), "{}", judged[2]);
+            assert_eq!(judged[2]["unknown"], true);
+            assert_eq!(judged[2]["fails"], false);
+        }
+        // Every judgment names the question it asked, and carries the
+        // proposal check, which finds no other order named here.
+        assert!(judged
+            .iter()
+            .all(|j| j["key"].as_str().is_some_and(|k| k.len() == 64)));
+        assert!(judged
+            .iter()
+            .all(|j| j["proposal_check"].as_array().is_some_and(Vec::is_empty)));
+    }
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+#[test]
+fn a_shadowed_second_question_is_logged_but_refuses_nothing() {
+    use hoist_oracle::{Answer, ReplayCache, Response};
+    use hoist_report::confirm::{self, Second};
+
+    let dir = std::env::temp_dir().join(format!("hoist-judge2-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(&dir).unwrap();
+    let cache = dir.join("cache");
+    let offer = "I can cancel order #W7a because you no longer need it. Shall I go ahead?";
+    let yes = "Yes, please go ahead.";
+    // The customer confirmed (0.92), but the judge doubts the agent had
+    // proposed this exact change (0.10).
+    let call = ToolCall {
+        id: "pending".to_string(),
+        name: "cancel_pending_order".to_string(),
+        arguments: json!({"order_id": "#W7a", "reason": "no longer needed"}),
+    };
+    let first = confirm::request("jev-latest", offer, yes, &call);
+    let second = confirm::second_request(&first, Second::Proposed);
+    for (request, id, p) in [
+        (&first, confirm::QUESTION, 0.92),
+        (&second, Second::Proposed.id(), 0.10),
+    ] {
+        let response = Response {
+            model: "jev-test".to_string(),
+            answers: BTreeMap::from([(id.to_string(), Answer::Noul { noul: p })]),
+            usage: Default::default(),
+        };
+        ReplayCache::<MockOracle>::new(&cache, None)
+            .insert(&hoist_oracle::request_key(request), &response)
+            .unwrap();
+    }
+
+    for shadow in [false, true] {
+        let logs = dir.join(format!("logs-{shadow}"));
+        let context = dir.join(format!("context-{shadow}.jsonl"));
+        let mut args = vec![
+            "--record",
+            logs.to_str().unwrap(),
+            "--domain",
+            "retail",
+            "--guards",
+            "--context",
+            context.to_str().unwrap(),
+            "--confirm-judge",
+            "enforce",
+            "--confirm-second",
+            "proposed",
+            "--oracle",
+            "replay",
+            "--oracle-cache",
+            cache.to_str().unwrap(),
+        ];
+        if shadow {
+            args.push("--confirm-second-shadow");
+        }
+        args.extend(["--", DEMO, "--world", "retail"]);
+        let mut host = Host::start_without(&args, &["TYPESAFE_DEFAULT_MODEL"]);
+        open_session(&mut host);
+        say_to(
+            &context,
+            "Hi, I'm c7@example.com and I want to cancel an order.",
+        );
+        host.call(
+            3,
+            "find_user_id_by_email",
+            json!({"email": "c7@example.com"}),
+        );
+        host.call(4, "get_order_details", json!({"order_id": "#W7a"}));
+        agent_says(&context, offer);
+        say_to(&context, yes);
+        let result = host.call(
+            5,
+            "cancel_pending_order",
+            json!({"order_id": "#W7a", "reason": "no longer needed"}),
+        );
+        // Counted, the second answer refuses the write; shadowed, it does not.
+        assert_eq!(result["isError"], !shadow, "{result}");
+        if !shadow {
+            let why = &texts(&result)[0];
+            assert!(why.contains("confirmation judge: p_second 0.10"), "{why}");
+        }
+        assert_eq!(host.finish(), 0);
+
+        let judged: Vec<Value> = fs::read_dir(&logs)
+            .unwrap()
+            .map(|e| e.unwrap().path())
+            .filter(|p| p.to_string_lossy().ends_with(".confirm.jsonl"))
+            .flat_map(|p| {
+                fs::read_to_string(p)
+                    .unwrap()
+                    .lines()
+                    .map(|l| serde_json::from_str(l).unwrap())
+                    .collect::<Vec<Value>>()
+            })
+            .collect();
+        assert_eq!(judged.len(), 1, "{judged:?}");
+        // Both answers are logged either way.
+        assert_eq!(judged[0]["p_yes"], 0.92);
+        assert_eq!(judged[0]["p_second"], 0.1);
+        assert_eq!(judged[0]["fails"], !shadow);
+        assert_eq!(judged[0]["unknown"], false);
+        assert_eq!(
+            judged[0]["second_shadow"].as_bool().unwrap_or(false),
+            shadow
+        );
+    }
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+/// Shadow mode: the flow decides and logs, the agent gets the server's
+/// results unchanged, and `hoist promote` scores the logged session.
+#[test]
+fn a_shadow_flow_decides_and_logs_but_makes_no_lookups() {
+    let dir = std::env::temp_dir().join(format!("hoist-shadow-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(&dir).unwrap();
+    let flow_path = learned_flow(&dir);
+    let logs = dir.join("logs");
+    let context = dir.join("context.jsonl");
+    say_to(
+        &context,
+        "Hi, I'm c7@example.com and I want to cancel an order.",
+    );
+    let mut host = Host::start(&[
+        "--record",
+        logs.to_str().unwrap(),
+        "--domain",
+        "retail",
+        "--flow",
+        flow_path.to_str().unwrap(),
+        "--oracle",
+        "mock",
+        "--flow-shadow",
+        "--context",
+        context.to_str().unwrap(),
+        "--",
+        DEMO,
+        "--world",
+        "retail",
+    ]);
+    open_session(&mut host);
+    // The flow would read the user's details, but the agent gets only its
+    // own result; then it reads them itself.
+    let found = host.call(
+        3,
+        "find_user_id_by_email",
+        json!({"email": "c7@example.com"}),
+    );
+    assert_eq!(texts(&found), ["user_7"]);
+    let details = host.call(4, "get_user_details", json!({"user_id": "user_7"}));
+    assert_eq!(texts(&details).len(), 1, "{details}");
+    assert_eq!(host.finish(), 0);
+
+    let flow_log = fs::read_dir(&logs)
+        .unwrap()
+        .map(|e| e.unwrap().path())
+        .find(|p| p.to_string_lossy().ends_with(".flow.jsonl"))
+        .expect("a flow log next to the session log");
+    let decisions: Vec<Value> = fs::read_to_string(&flow_log)
+        .unwrap()
+        .lines()
+        .map(|l| serde_json::from_str(l).unwrap())
+        .collect();
+    assert_eq!(decisions[0]["shadow"], true, "{decisions:?}");
+    // Each decision is a site of the flow's run, as a fugue program.
+    assert_eq!(decisions[0]["address"], "decide#0");
+    assert_eq!(decisions[0]["action"], "lookup");
+    assert_eq!(decisions[0]["tool"], "get_user_details");
+    assert_eq!(decisions[0]["arguments"], json!({"user_id": "user_7"}));
+
+    // Scored on the recorded session, the would-be lookup was the agent's
+    // next step.
+    let session = fs::read_dir(&logs)
+        .unwrap()
+        .map(|e| e.unwrap().path())
+        .find(|p| {
+            let name = p.to_string_lossy();
+            name.ends_with(".jsonl") && !name.ends_with(".flow.jsonl")
+        })
+        .unwrap();
+    let mut recorded = episode(&read_log(&session).unwrap());
+    recorded.task_id = recorded.id.clone();
+    let flow = hoist_report::flow::Flow::load(&flow_path).unwrap();
+    let oracle = MockOracle {
+        confidence: 0.6,
+        noul: 0.5,
+    };
+    let serving = hoist_report::promote::Serving {
+        decider: hoist_report::flow::Decider::Arbiter,
+        threshold: 0.3,
+        per_call: hoist_report::flow::PER_CALL,
+    };
+    let scored = hoist_report::promote::score(&flow, &[recorded.into()], &oracle, serving, None);
+    let site = &scored.sites["find_user_id_by_email"];
+    assert_eq!((site.lookups, site.used), (1, 1), "{scored:?}");
+}
+
+#[test]
+fn a_flow_leaves_a_tool_whose_input_changed_to_the_agent() {
+    let dir = std::env::temp_dir().join(format!("hoist-contract-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(&dir).unwrap();
+    // The flow learned `get_user_details` when it took a number.
+    let learned = learned_flow(&dir);
+    let mut flow: Value = serde_json::from_str(&fs::read_to_string(&learned).unwrap()).unwrap();
+    flow["contracts"] = json!({"get_user_details": "user_id:integer!"});
+    let pinned = dir.join("pinned.flow.json");
+    fs::write(&pinned, flow.to_string()).unwrap();
+    // The server now lists it with a string: the flow no longer looks it up,
+    // the agent gets the server's result alone, and the flow log says why.
+    assert_eq!(
+        withheld(&dir, &pinned, &[]),
+        ["its input changed since the flow was learned (user_id:integer! → user_id:string!)"]
+    );
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+/// Serve `flow` on the demo shop, run with `server`'s options, through one
+/// user lookup, and return why the proxy withheld the flow's lookups. With
+/// a reason, the agent gets the server's result alone.
+fn withheld(dir: &Path, flow: &Path, server: &[&str]) -> Vec<String> {
+    let log = dir.join("withheld.flow.jsonl");
+    let _ = fs::remove_file(&log);
+    let mut args = vec![
+        "--domain",
+        "retail",
+        "--flow",
+        flow.to_str().unwrap(),
+        "--oracle",
+        "mock",
+        "--flow-log",
+        log.to_str().unwrap(),
+        "--",
+        DEMO,
+        "--world",
+        "retail",
+    ];
+    args.extend(server);
+    let mut host = Host::start(&args);
+    host.send(
+        json!({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
+        "protocolVersion": "2025-06-18", "capabilities": {},
+        "clientInfo": {"name": "hoist-test-host", "version": "0"}}}),
+    );
+    assert_eq!(host.recv()["id"], 1);
+    host.send(json!({"jsonrpc": "2.0", "method": "notifications/initialized"}));
+    host.send(json!({"jsonrpc": "2.0", "id": 2, "method": "tools/list"}));
+    host.recv();
+    let found = host.call(
+        3,
+        "find_user_id_by_email",
+        json!({"email": "c7@example.com"}),
+    );
+    assert_eq!(host.finish(), 0);
+    let reasons: Vec<String> = fs::read_to_string(&log)
+        .unwrap()
+        .lines()
+        .filter_map(|l| {
+            serde_json::from_str::<Value>(l).ok()?["withheld"]
+                .as_str()
+                .map(str::to_string)
+        })
+        .collect();
+    assert_eq!(texts(&found).len() == 1, !reasons.is_empty(), "{found}");
+    reasons
+}
+
+#[test]
+fn a_flow_leaves_a_tool_the_server_no_longer_lists_as_a_read_to_the_agent() {
+    let dir = std::env::temp_dir().join(format!("hoist-listing-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(&dir).unwrap();
+    // The flow learned `get_user_details` from this server's listing, where
+    // it was marked read-only.
+    let learned = learned_flow(&dir);
+    let mut flow: Value = serde_json::from_str(&fs::read_to_string(&learned).unwrap()).unwrap();
+    flow["contracts"] = json!({"get_user_details": "user_id:string!"});
+    let pinned = dir.join("pinned.flow.json");
+    fs::write(&pinned, flow.to_string()).unwrap();
+    assert_eq!(
+        withheld(&dir, &pinned, &["--hide", "get_user_details"]),
+        ["the server no longer lists it"]
+    );
+    assert_eq!(
+        withheld(&dir, &pinned, &["--hint", "get_user_details=false"]),
+        ["the server marks it as a write"]
+    );
+    assert_eq!(
+        withheld(&dir, &pinned, &["--hint", "get_user_details=none"]),
+        ["the server no longer marks it read-only"]
+    );
+    // A flow learned elsewhere pins no contract, so a server that marks
+    // nothing read-only is no change.
+    assert!(withheld(&dir, &learned, &["--hint", "get_user_details=none"]).is_empty());
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+#[test]
+fn a_flow_calls_only_the_tools_the_operator_granted() {
+    let dir = std::env::temp_dir().join(format!("hoist-grant-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(&dir).unwrap();
+    let flow = learned_flow(&dir);
+    let run = |tools: &str| {
+        let mut host = Host::start(&[
+            "--domain",
+            "retail",
+            "--flow",
+            flow.to_str().unwrap(),
+            "--oracle",
+            "mock",
+            "--flow-tools",
+            tools,
+            "--",
+            DEMO,
+            "--world",
+            "retail",
+        ]);
+        host.send(
+            json!({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
+            "protocolVersion": "2025-06-18", "capabilities": {},
+            "clientInfo": {"name": "hoist-test-host", "version": "0"}}}),
+        );
+        assert_eq!(host.recv()["id"], 1);
+        host.send(json!({"jsonrpc": "2.0", "method": "notifications/initialized"}));
+        let found = host.call(
+            3,
+            "find_user_id_by_email",
+            json!({"email": "c7@example.com"}),
+        );
+        texts(&found).len()
+    };
+    // Granted the user lookup, the flow makes it; granted only another
+    // tool, it leaves the lookup to the agent.
+    assert_eq!(run("get_user_details,get_order_details"), 2);
+    assert_eq!(run("get_order_details"), 1);
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+#[test]
+fn after_one_call_of_a_batch_the_flow_decides_at_its_site_and_leaves_the_rest_to_the_agent() {
+    let dir = std::env::temp_dir().join(format!("hoist-batch-{}", std::process::id()));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(&dir).unwrap();
+    let flow = learned_flow(&dir);
+    let log = dir.join("flow.jsonl");
+    // The flow may read the user's details on its own, not their orders.
+    let mut host = Host::start(&[
+        "--domain",
+        "retail",
+        "--flow",
+        flow.to_str().unwrap(),
+        "--oracle",
+        "mock",
+        "--flow-tools",
+        "get_user_details",
+        "--flow-log",
+        log.to_str().unwrap(),
+        "--",
+        DEMO,
+        "--world",
+        "retail",
+    ]);
+    host.send(
+        json!({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
+        "protocolVersion": "2025-06-18", "capabilities": {},
+        "clientInfo": {"name": "hoist-test-host", "version": "0"}}}),
+    );
+    assert_eq!(host.recv()["id"], 1);
+    host.send(json!({"jsonrpc": "2.0", "method": "notifications/initialized"}));
+    let found = host.call(
+        3,
+        "find_user_id_by_email",
+        json!({"email": "c7@example.com"}),
+    );
+    assert!(texts(&found)[1].contains("#W7b"), "{found}");
+    // The agent reads both orders in one turn. The server takes its time
+    // over the first, so the second is on its way when the first answer
+    // comes back.
+    host.send(json!({"jsonrpc": "2.0", "id": 5, "method": "tools/call",
+                     "params": {"name": "get_order_details", "arguments": {"order_id": "#W7a", "delay_ms": 300}}}));
+    host.send(json!({"jsonrpc": "2.0", "id": 6, "method": "tools/call",
+                     "params": {"name": "get_order_details", "arguments": {"order_id": "#W7b"}}}));
+    let answered: Vec<Value> = (0..2).map(|_| host.recv()["id"].clone()).collect();
+    assert_eq!(answered, [json!(5), json!(6)]);
+    assert_eq!(host.finish(), 0);
+    let decisions: Vec<Value> = fs::read_to_string(&log)
+        .unwrap()
+        .lines()
+        .map(|l| serde_json::from_str(l).unwrap())
+        .filter(|d: &Value| d.get("site").is_some())
+        .collect();
+    // After the first order, the flow stands at that call's own site, not
+    // at the unanswered second call's, and does not read the second order,
+    // which the agent asked for already.
+    let after_first = decisions.iter().find(|d| d["after"] == 5).unwrap();
+    assert_eq!(after_first["site"], "get_order_details", "{after_first}");
+    assert_eq!(after_first["action"], "hand_back", "{after_first}");
+    assert_eq!(
+        after_first["reason"],
+        "get_order_details: nothing left to pass as `order_id`"
+    );
+    let after_second = decisions.iter().find(|d| d["after"] == 6).unwrap();
+    assert_eq!(after_second["site"], "get_order_details");
+    fs::remove_dir_all(&dir).unwrap();
+}
+
+#[test]
+fn the_demo_shop_lists_its_tools_as_told() {
+    let mut demo = Command::new(DEMO)
+        .args(["--world", "retail", "--hide", "cancel_pending_order"])
+        .args([
+            "--hint",
+            "get_user_details=none",
+            "--hint",
+            "get_order_details=false",
+        ])
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
+    let mut stdin = demo.stdin.take().unwrap();
+    writeln!(
+        stdin,
+        "{}",
+        json!({"jsonrpc": "2.0", "id": 1, "method": "tools/list"})
+    )
+    .unwrap();
+    drop(stdin);
+    let out = demo.wait_with_output().unwrap();
+    let listed: Value = serde_json::from_slice(&out.stdout).unwrap();
+    let tools = listed["result"]["tools"].as_array().unwrap();
+    let names: Vec<&str> = tools.iter().map(|t| t["name"].as_str().unwrap()).collect();
+    assert_eq!(
+        names,
+        [
+            "find_user_id_by_email",
+            "get_user_details",
+            "get_order_details"
+        ]
+    );
+    assert_eq!(tools[1]["annotations"], json!({}));
+    assert_eq!(tools[2]["annotations"]["readOnlyHint"], false);
+    // A hint it does not know is a usage error.
+    let out = Command::new(DEMO)
+        .args(["--world", "retail", "--hint", "get_user_details=maybe"])
+        .output()
+        .unwrap();
+    assert_eq!(out.status.code(), Some(2));
+    assert!(String::from_utf8_lossy(&out.stderr).contains("[--hint TOOL=false|none]"));
+}

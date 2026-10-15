@@ -19,7 +19,7 @@ test('a server gives each host’s configuration, and its connection test lists 
   await page.getByTestId('server-shop').getByRole('link', { name: 'shop' }).first().click()
   await expect(page.getByRole('heading', { name: 'shop', level: 1 })).toBeVisible()
   const snippet = page.getByTestId('host-snippet')
-  await expect(snippet).toContainText('claude mcp add shop -- stretto-proxy --record')
+  await expect(snippet).toContainText('claude mcp add shop -- hoist-mcp --record')
   await page.getByRole('tab', { name: 'Cursor' }).click()
   await expect(snippet).toContainText('"mcpServers"')
   await page.getByTestId('probe').click()
@@ -33,7 +33,7 @@ test('a discovered upstream becomes a server, which can be edited and removed', 
   await page.goto('/servers')
   await page.getByTestId('discovered-retail').getByRole('link', { name: 'Add' }).click()
   await expect(page.getByTestId('server-name')).toHaveValue('retail')
-  await expect(page.getByTestId('server-command')).toHaveValue('stretto-mcp-demo --world retail')
+  await expect(page.getByTestId('server-command')).toHaveValue('hoist-mcp-demo --world retail')
   await page.getByTestId('server-save').click()
   await expect(page).toHaveURL(/\/servers\/retail$/)
   await expect(page.getByText('Server retail added')).toBeVisible()
@@ -57,7 +57,7 @@ test('a discovered upstream becomes a server, which can be edited and removed', 
 
 test('the server refuses a duplicate name', async ({ page }) => {
   await page.goto('/servers/new?domain=shop')
-  await page.getByTestId('server-command').fill('stretto-mcp-demo')
+  await page.getByTestId('server-command').fill('hoist-mcp-demo')
   await page.getByTestId('server-save').click()
   await expect(page.getByText('A server named shop exists.')).toBeVisible()
 })

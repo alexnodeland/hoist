@@ -42,12 +42,12 @@ const last = computed(() => Math.min(props.total, props.offset + props.limit))
   align-items: center;
   gap: 8px;
   padding: 12px 20px;
-  border-top: 1px solid var(--stretto-border);
+  border-top: 1px solid var(--hoist-border);
 }
 
 .pager-range {
   font-size: 13px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 @media (max-width: 720px) {

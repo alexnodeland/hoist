@@ -189,10 +189,10 @@ watch(
 .fg {
   position: relative;
   border-radius: var(--c-radius-control);
-  border: 1px solid var(--stretto-border);
-  background-color: var(--stretto-bg);
+  border: 1px solid var(--hoist-border);
+  background-color: var(--hoist-bg);
   background-image: radial-gradient(
-    color-mix(in oklab, var(--stretto-border-strong) 35%, transparent) 1px,
+    color-mix(in oklab, var(--hoist-border-strong) 35%, transparent) 1px,
     transparent 1px
   );
   background-size: 18px 18px;
@@ -204,11 +204,11 @@ watch(
 }
 
 .arrow {
-  fill: var(--stretto-border-strong);
+  fill: var(--hoist-border-strong);
 }
 
 .arrow.acts {
-  fill: var(--stretto-chart-accent);
+  fill: var(--hoist-chart-accent);
 }
 
 .fg-controls {
@@ -217,8 +217,8 @@ watch(
   bottom: 8px;
   display: flex;
   border-radius: 8px;
-  border: 1px solid var(--stretto-border);
-  background: var(--stretto-surface);
+  border: 1px solid var(--hoist-border);
+  background: var(--hoist-surface);
   box-shadow: var(--c-shadow-sm);
   overflow: hidden;
   z-index: 5;
@@ -230,9 +230,9 @@ watch(
   width: 30px;
   height: 28px;
   border: 0;
-  border-right: 1px solid var(--stretto-border);
+  border-right: 1px solid var(--hoist-border);
   background: none;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .fg-controls button:last-child {
@@ -240,8 +240,8 @@ watch(
 }
 
 .fg-controls button:hover {
-  background: var(--stretto-surface-2);
-  color: var(--stretto-text);
+  background: var(--hoist-surface-2);
+  color: var(--hoist-text);
 }
 
 .fg :deep(.vue-flow__edge-path) {

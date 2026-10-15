@@ -1,17 +1,17 @@
 ---
-description: Put stretto-proxy in front of any MCP server, in any MCP host - stretto init for Claude Code, Claude Desktop, Cursor and VS Code, the three stages of a deployment, and what to watch for.
+description: Put hoist-mcp in front of any MCP server, in any MCP host - hoist init for Claude Code, Claude Desktop, Cursor and VS Code, the three stages of a deployment, and what to watch for.
 ---
 
 # Any MCP host
 
-stretto works with any MCP host that starts servers over stdio, which is how desktop apps, IDEs and agent frameworks run local servers. The change is always the same: in the host's configuration, **replace the server's command with `stretto-proxy`, and put the server's command after `--`**.
+Hoist works with any MCP host that starts servers over stdio, which is how desktop apps, IDEs and agent frameworks run local servers. The change is always the same: in the host's configuration, **replace the server's command with `hoist-mcp`, and put the server's command after `--`**.
 
-## `stretto init` prints it
+## `hoist init` prints it
 
-For Claude Code, Claude Desktop, Cursor and VS Code, `stretto init` prints the configuration in the host's own format. Give it the host, a name for the server, and the server's command after `--`:
+For Claude Code, Claude Desktop, Cursor and VS Code, `hoist init` prints the configuration in the host's own format. Give it the host, a name for the server, and the server's command after `--`:
 
 ```sh
-stretto init --host cursor --domain orders -- npx -y some-mcp-server
+hoist init --host cursor --domain orders -- npx -y some-mcp-server
 ```
 
 It prints (its arguments wrapped here):
@@ -20,8 +20,8 @@ It prints (its arguments wrapped here):
 {
   "mcpServers": {
     "orders": {
-      "command": "stretto-proxy",
-      "args": ["--record", "~/.stretto/logs/orders", "--domain", "orders",
+      "command": "hoist-mcp",
+      "args": ["--record", "~/.hoist/logs/orders", "--domain", "orders",
                "--", "npx", "-y", "some-mcp-server"]
     }
   }
@@ -29,11 +29,11 @@ It prints (its arguments wrapped here):
 ```
 
 - `--host` is `claude-code`, `claude-desktop`, `cursor` or `vscode`. The configuration goes to stdout; where it goes, and the next steps, go to stderr.
-- `--domain NAME` is the server's name in the host, and the domain of its sessions and flows. The proxy records sessions in `~/.stretto/logs/NAME`, or where `--record DIR` says.
+- `--domain NAME` is the server's name in the host, and the domain of its sessions and flows. The proxy records sessions in `~/.hoist/logs/NAME`, or where `--record DIR` says.
 - `--write PATH` writes the configuration file instead of printing it. It leaves an existing file alone unless you add `--force`, which replaces the whole file, with any other servers in it; to add a server to a file that has others, merge the printed configuration by hand.
 - A server program named by a relative path is written with its absolute path, since the host starts servers in a directory of its own choosing.
 
-`init` writes no `env` block. If the server needs environment variables, add them to its entry as before: the server inherits the proxy's environment. Every option is in [the CLI reference](/reference/cli#stretto-init).
+`init` writes no `env` block. If the server needs environment variables, add them to its entry as before: the server inherits the proxy's environment. Every option is in [the CLI reference](/reference/cli#hoist-init).
 
 ::: tip In the console
 [The console](/guide/console)'s page for a server shows the same configuration for each host, from a registry of your servers. It also tests the connection, listing the server's tools as they are now.
@@ -48,7 +48,7 @@ It prints (its arguments wrapped here):
 | Cursor | `cursor` | JSON for `~/.cursor/mcp.json` or `.cursor/mcp.json` | [Cursor and VS Code](./cursor-vscode) |
 | VS Code | `vscode` | JSON for `.vscode/mcp.json`, or the user `mcp.json` | [Cursor and VS Code](./cursor-vscode) |
 | A server reached over HTTP | none | write the entry by hand, with `--upstream URL` in place of the command | [Streamable HTTP servers](./streamable-http) |
-| A framework that exports OpenTelemetry spans | none | nothing to configure for learning: `stretto learn --otel` reads the export | [OpenTelemetry spans](./opentelemetry) |
+| A framework that exports OpenTelemetry spans | none | nothing to configure for learning: `hoist learn --otel` reads the export | [OpenTelemetry spans](./opentelemetry) |
 
 In any other host, write the entry by hand. Before:
 
@@ -70,8 +70,8 @@ After:
 {
   "mcpServers": {
     "orders": {
-      "command": "stretto-proxy",
-      "args": ["--record", "~/.stretto/logs/orders", "--domain", "orders",
+      "command": "hoist-mcp",
+      "args": ["--record", "~/.hoist/logs/orders", "--domain", "orders",
                "--", "npx", "-y", "some-mcp-server"],
       "env": { "SOME_API_KEY": "…" }
     }
@@ -83,38 +83,38 @@ The host still sees a stdio MCP server with the same tools.
 
 ## The three stages
 
-A deployment moves through three configurations, and `stretto init` prints each. Only the proxy's arguments change; the server's command after `--` stays the same.
+A deployment moves through three configurations, and `hoist init` prints each. Only the proxy's arguments change; the server's command after `--` stays the same.
 
 **1. Record.** Log sessions to learn from:
 
 ```sh
-stretto init --host cursor --domain orders -- npx -y some-mcp-server
+hoist init --host cursor --domain orders -- npx -y some-mcp-server
 ```
 
 ```json
-"args": ["--record", "~/.stretto/logs/orders", "--domain", "orders",
+"args": ["--record", "~/.hoist/logs/orders", "--domain", "orders",
          "--", "npx", "-y", "some-mcp-server"]
 ```
 
 Then learn a flow and review it:
 
 ```sh
-stretto learn --sessions ~/.stretto/logs/orders --domain orders \
-  --habit-only --out ~/.stretto/orders.flow.json
-stretto flow-show ~/.stretto/orders.flow.json
+hoist learn --sessions ~/.hoist/logs/orders --domain orders \
+  --habit-only --out ~/.hoist/orders.flow.json
+hoist flow-show ~/.hoist/orders.flow.json
 ```
 
 **2. Shadow.** Serve the flow so that it decides and logs, but makes no lookups ([shadow mode](/guide/concepts/shadow-and-promotion)):
 
 ```sh
-stretto init --host cursor --domain orders \
-  --flow ~/.stretto/orders.flow.json --shadow \
+hoist init --host cursor --domain orders \
+  --flow ~/.hoist/orders.flow.json --shadow \
   -- npx -y some-mcp-server
 ```
 
 ```json
-"args": ["--record", "~/.stretto/shadow/orders", "--domain", "orders",
-         "--flow", "/home/me/.stretto/orders.flow.json",
+"args": ["--record", "~/.hoist/shadow/orders", "--domain", "orders",
+         "--flow", "/home/me/.hoist/orders.flow.json",
          "--flow-decider", "reach", "--flow-shadow",
          "--", "npx", "-y", "some-mcp-server"]
 ```
@@ -122,22 +122,22 @@ stretto init --host cursor --domain orders \
 Then keep the flow to the calls where its lookups were the agent's own:
 
 ```sh
-stretto promote --flow ~/.stretto/orders.flow.json \
-  --sessions ~/.stretto/shadow/orders \
-  --out ~/.stretto/orders-promoted.flow.json
+hoist promote --flow ~/.hoist/orders.flow.json \
+  --sessions ~/.hoist/shadow/orders \
+  --out ~/.hoist/orders-promoted.flow.json
 ```
 
 **3. Serve.** Let the promoted flow act:
 
 ```sh
-stretto init --host cursor --domain orders \
-  --flow ~/.stretto/orders-promoted.flow.json \
+hoist init --host cursor --domain orders \
+  --flow ~/.hoist/orders-promoted.flow.json \
   -- npx -y some-mcp-server
 ```
 
 ```json
-"args": ["--record", "~/.stretto/logs/orders", "--domain", "orders",
-         "--flow", "/home/me/.stretto/orders-promoted.flow.json",
+"args": ["--record", "~/.hoist/logs/orders", "--domain", "orders",
+         "--flow", "/home/me/.hoist/orders-promoted.flow.json",
          "--flow-decider", "reach",
          "--", "npx", "-y", "some-mcp-server"]
 ```
@@ -149,12 +149,12 @@ A flow learned with `--habit-only` has no arbiter, so `init` serves it with the 
 Each host above starts its own proxy over stdio. With `--listen`, `init` sets up one proxy that every host connects to by URL, over Streamable HTTP ([hosts that connect by URL](/integrations/streamable-http#hosts-that-connect-by-url)):
 
 ```bash
-stretto init --host claude-code --domain orders --listen 127.0.0.1:8931 -- npx -y some-mcp-server
+hoist init --host claude-code --domain orders --listen 127.0.0.1:8931 -- npx -y some-mcp-server
 ```
 
 It prints the host's configuration by URL, `claude mcp add --transport http orders http://127.0.0.1:8931/mcp` here, and its next steps start with the command that runs the proxy; keep it running. Each change after that, such as serving a flow, restarts the proxy, and leaves the host's configuration as it is.
 
-- **Beyond loopback, a token.** Without `--listen-token-file FILE`, `init` refuses an address other than loopback, as the proxy does. With it, each host sends the token as `Authorization: Bearer`: Claude Code reads it from the file when you run `claude mcp add`, and the JSON configurations read it from `STRETTO_PROXY_TOKEN`, which you set to the token in the host's environment.
+- **Beyond loopback, a token.** Without `--listen-token-file FILE`, `init` refuses an address other than loopback, as the proxy does. With it, each host sends the token as `Authorization: Bearer`: Claude Code reads it from the file when you run `claude mcp add`, and the JSON configurations read it from `HOIST_PROXY_TOKEN`, which you set to the token in the host's environment.
 - **Every address.** A proxy listening on `0.0.0.0` is at `127.0.0.1` for this machine; a host on another one puts this machine's name in the URL.
 - **Claude Desktop** starts its servers as commands, so its configuration still starts a proxy of its own, over stdio.
 
@@ -163,10 +163,10 @@ The console sets the same on a server, under *How hosts connect* ([the console](
 ## What to watch for
 
 - **Paths.** Hosts start servers without a shell. The proxy expands a leading `~` in its own path options (`--record`, `--flow`, `--context`, `--flow-log`, `--confirm-log`, `--oracle-cache`), but the server's arguments after `--` are passed as written: give them as absolute paths.
-- **Finding the program.** Some hosts do not see your shell's `PATH`. `init` writes `stretto-proxy`'s full path for Claude Desktop, which starts servers with a minimal `PATH`. If another host cannot start it, use its full path too, from `which stretto-proxy`; the same goes for `npx` or the server's own command.
+- **Finding the program.** Some hosts do not see your shell's `PATH`. `init` writes `hoist-mcp`'s full path for Claude Desktop, which starts servers with a minimal `PATH`. If another host cannot start it, use its full path too, from `which hoist-mcp`; the same goes for `npx` or the server's own command.
 - **Credentials.** Put them in `env`, not in `args`. The proxy never records its environment; it replaces credential-looking arguments in the log's header with `<redacted>`, but only as a best effort.
 - **One proxy per server.** Wrap each server you want to record in its own proxy, with its own `--domain`. For a flow across several servers, record them into one directory ([several servers](/guide/concepts/sessions#several-servers)).
-- **Its messages.** The proxy writes to stderr, prefixed `stretto-proxy:`; the first message says where the log is. Hosts usually keep a server's stderr in their MCP logs.
+- **Its messages.** The proxy writes to stderr, prefixed `hoist-mcp:`; the first message says where the log is. Hosts usually keep a server's stderr in their MCP logs.
 - **Exit status.** The proxy exits with the server's status, or with 125 if the proxy itself fails, such as when the log cannot be created or the server cannot be started.
 
 ## The conversation
@@ -175,7 +175,7 @@ MCP does not carry the conversation, and none of the hosts above hand it to a se
 
 ## Related
 
-- [`stretto init`](/reference/cli#stretto-init) and [`stretto-proxy`'s options](/reference/cli#stretto-proxy)
-- [`stretto-proxy` reference](/reference/proxy)
+- [`hoist init`](/reference/cli#hoist-init) and [`hoist-mcp`'s options](/reference/cli#hoist-mcp)
+- [`hoist-mcp` reference](/reference/proxy)
 - [Quick start](/guide/quick-start)
 - [The console](/guide/console): each server's host configuration and connection test

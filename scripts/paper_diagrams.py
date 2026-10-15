@@ -17,7 +17,7 @@
 - `cascade.svg`: the compiled procedure and its hand-backs on solo telecom's
   held-out tasks (§4.5, Table 6).
 
-Every number drawn is read from paper/stretto.md: from the cells of its
+Every number drawn is read from paper/hoist.md: from the cells of its
 tables, found by their row and column, or from the sentence that states it.
 The figures' own alt text and captions are left out of what is read, and the
 script fails when a table, a row or a sentence is not there, so a figure
@@ -31,7 +31,7 @@ from pathlib import Path
 
 from paper_figures import DARK, LIGHT
 
-PAPER = Path(__file__).resolve().parent.parent / "paper" / "stretto.md"
+PAPER = Path(__file__).resolve().parent.parent / "paper" / "hoist.md"
 
 # Tints and neutrals for diagrams' fills, beside the categorical palette.
 LIGHT_X = {"pa": "#dbe8f9", "pb": "#fde6da", "panel": "#f1f0ec", "g1": "#a3a29c", "g2": "#d6d5cf"}
@@ -89,7 +89,7 @@ def find(pattern: str) -> tuple[str, ...]:
     """The groups of `pattern` in the paper's text; fails if the text does not hold it."""
     m = re.search(pattern, prose())
     if not m:
-        raise SystemExit(f"paper_diagrams.py: paper/stretto.md does not hold /{pattern}/")
+        raise SystemExit(f"paper_diagrams.py: paper/hoist.md does not hold /{pattern}/")
     return m.groups()
 
 
@@ -108,7 +108,7 @@ def table(*header: str) -> list[dict[str, str]]:
                 label = values[0] or label
                 rows.append(dict(zip(names, [label] + values[1:])))
             return rows
-    raise SystemExit(f"paper_diagrams.py: paper/stretto.md has no table with the columns {header}")
+    raise SystemExit(f"paper_diagrams.py: paper/hoist.md has no table with the columns {header}")
 
 
 def cell(rows: list[dict[str, str]], label: str, column: str, **where: str) -> str:
@@ -147,7 +147,7 @@ def lookup(path: Path) -> None:
 
     # (a) Two lanes: the same episode without and with the speculator.
     text(out, 6, 16, "(a) A lookup spares an LLM turn", weight="700", size=13)
-    lanes = [(6, "Without stretto"), (246, "With stretto")]
+    lanes = [(6, "Without hoist"), (246, "With hoist")]
     row = 27
 
     def turn(x: float, y: float, n: int, call: str, sans: bool = False) -> None:

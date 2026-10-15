@@ -1,6 +1,6 @@
-"""How well stretto infers an agent's LLM turns from an MCP proxy's log,
+"""How well Hoist infers an agent's LLM turns from an MCP proxy's log,
 against the host's own record of them (docs/results/turns-2026-09-28.md;
-stretto #40).
+hoist #40).
 
     python3 scripts/turn_inference.py EPISODES [--json rows.json] [--check-against TSV]
 
@@ -11,7 +11,7 @@ proxy's session log (`log/*.jsonl`) and Claude Code's event stream
 the truth. A task folder without both, or whose log's calls are not the
 event stream's MCP calls in order, is left out.
 
-The rule is `stretto_trace::mcp::episode`'s, over the agent's calls (the
+The rule is `hoist_trace::mcp::episode`'s, over the agent's calls (the
 proxy's own lookups left out, as the console counts turns). A call joins the
 current turn while an earlier call of it awaits its response. Otherwise it
 joins when it comes within GAP ms of the turn's last response, with nothing
@@ -32,7 +32,7 @@ import json
 import os
 from collections import Counter
 
-# stretto_trace::mcp::SAME_TURN_MS
+# hoist_trace::mcp::SAME_TURN_MS
 SAME_TURN_MS = 500
 RULES = [("overlap only", None, False)] + [
     (f"within {gap} ms{', unless it needs what the turn returned' if dep else ''}", gap, dep)
@@ -66,7 +66,7 @@ def uses_new_values(arguments, returned: str, known: str) -> bool:
 
 
 def outcome(response: dict) -> str:
-    """A response's content as text, as `stretto_trace::mcp` reads it."""
+    """A response's content as text, as `hoist_trace::mcp` reads it."""
     error = response.get("error")
     if error is not None:
         message = error.get("message") if isinstance(error, dict) else None
@@ -97,7 +97,7 @@ def messages(log: str):
 def infer(log: str, gap: int | None = SAME_TURN_MS, dependency: bool = True) -> tuple[list, list]:
     """Each of the agent's calls in the order sent, as (sent at, name,
     arguments, answered at), and its turn: the index of the turn's event, as
-    `stretto_trace::mcp::episode` places it. A call is answered by its first
+    `hoist_trace::mcp::episode` places it. A call is answered by its first
     response, or never (None)."""
     events: list[str] = []
     turn, open_calls, answered_ms = 0, 0, None

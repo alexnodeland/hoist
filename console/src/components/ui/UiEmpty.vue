@@ -39,8 +39,8 @@ withDefaults(defineProps<{ icon?: Component; title: string; compact?: boolean }>
   height: 44px;
   margin-bottom: 8px;
   border-radius: 12px;
-  background: var(--stretto-accent-soft);
-  color: var(--stretto-accent);
+  background: var(--hoist-accent-soft);
+  color: var(--hoist-accent);
 }
 
 .compact .empty-icon {
@@ -62,7 +62,7 @@ withDefaults(defineProps<{ icon?: Component; title: string; compact?: boolean }>
 .empty-body {
   max-width: 460px;
   font-size: 13.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .empty-actions {

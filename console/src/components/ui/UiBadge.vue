@@ -31,7 +31,7 @@ withDefaults(
   padding: 0 8px;
   border-radius: 999px;
   border: 1px solid transparent;
-  font-family: var(--stretto-font-sans);
+  font-family: var(--hoist-font-sans);
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0;
@@ -41,7 +41,7 @@ withDefaults(
 }
 
 .badge-mono {
-  font-family: var(--stretto-font-mono);
+  font-family: var(--hoist-font-mono);
   font-size: 11.5px;
   font-weight: 400;
   border-radius: 6px;
@@ -55,37 +55,37 @@ withDefaults(
 }
 
 .badge-neutral {
-  background: var(--stretto-surface-2);
-  border-color: var(--stretto-border);
-  color: var(--stretto-text-muted);
+  background: var(--hoist-surface-2);
+  border-color: var(--hoist-border);
+  color: var(--hoist-text-muted);
 }
 
 .badge-accent {
-  background: var(--stretto-accent-soft);
-  border-color: color-mix(in oklab, var(--stretto-accent-graphic) 28%, transparent);
-  color: var(--stretto-accent);
+  background: var(--hoist-accent-soft);
+  border-color: color-mix(in oklab, var(--hoist-accent-graphic) 28%, transparent);
+  color: var(--hoist-accent);
 }
 
 .badge-solid {
-  background: var(--stretto-accent-fill);
-  color: var(--stretto-on-accent);
+  background: var(--hoist-accent-fill);
+  color: var(--hoist-on-accent);
 }
 
 .badge-dashed {
   background: transparent;
-  border: 1px dashed var(--stretto-accent-graphic);
-  color: var(--stretto-accent);
+  border: 1px dashed var(--hoist-accent-graphic);
+  color: var(--hoist-accent);
 }
 
 .badge-outline {
   background: transparent;
-  border-color: var(--stretto-border-strong);
-  color: var(--stretto-text-muted);
+  border-color: var(--hoist-border-strong);
+  color: var(--hoist-text-muted);
 }
 
 .badge-ink {
-  background: var(--stretto-text);
-  color: var(--stretto-bg);
+  background: var(--hoist-text);
+  color: var(--hoist-bg);
 }
 
 .badge-danger {

@@ -1,5 +1,5 @@
 ---
-description: What stretto's files hold, what leaves the machine, how to keep less with retention, and how to share sessions pseudonymized with stretto redact.
+description: What Hoist's files hold, what leaves the machine, how to keep less with retention, and how to share sessions pseudonymized with hoist redact.
 ---
 
 # Privacy and redaction
@@ -23,7 +23,7 @@ Keep logs where the data may live, and never commit them. [The console](../conso
 The proxy talks to the MCP server it fronts, and to nothing else unless a System-One model is asked. Questions go to Jev, only on a cache miss, and only when:
 
 - the proxy serves a flow with its arbiter (`--flow-decider arbiter`, the default for a flow that has one) or runs the confirmation judge (`--confirm-judge`), with `--oracle jev`; or
-- an offline command asks: `stretto learn` or `compile` fitting an arbiter, `phase0 --oracle`, `confirm`, `match`, `ask`.
+- an offline command asks: `hoist learn` or `compile` fitting an arbiter, `phase0 --oracle`, `confirm`, `match`, `ask`.
 
 A question carries the customer's first message and up to four later ones, the agent's last message, up to 16 earlier calls and the last four results in full, each cut to a length ([the fields](/reference/privacy#what-leaves-the-machine)).
 
@@ -32,7 +32,7 @@ A question carries the customer's first message and up to four later ones, the a
 ## Keep less: retention
 
 ```sh
-stretto-proxy --record ~/.stretto/logs/orders --retain-days 30 ... \
+hoist-mcp --record ~/.hoist/logs/orders --retain-days 30 ... \
   -- <server command>
 ```
 
@@ -40,12 +40,12 @@ When it starts, the proxy deletes the `.jsonl` and `.json` files last modified m
 
 ## Share: pseudonymized sessions
 
-`stretto redact` writes a copy of recorded sessions in which rare values are replaced by salted hashes, the same hash wherever a value appears. A flow learned from the copy matches one learned from the originals.
+`hoist redact` writes a copy of recorded sessions in which rare values are replaced by salted hashes, the same hash wherever a value appears. A flow learned from the copy matches one learned from the originals.
 
 ```sh
 # Keep the salt secret. Reuse it when two batches' hashes must match.
-export STRETTO_REDACT_SALT="$(openssl rand -hex 16)"
-stretto redact --sessions ~/.stretto/logs/orders --out shared/logs \
+export HOIST_REDACT_SALT="$(openssl rand -hex 16)"
+hoist redact --sessions ~/.hoist/logs/orders --out shared/logs \
   --hash-field user_id,email,name,address,payment_method_id,orders,order_id
 ```
 
@@ -67,4 +67,4 @@ Pass a server's credentials in the host's `env` block, not as arguments. The pro
 ## Related
 
 - [Privacy: files and data](/reference/privacy): every file, every field sent, and the caveats
-- [`stretto redact`](/reference/cli#stretto-redact)
+- [`hoist redact`](/reference/cli#hoist-redact)

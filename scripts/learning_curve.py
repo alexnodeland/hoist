@@ -4,7 +4,7 @@
 A deployment learns from the sessions it serves, one after another. This
 simulates that: for an agent's τ²-bench results, it orders the agent's
 training-task episodes at random (a seed per order), learns a habit-only flow
-from the first n of them (`stretto learn --results`), and replays the flow on
+from the first n of them (`hoist learn --results`), and replays the flow on
 the agent's own test-task episodes (`pilot/check_flow.py`), for each n.
 n = 0 is the agent alone: a flow learned from nothing makes no lookup.
 Episodes are drawn whole, whether or not they succeeded, as sessions arrive;
@@ -21,7 +21,7 @@ other agents' sessions then weigh as K sessions do, a prior of bounded size,
 and the agent's own take over as they outnumber it.
 
     learning_curve.py RESULTS.json --domain D --n 30 60 100 200 --seeds 1 2 3 \\
-        --out DIR [--pool OTHER.json ... | --prior OTHER.json ...] [--bin target/release/stretto]
+        --out DIR [--pool OTHER.json ... | --prior OTHER.json ...] [--bin target/release/hoist]
 
 Each point is a row of DIR/curve.jsonl: n, seed, turns, turns saved, detours,
 lookups, and the replay folder, whose check.json has a row per episode.
@@ -60,7 +60,7 @@ def main():
                     help="also learn from all of these results' training episodes, before the agent's own first n")
     ap.add_argument("--prior-n", type=int, help="with --prior: learn from this many of them, drawn at random")
     ap.add_argument("--tau2", type=Path, default=ROOT.parent / "tau2-bench")
-    ap.add_argument("--bin", type=Path, default=ROOT / "target/release/stretto")
+    ap.add_argument("--bin", type=Path, default=ROOT / "target/release/hoist")
     ap.add_argument("--python", default=sys.executable, help="the Python with τ²-bench, for the replays")
     ap.add_argument("--oracle-cache", type=Path, required=True)
     ap.add_argument("--jobs", type=int, default=4)

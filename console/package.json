@@ -1,9 +1,9 @@
 {
-  "name": "stretto-console",
+  "name": "hoist-console",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "The stretto console's web UI: the management plane for the MCP servers stretto fronts, their recorded sessions, flows and jobs.",
+  "description": "The Hoist console's web UI: the management plane for the MCP servers Hoist fronts, their recorded sessions, flows and jobs.",
   "license": "MIT",
   "scripts": {
     "dev": "vite",

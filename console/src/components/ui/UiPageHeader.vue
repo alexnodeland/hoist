@@ -39,12 +39,12 @@ defineProps<{ title?: string; back?: RouteLocationRaw; backLabel?: string; mono?
   align-self: flex-start;
   font-size: 13px;
   font-weight: 500;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
   border-radius: 6px;
 }
 
 .ph-back:hover {
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .ph-row {
@@ -73,7 +73,7 @@ defineProps<{ title?: string; back?: RouteLocationRaw; backLabel?: string; mono?
 }
 
 .ph-title.mono {
-  font-family: var(--stretto-font-mono);
+  font-family: var(--hoist-font-mono);
   font-size: 20px;
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -82,7 +82,7 @@ defineProps<{ title?: string; back?: RouteLocationRaw; backLabel?: string; mono?
 .ph-sub {
   margin-top: 6px;
   font-size: 14px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
   /* A path, such as the data dir, may be longer than a phone is wide. */
   overflow-wrap: anywhere;
 }

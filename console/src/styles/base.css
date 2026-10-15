@@ -17,9 +17,9 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--stretto-bg);
-  color: var(--stretto-text);
-  font-family: var(--stretto-font-sans);
+  background: var(--hoist-bg);
+  color: var(--hoist-text);
+  font-family: var(--hoist-font-sans);
   font-size: 14px;
   line-height: 1.5;
   font-feature-settings: 'cv11', 'ss01';
@@ -78,12 +78,12 @@ button:disabled {
 }
 
 a {
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
   text-decoration: none;
 }
 
 a:hover {
-  color: var(--stretto-accent-hover);
+  color: var(--hoist-accent-hover);
 }
 
 code,
@@ -91,7 +91,7 @@ kbd,
 samp,
 pre,
 .mono {
-  font-family: var(--stretto-font-mono);
+  font-family: var(--hoist-font-mono);
   font-feature-settings: normal;
   font-variant-ligatures: none;
 }
@@ -102,11 +102,11 @@ code,
 }
 
 ::selection {
-  background: color-mix(in oklab, var(--stretto-accent-graphic) 28%, transparent);
+  background: color-mix(in oklab, var(--hoist-accent-graphic) 28%, transparent);
 }
 
 :focus-visible {
-  outline: 2px solid var(--stretto-focus);
+  outline: 2px solid var(--hoist-focus);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -141,11 +141,11 @@ code,
 /* ---------------------------------------------------------------- text */
 
 .muted {
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .subtle {
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .num,
@@ -168,21 +168,21 @@ code,
 }
 
 .tool {
-  font-family: var(--stretto-font-mono);
+  font-family: var(--hoist-font-mono);
   font-size: 12.5px;
   font-weight: 400;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .caption {
   font-size: 12.5px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .label {
   font-size: 12.5px;
   font-weight: 500;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 /* ---------------------------------------------------------------- layout */
@@ -263,8 +263,8 @@ code,
 /* ---------------------------------------------------------------- cards */
 
 .card {
-  background: var(--stretto-surface);
-  border: 1px solid var(--stretto-border);
+  background: var(--hoist-surface);
+  border: 1px solid var(--hoist-border);
   border-radius: var(--c-radius-card);
   box-shadow: var(--c-shadow-sm);
   min-width: 0;
@@ -275,7 +275,7 @@ code,
   align-items: center;
   gap: 12px;
   padding: 14px 20px;
-  border-bottom: 1px solid var(--stretto-border);
+  border-bottom: 1px solid var(--hoist-border);
   min-height: 52px;
 }
 
@@ -300,7 +300,7 @@ code,
 
 .card-foot {
   padding: 12px 20px;
-  border-top: 1px solid var(--stretto-border);
+  border-top: 1px solid var(--hoist-border);
   font-size: 13px;
 }
 
@@ -337,16 +337,16 @@ code,
   text-align: left;
   font-weight: 500;
   font-size: 12.5px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
   padding: 10px 12px;
-  border-bottom: 1px solid var(--stretto-border);
+  border-bottom: 1px solid var(--hoist-border);
   white-space: nowrap;
-  background: var(--stretto-surface);
+  background: var(--hoist-surface);
 }
 
 .table td {
   padding: 11px 12px;
-  border-bottom: 1px solid var(--stretto-border);
+  border-bottom: 1px solid var(--hoist-border);
   vertical-align: middle;
 }
 
@@ -411,7 +411,7 @@ code,
     align-items: center;
     gap: 6px 14px;
     padding: 12px 16px;
-    border-bottom: 1px solid var(--stretto-border);
+    border-bottom: 1px solid var(--hoist-border);
   }
 
   .table.table-stack tbody:last-child tr:last-child {
@@ -442,11 +442,11 @@ code,
     content: attr(data-label);
     display: block;
     margin-bottom: 3px;
-    font-family: var(--stretto-font-sans);
+    font-family: var(--hoist-font-sans);
     font-size: 11.5px;
     font-weight: 500;
     letter-spacing: normal;
-    color: var(--stretto-text-subtle);
+    color: var(--hoist-text-subtle);
   }
 
   .table.table-stack td.inline[data-label]::before {
@@ -465,7 +465,7 @@ code,
 }
 
 .kv dt {
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .kv dd {
@@ -494,12 +494,12 @@ code,
   max-width: 100%;
   padding: 1px 7px;
   border-radius: 6px;
-  background: var(--stretto-surface-2);
-  border: 1px solid var(--stretto-border);
-  font-family: var(--stretto-font-mono);
+  background: var(--hoist-surface-2);
+  border: 1px solid var(--hoist-border);
+  font-family: var(--hoist-font-mono);
   font-size: 12px;
   line-height: 18px;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   overflow-wrap: anywhere;
 }
 
@@ -517,10 +517,10 @@ code,
   width: 100%;
   min-height: 36px;
   padding: 7px 11px;
-  border: 1px solid var(--stretto-border-strong);
+  border: 1px solid var(--hoist-border-strong);
   border-radius: var(--c-radius-control);
-  background: var(--stretto-surface);
-  color: var(--stretto-text);
+  background: var(--hoist-surface);
+  color: var(--hoist-text);
   font-size: 14px;
   line-height: 20px;
   transition:
@@ -530,14 +530,14 @@ code,
 
 .input::placeholder,
 .textarea::placeholder {
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
   opacity: 1;
 }
 
 .input:hover,
 .select:hover,
 .textarea:hover {
-  border-color: var(--stretto-text-subtle);
+  border-color: var(--hoist-text-subtle);
 }
 
 .input:focus-visible,
@@ -547,8 +547,8 @@ code,
 .select:focus,
 .textarea:focus {
   outline: none;
-  border-color: var(--stretto-focus);
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--stretto-focus) 22%, transparent);
+  border-color: var(--hoist-focus);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--hoist-focus) 22%, transparent);
 }
 
 .input.mono,
@@ -564,8 +564,8 @@ code,
 .input:disabled,
 .select:disabled,
 .textarea:disabled {
-  background: var(--stretto-surface-2);
-  color: var(--stretto-text-subtle);
+  background: var(--hoist-surface-2);
+  color: var(--hoist-text-subtle);
   cursor: not-allowed;
 }
 
@@ -601,7 +601,7 @@ code,
   width: 16px;
   height: 16px;
   margin: 2px 0 0;
-  accent-color: var(--stretto-accent-fill);
+  accent-color: var(--hoist-accent-fill);
   flex: none;
 }
 
@@ -614,9 +614,9 @@ code,
   padding: 10px 14px;
   border-radius: var(--c-radius-control);
   font-size: 13.5px;
-  border: 1px solid var(--stretto-border);
-  background: var(--stretto-surface-2);
-  color: var(--stretto-text);
+  border: 1px solid var(--hoist-border);
+  background: var(--hoist-surface-2);
+  color: var(--hoist-text);
 }
 
 .notice > svg {
@@ -625,12 +625,12 @@ code,
 }
 
 .notice.accent {
-  background: var(--stretto-accent-soft);
-  border-color: color-mix(in oklab, var(--stretto-accent-graphic) 30%, transparent);
+  background: var(--hoist-accent-soft);
+  border-color: color-mix(in oklab, var(--hoist-accent-graphic) 30%, transparent);
 }
 
 .notice.accent > svg {
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
 }
 
 .notice.warn {
@@ -660,7 +660,7 @@ code,
 }
 
 .text-accent {
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
 }
 
 /* ---------------------------------------------------------------- code */
@@ -668,8 +668,8 @@ code,
 .code {
   margin: 0;
   padding: 14px 16px;
-  background: var(--stretto-surface-2);
-  border: 1px solid var(--stretto-border);
+  background: var(--hoist-surface-2);
+  border: 1px solid var(--hoist-border);
   border-radius: var(--c-radius-control);
   font-size: 12.5px;
   line-height: 1.6;
@@ -688,7 +688,7 @@ code,
 .md {
   font-size: 14px;
   line-height: 1.6;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   max-width: 920px;
 }
 
@@ -705,7 +705,7 @@ code,
   font-size: 16px;
   margin-top: 28px;
   padding-top: 18px;
-  border-top: 1px solid var(--stretto-border);
+  border-top: 1px solid var(--hoist-border);
 }
 
 .md h3 {
@@ -715,7 +715,7 @@ code,
 
 .md p,
 .md li {
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .md ul,
@@ -730,16 +730,16 @@ code,
 .md code {
   padding: 1px 5px;
   border-radius: 5px;
-  background: var(--stretto-surface-2);
-  border: 1px solid var(--stretto-border);
+  background: var(--hoist-surface-2);
+  border: 1px solid var(--hoist-border);
   font-size: 12.5px;
   overflow-wrap: anywhere;
 }
 
 .md pre {
   padding: 14px 16px;
-  background: var(--stretto-surface-2);
-  border: 1px solid var(--stretto-border);
+  background: var(--hoist-surface-2);
+  border: 1px solid var(--hoist-border);
   border-radius: var(--c-radius-control);
   overflow-x: auto;
   font-size: 12.5px;
@@ -754,7 +754,7 @@ code,
 
 .md .md-table {
   overflow-x: auto;
-  border: 1px solid var(--stretto-border);
+  border: 1px solid var(--hoist-border);
   border-radius: var(--c-radius-control);
 }
 
@@ -768,14 +768,14 @@ code,
 .md td {
   padding: 8px 12px;
   text-align: left;
-  border-bottom: 1px solid var(--stretto-border);
+  border-bottom: 1px solid var(--hoist-border);
   vertical-align: top;
 }
 
 .md th {
   font-weight: 500;
-  color: var(--stretto-text-subtle);
-  background: var(--stretto-surface-2);
+  color: var(--hoist-text-subtle);
+  background: var(--hoist-surface-2);
   white-space: nowrap;
 }
 
@@ -795,7 +795,7 @@ code,
 
 .md hr {
   border: 0;
-  border-top: 1px solid var(--stretto-border);
+  border-top: 1px solid var(--hoist-border);
 }
 
 /* ---------------------------------------------------------------- skeletons */
@@ -806,7 +806,7 @@ code,
   background: linear-gradient(
     90deg,
     var(--c-skeleton) 0%,
-    color-mix(in oklab, var(--c-skeleton) 55%, var(--stretto-surface)) 50%,
+    color-mix(in oklab, var(--c-skeleton) 55%, var(--hoist-surface)) 50%,
     var(--c-skeleton) 100%
   );
   background-size: 200% 100%;

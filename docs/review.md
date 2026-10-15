@@ -2,15 +2,15 @@
 
 A flow makes read-only calls on the agent's behalf. Before one is served, and whenever it is learned again, someone should see what it may call, after which calls, where the arguments come from, and whom it asks. The flow file holds all of that ([every field](formats.md)), but as habit counts and fold weights. Two commands say it plainly:
 
-- `stretto flow-show FLOW` renders one flow for review, as Markdown.
-- `stretto flow-diff OLD NEW` lists what changed between two flows, for a pull request. It exits with 1 when a change needs a reviewer.
+- `hoist flow-show FLOW` renders one flow for review, as Markdown.
+- `hoist flow-diff OLD NEW` lists what changed between two flows, for a pull request. It exits with 1 when a change needs a reviewer.
 
 The examples below are real flows, in [`examples/`](examples/). They were learned from GLM-5's published τ²-bench retail trajectories, the [cold start](results/cold-start-2026-09-24.md)'s samples of five and ten sessions.
 
-## `stretto flow-show`
+## `hoist flow-show`
 
 ```sh
-stretto flow-show docs/examples/retail-5-sessions.flow.json
+hoist flow-show docs/examples/retail-5-sessions.flow.json
 ```
 
 <!-- begin show-5 -->
@@ -18,7 +18,7 @@ stretto flow-show docs/examples/retail-5-sessions.flow.json
 ```markdown
 # Flow: retail
 
-Written by stretto 0.0.1 from openai/glm-5-fp8. The habit learned from 3 successful sessions or episodes. It has no arbiter: it decides with the habit alone and asks no one.
+Written by Hoist 0.0.1 from openai/glm-5-fp8. The habit learned from 3 successful sessions or episodes. It has no arbiter: it decides with the habit alone and asks no one.
 
 ## Tools
 
@@ -76,7 +76,7 @@ Where each lookup's required arguments come from, and how often binding them tha
 What to check, section by section:
 
 - **Tools.** The flow calls only the read tools. A tool that writes but is marked read is the one mistake that matters here. Kinds come from the server's `readOnlyHint` annotations or a `--manifest` file, so check them against what the tools do.
-- **Sites.** After each call: the lookups the flow may make next, how often the agent made each in training, and what the flow does there as it is served by default: with `reach` for a flow without an arbiter, as every flow `stretto learn` writes is, else with the habit alone (the examples here were learned before flows held reach's counts, and an arbiter's model is not asked for a review). That last column uses the threshold the flow will be served with (`--threshold`, as `stretto-proxy --flow-threshold`). It pools over what came before the call, so a live decision near the threshold can go either way. A lookup seen once or twice is a thin basis.
+- **Sites.** After each call: the lookups the flow may make next, how often the agent made each in training, and what the flow does there as it is served by default: with `reach` for a flow without an arbiter, as every flow `hoist learn` writes is, else with the habit alone (the examples here were learned before flows held reach's counts, and an arbiter's model is not asked for a review). That last column uses the threshold the flow will be served with (`--threshold`, as `hoist-mcp --flow-threshold`). It pools over what came before the call, so a live decision near the threshold can go either way. A lookup seen once or twice is a thin basis.
 - **Surprise**, when a flow has a gate (`learn --surprise`): when it hands back for the rest of a session unlike those it learned from. A gate only makes the flow hand back; check that its threshold was learned from sessions like the ones it will serve.
 - **Bindings.** Where each required argument comes from, and how often that way gave the agent's own arguments. "Nothing" means the flow never makes that lookup itself. Here, `find_user_id_by_email` needs an email only the customer knows. Where a flow counts them, further columns give the chance where the customer had named another record, and where the record they described had already been read.
 - **Sources by site**, when a flow has them: where an argument has more than one source, the order the binding tries them after a call, as the agent used them there. A reorder adds no source; a new source shows under Bindings.
@@ -84,42 +84,42 @@ What to check, section by section:
 - **Code features**, when a flow has them, hold values copied from training outputs. Treat such a flow like the data it was learned from.
 - **Arbiter.** A flow with an arbiter asks a System-One model at each decision and sends it the conversation so far. The section shows the arbiter's weights, the model's record, and the text of each yes/no predicate it asks alongside.
 
-## `stretto flow-diff`
+## `hoist flow-diff`
 
 ```sh
-stretto flow-diff OLD NEW
+hoist flow-diff OLD NEW
 ```
 
 The diff speaks in the same terms as `flow-show` and lists first what needs a reviewer: every way the new flow can do something the old one could not.
 
-| Change | Needs review |
-|---|---|
-| A tool newly marked read-only | Yes: the flow may now call it |
-| A lookup offered after a call where it was not | Yes |
-| Every read tool offered after every call (`--manifest-options`) | Yes |
-| An argument bound from a new source (tool and JSON path) | Yes |
-| A new or changed constant (`learn --constants`) | Yes: it could be one user's value that every training session shared |
-| An arbiter added, another System-One model, or new or reworded predicates | Yes: the flow sends the conversation to a model, or asks it something new |
-| A site newly promoted, or a promotion lifted (`stretto promote`), or a site a search switched off switched back on | Yes: the flow acts after a call where it handed back |
-| Lookups, sources, constants or an arbiter removed, a tool no longer read-only, a site no longer promoted or switched off | No: the flow does less |
-| A site's own threshold set, raised or lowered (`stretto search`) | No; listed. It moves the bar for lookups the flow could already make there, as `--threshold` does |
-| What the flow does after each call with `reach` or the habit alone, as for `flow-show`, at `--threshold` (0.3) | No; listed |
-| The source a binding tries first after a call (`bindings.site_sources`) | No; listed. It orders sources the flow could already bind from |
-| Shares, binding chances and arbiter weights that moved by `--tolerance` (0.05) or more | No; listed |
-| Code features, the promotion's bar, and provenance | No; listed |
-| A surprise gate added, removed or changed (`learn --surprise`) | No; listed. A gate only makes the flow hand back, and without one the flow acts as it did before it had one |
+| Change                                                                                                                   | Needs review                                                                                                |
+| ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| A tool newly marked read-only                                                                                            | Yes: the flow may now call it                                                                               |
+| A lookup offered after a call where it was not                                                                           | Yes                                                                                                         |
+| Every read tool offered after every call (`--manifest-options`)                                                          | Yes                                                                                                         |
+| An argument bound from a new source (tool and JSON path)                                                                 | Yes                                                                                                         |
+| A new or changed constant (`learn --constants`)                                                                          | Yes: it could be one user's value that every training session shared                                        |
+| An arbiter added, another System-One model, or new or reworded predicates                                                | Yes: the flow sends the conversation to a model, or asks it something new                                   |
+| A site newly promoted, or a promotion lifted (`hoist promote`), or a site a search switched off switched back on         | Yes: the flow acts after a call where it handed back                                                        |
+| Lookups, sources, constants or an arbiter removed, a tool no longer read-only, a site no longer promoted or switched off | No: the flow does less                                                                                      |
+| A site's own threshold set, raised or lowered (`hoist search`)                                                           | No; listed. It moves the bar for lookups the flow could already make there, as `--threshold` does           |
+| What the flow does after each call with `reach` or the habit alone, as for `flow-show`, at `--threshold` (0.3)           | No; listed                                                                                                  |
+| The source a binding tries first after a call (`bindings.site_sources`)                                                  | No; listed. It orders sources the flow could already bind from                                              |
+| Shares, binding chances and arbiter weights that moved by `--tolerance` (0.05) or more                                   | No; listed                                                                                                  |
+| Code features, the promotion's bar, and provenance                                                                       | No; listed                                                                                                  |
+| A surprise gate added, removed or changed (`learn --surprise`)                                                           | No; listed. A gate only makes the flow hand back, and without one the flow acts as it did before it had one |
 
 The exit status is 0 when nothing needs review, 1 when something does and 2 on an error, as with `diff`. A CI job can post the diff on a pull request that changes a flow, and ask for a review when it exits with 1:
 
 ```sh
 git show origin/main:flows/orders.flow.json > old.flow.json
-stretto flow-diff old.flow.json flows/orders.flow.json > flow-diff.md
+hoist flow-diff old.flow.json flows/orders.flow.json > flow-diff.md
 ```
 
 ### Five sessions, then ten
 
 ```sh
-stretto flow-diff docs/examples/retail-5-sessions.flow.json docs/examples/retail-10-sessions.flow.json
+hoist flow-diff docs/examples/retail-5-sessions.flow.json docs/examples/retail-10-sessions.flow.json
 ```
 
 <!-- begin diff-5-10 -->
@@ -173,7 +173,7 @@ Five more sessions taught the flow three lookups and one binding it did not have
 ### The habit alone, then with the shipped arbiter
 
 ```sh
-stretto flow-diff docs/examples/retail-5-sessions.flow.json docs/examples/retail-5-sessions-shipped-arbiter.flow.json
+hoist flow-diff docs/examples/retail-5-sessions.flow.json docs/examples/retail-5-sessions-shipped-arbiter.flow.json
 ```
 
 <!-- begin diff-shipped -->
@@ -205,11 +205,11 @@ The example flows, from GLM-5's published results (`scripts/fetch-leaderboard.sh
 
 ```sh
 R=.data/tau2-targets/glm-5_enabled_retail_gpt-5.2_4trials.json
-learn() { stretto learn --tau2 ../tau2-bench --domain retail --results $R --trials 0 "$@"; }
+learn() { hoist learn --tau2 ../tau2-bench --domain retail --results $R --trials 0 "$@"; }
 learn --train-tasks 104,105,106,107,109 --habit-only --out retail-5-sessions.flow.json
 learn --train-tasks 98,103,104,105,106,107,109,110,112,113 --habit-only --out retail-10-sessions.flow.json
 learn --train-tasks 104,105,106,107,109 --arbiter-from data/arbiters/retail.json \
   --out retail-5-sessions-shipped-arbiter.flow.json
 ```
 
-A test checks that this page shows what `flow-show` and `flow-diff` print for them. After changing either, `STRETTO_BLESS=1 cargo test` rewrites the examples.
+A test checks that this page shows what `flow-show` and `flow-diff` print for them. After changing either, `HOIST_BLESS=1 cargo test` rewrites the examples.

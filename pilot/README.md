@@ -1,21 +1,21 @@
 # Live pilot harness
 
-Runs τ²-bench episodes live, with the agent in an MCP host, so stretto can
+Runs τ²-bench episodes live, with the agent in an MCP host, so Hoist can
 be measured on real traffic rather than replays.
 
 - **Agent:** GLM in Claude Code, on Z.ai's GLM Coding Plan endpoint. That is the setup Z.ai documents for its coding plan, which may only be used in supported tools. [`glm-claude.sh`](glm-claude.sh) runs Claude Code with a clean environment, so a Claude Code session that starts it is not affected. The agent has no built-in tools; it gets τ²-bench's system prompt (instructions and domain policy).
-- **Tools:** [`tau2_mcp.py`](tau2_mcp.py) serves one task's tools over MCP, behind [`stretto-proxy`](../crates/stretto-proxy), which records the session. It appends every call and result to the episode's `trajectory.jsonl` in τ²-bench's message format.
+- **Tools:** [`tau2_mcp.py`](tau2_mcp.py) serves one task's tools over MCP, behind [`hoist-mcp`](../crates/hoist-mcp), which records the session. It appends every call and result to the episode's `trajectory.jsonl` in τ²-bench's message format.
 - **Customer:** τ²-bench's user-simulator prompt, answered by GLM through the same route ([`customer.py`](customer.py)), one short request per reply.
 - **Episode:** [`run_episode.py`](run_episode.py) keeps one Claude Code process alive for the whole episode (stream-json in and out). Each agent turn ends with a message to the customer, and the customer's reply is the next turn, as in τ²-bench. The episode ends when the customer stops, or when the agent transfers them to a human agent. τ²-bench's customer is told to end the conversation at a transfer, and the simulated one here did not always do so (the cold start's task 27, below).
 - **Scoring:** τ²-bench's own evaluator. An episode's `reward` is the database check, which the pilot pages report. `reward_basis` is τ²-bench's own reward, the product of every check in the task's reward basis. In airline that adds the communication check, which needs no judge. Most retail tasks also count natural-language assertions, which an LLM judges. `--judge claude:MODEL` has a Claude model judge them through [`judge.py`](judge.py), with τ²-bench's prompt and rule. Without a judge, `reward_basis` is empty for a task that counts them. [The scoring page](../docs/results/scoring-2026-09-29.md) rescored every published episode this way.
-- **Flows arm:** the same episode with a read-only flow behind the tools (RFC-001 §3.13). `stretto flow-serve` compiles the flow before the agent starts, from cached System-One answers, goal free (no one names the episode's goal live). After each of the agent's calls, `tau2_mcp.py` asks it what comes next, makes the lookup it names, records it like any other call and asks again, until the flow hands back. The agent gets its own result followed by the flow's lookups in the same tool response, so those lookups cost it no turns. The flow asks Jev one question per step (`TYPESAFE_API_KEY`, read by `flow-serve` only, never by the agent's process).
+- **Flows arm:** the same episode with a read-only flow behind the tools (RFC-001 §3.13). `hoist flow-serve` compiles the flow before the agent starts, from cached System-One answers, goal free (no one names the episode's goal live). After each of the agent's calls, `tau2_mcp.py` asks it what comes next, makes the lookup it names, records it like any other call and asks again, until the flow hands back. The agent gets its own result followed by the flow's lookups in the same tool response, so those lookups cost it no turns. The flow asks Jev one question per step (`TYPESAFE_API_KEY`, read by `flow-serve` only, never by the agent's process).
 
 ## Setup
 
 ```bash
 uv venv --python 3.12 ~/.venvs/tau2
 VIRTUAL_ENV=~/.venvs/tau2 uv pip install -e ../../tau2-bench websockets "mcp>=1.10,<2"
-cargo build --release -p stretto-proxy
+cargo build --release -p hoist-mcp
 ```
 
 `ZAI_API_KEY` must be set; `GLM_CLAUDE_CONFIG_DIR` optionally keeps the nested Claude Code's state apart.
@@ -30,13 +30,13 @@ PATH=~/.venvs/tau2/bin:$PATH python run_episode.py --task-id 90 --out runs/pilot
   --arm flows --oracle-cache ../.oracle-cache
 ```
 
-`--confirm-judge log|enforce` adds [the confirmation judge](../crates/stretto-proxy/README.md) to the guards arm: the proxy puts each write the guards check for a confirmation to Jev as well, logs the judgment in `log/*.confirm.jsonl`, and in `enforce` refuses a write Jev fails. `--confirm-second proposed` asks the second question too, and `--confirm-second-shadow` only logs its answer. The proxy runs under the agent's process, so the harness hands it Jev's key in a file only the proxy opens (`TYPESAFE_API_KEY_FILE`): mode 0600, outside the episode directory, and deleted when the agent exits. The agent's process gets the file's path, never the key. `--label` names the arm's directory under `--out`, so two judge settings can share one. `result.json` lists the judgments.
+`--confirm-judge log|enforce` adds [the confirmation judge](../crates/hoist-mcp/README.md) to the guards arm: the proxy puts each write the guards check for a confirmation to Jev as well, logs the judgment in `log/*.confirm.jsonl`, and in `enforce` refuses a write Jev fails. `--confirm-second proposed` asks the second question too, and `--confirm-second-shadow` only logs its answer. The proxy runs under the agent's process, so the harness hands it Jev's key in a file only the proxy opens (`TYPESAFE_API_KEY_FILE`): mode 0600, outside the episode directory, and deleted when the agent exits. The agent's process gets the file's path, never the key. `--label` names the arm's directory under `--out`, so two judge settings can share one. `result.json` lists the judgments.
 
 `--batch-reads` ends the agent's system prompt with the sample prompt for maximum parallel efficiency from Anthropic's prompting guide, word for word: the prompting baseline a flow has to beat. It combines with any arm. With a Claude agent, `result.json` also records the agent's and the customer's cost at list prices (`total_cost_usd`) and the subscription's last reported windows (`rate_limit`). `--flow-oracle mock` with `--flow` needs no `--oracle-cache`: the mock never reads one, and the habit and reach deciders never ask it.
 
-`--record-context` hands the proxy the conversation, as the guards arm does, so the session log in `log/` can train a flow with `stretto learn` (see the cold start below). `--read-only-hints` makes `tau2_mcp.py` mark τ²-bench's read tools `readOnlyHint: true` and its writes `false` in `tools/list`, as a real server would, so `stretto learn --sessions` takes the tools' kinds from the log and needs no `--manifest`. The pilots ran without it, so their agents all saw the same tool list. `--flow` serves a compiled or learned flow instead of compiling one per episode.
+`--record-context` hands the proxy the conversation, as the guards arm does, so the session log in `log/` can train a flow with `hoist learn` (see the cold start below). `--read-only-hints` makes `tau2_mcp.py` mark τ²-bench's read tools `readOnlyHint: true` and its writes `false` in `tools/list`, as a real server would, so `hoist learn --sessions` takes the tools' kinds from the log and needs no `--manifest`. The pilots ran without it, so their agents all saw the same tool list. `--flow` serves a compiled or learned flow instead of compiling one per episode.
 
-The flows arm needs `cargo build --release -p stretto-report` and a replay cache holding the goal-free v2 answers. `--arm habit` runs the same flow on the habit alone; it still compiles from the cache, but asks Jev nothing live. `--arm reach-guards`, the design's arm E, serves a flow with the reach decider (`--flow`) and has the proxy check the agent's calls against the guards, as the guards arm does. Fill it with `stretto phase0 --oracle jev --questions v2 --predicates data/predicates-v2.json --no-intent`, or import the published bundles (the v2 bundle and its goal-free supplement, in `docs/results/`). Pilot tasks come from the test split, so the habit never trained on them. Each task is judged by the arbiter of its own fold, which never saw it.
+The flows arm needs `cargo build --release -p hoist-report` and a replay cache holding the goal-free v2 answers. `--arm habit` runs the same flow on the habit alone; it still compiles from the cache, but asks Jev nothing live. `--arm reach-guards`, the design's arm E, serves a flow with the reach decider (`--flow`) and has the proxy check the agent's calls against the guards, as the guards arm does. Fill it with `hoist phase0 --oracle jev --questions v2 --predicates data/predicates-v2.json --no-intent`, or import the published bundles (the v2 bundle and its goal-free supplement, in `docs/results/`). Pilot tasks come from the test split, so the habit never trained on them. Each task is judged by the arbiter of its own fold, which never saw it.
 
 The episode directory (`runs/pilot/baseline/task-90/`) holds everything:
 
@@ -123,7 +123,7 @@ In the flows arm, the agent's first call found the user. The flow then looked up
 - Claude Sonnet 5 as the customer to GLM-5.3, on five: D0 saved 23.1% of turns, against 25.8% with GLM-5.3 as the customer, and all 20 episodes passed.
 - 2.32 million Claude tokens, most of them cache reads, and 178 Z.ai credits for the GLM side.
 
-**Guards pilot, airline.** The guards arm (`run_episode.py --arm guards`) runs the tools behind `stretto-proxy --guards`, which refuses a write an enforced policy rule fails. It ran on the four airline test tasks where the guard audit finds the 2025 agents' refused writes concentrated (35, 45, 32, 48), plus four harm checks against the airline pilot's baselines. See [the summary](../docs/results/pilot-guards-2026-09-24.md):
+**Guards pilot, airline.** The guards arm (`run_episode.py --arm guards`) runs the tools behind `hoist-mcp --guards`, which refuses a write an enforced policy rule fails. It ran on the four airline test tasks where the guard audit finds the 2025 agents' refused writes concentrated (35, 45, 32, 48), plus four harm checks against the airline pilot's baselines. See [the summary](../docs/results/pilot-guards-2026-09-24.md):
 
 - GLM-5.3 passed all four main tasks in both arms, and the guards refused nothing. It never tried the cancellations the policy forbids.
 - With the guards on, 7 of the 8 episodes passed; the failure (task 31) was the agent's cost error from the airline pilot, with nothing refused.
@@ -136,7 +136,7 @@ In the flows arm, the agent's first call found the user. The flow then looked up
 - 37 flow lookups, none repeated by the agent; 9 of 10 passed.
 - 109 Z.ai credits.
 
-**Cold start, live.** A flow learned from five sessions GLM-5.3 ran on training tasks through the proxy (`--record-context`), with `stretto learn`. Three sessions trained the habit, and two held out the 15 decisions its arbiter was fitted on. It ran on the retail pilot's tasks, costliest first, until the round's 200-credit budget was nearly spent. See [the results](../docs/results/cold-start-2026-09-24.md):
+**Cold start, live.** A flow learned from five sessions GLM-5.3 ran on training tasks through the proxy (`--record-context`), with `hoist learn`. Three sessions trained the habit, and two held out the 15 decisions its arbiter was fitted on. It ran on the retail pilot's tasks, costliest first, until the round's 200-credit budget was nearly spent. See [the results](../docs/results/cold-start-2026-09-24.md):
 
 - **Three tasks finished.** Task 101 took 12 LLM turns against 19 without the flow, and task 36 took 14 against 16. Both passed.
 - **Task 27 failed, as it did without the flow and with D0.** The agent filed a return, which blocks the exchange the customer also wanted. The simulated customer then carried on after each transfer to a human, and the episode ran to 26 LLM turns. The harness now ends an episode at a transfer.

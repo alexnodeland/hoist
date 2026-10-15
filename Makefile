@@ -1,4 +1,4 @@
-# stretto's everyday commands. `make` or `make help` lists them.
+# Hoist's everyday commands. `make` or `make help` lists them.
 #
 # The Rust targets run the commands CI runs (.github/workflows/ci.yml and
 # coverage.yml), so a green `make ci` before a push means a green check job.
@@ -22,8 +22,8 @@ MSRV := $(shell sed -n 's/^rust-version = "\([0-9]*\.[0-9]*\)"$$/\1.0/p' Cargo.t
 BIN := $(or $(CARGO_TARGET_DIR),target)/debug
 
 # The tag `make docker` gives the image.
-IMAGE ?= stretto:dev
-CONSOLE_IMAGE ?= stretto-console:dev
+IMAGE ?= hoist:dev
+CONSOLE_IMAGE ?= hoist-console:dev
 
 # The UI's npm commands, in console/.
 NPM := npm --prefix console
@@ -45,14 +45,14 @@ check: ## Check the formatting, as CI does
 
 lint: ## Clippy on every target, with warnings as errors, and on the console's ts feature
 	cargo clippy --all-targets -- -D warnings
-	cargo clippy -p stretto-console --all-targets --features ts -- -D warnings
+	cargo clippy -p hoist-console --all-targets --features ts -- -D warnings
 
 test: ## Unit, integration and doc tests (the docs' drift tests among them)
 	cargo test --all-targets
 	cargo test --doc
 
 types: ## The API's TypeScript for the UI (console/src/api/generated/): rewrites it, and fails if it was out of date
-	cargo test -p stretto-console --features ts --lib api::typescript
+	cargo test -p hoist-console --features ts --lib api::typescript
 
 doc: ## API docs, with rustdoc warnings as errors
 	RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
@@ -73,14 +73,14 @@ coverage: ## Line coverage with cargo-llvm-cov: writes lcov.info; fails under CO
 	python3 scripts/patch_coverage.py lcov.info $(COVERAGE_BASE)
 
 bless: ## Regenerate docs/cli.md and the review examples from the code
-	STRETTO_BLESS=1 cargo test
+	HOIST_BLESS=1 cargo test
 
 quickstart: ## The no-key quickstart (examples/quickstart/run.sh) on a debug build
-	cargo build -p stretto-report -p stretto-proxy
+	cargo build -p hoist-report -p hoist-mcp
 	sh examples/quickstart/run.sh --bin $(BIN)
 
 walkthrough: ## docs/walkthrough.md end to end on a debug build (needs Node for npx)
-	cargo build -p stretto-report -p stretto-proxy
+	cargo build -p hoist-report -p hoist-mcp
 	python3 scripts/walkthrough.py --bin $(BIN)
 
 site: website/node_modules/.package-lock.json ## Build the documentation site (website/), failing on a dead link
@@ -91,7 +91,7 @@ site: website/node_modules/.package-lock.json ## Build the documentation site (w
 website/node_modules/.package-lock.json: website/package-lock.json
 	cd website && npm ci --no-audit --no-fund
 
-ui: console/node_modules/.package-lock.json ## Build the console's UI into console/dist, which stretto-console embeds
+ui: console/node_modules/.package-lock.json ## Build the console's UI into console/dist, which hoist-console embeds
 	$(NPM) run build
 
 ui-check: console/node_modules/.package-lock.json ## The UI's checks, as CI's ui job runs them: formatting, lint, types, unit tests, build
@@ -102,20 +102,20 @@ ui-check: console/node_modules/.package-lock.json ## The UI's checks, as CI's ui
 	$(NPM) run build
 
 e2e: console/node_modules/.package-lock.json ## The UI's end-to-end tests in Chromium, on the mock API and on the console over the test fixtures
-	cargo build -p stretto-console -p stretto-report -p stretto-proxy
+	cargo build -p hoist-console -p hoist-report -p hoist-mcp
 	$(NPM) run e2e
 	$(NPM) run e2e:real
 
-console: ui ## Build the UI, then run the console on ~/.stretto (ARGS="--read-only --open")
-	cargo run -p stretto-console -- $(ARGS)
+console: ui ## Build the UI, then run the console on ~/.hoist (ARGS="--read-only --open")
+	cargo run -p hoist-console -- $(ARGS)
 
 console/node_modules/.package-lock.json: console/package-lock.json
 	$(NPM) ci --no-audit --no-fund
 
-docker: ## Build the CLI's container image from the Dockerfile (IMAGE=stretto:dev)
+docker: ## Build the CLI's container image from the Dockerfile (IMAGE=hoist:dev)
 	docker build -t $(IMAGE) .
 
-docker-console: ## Build the console's container image, the Dockerfile's console target (CONSOLE_IMAGE=stretto-console:dev)
+docker-console: ## Build the console's container image, the Dockerfile's console target (CONSOLE_IMAGE=hoist-console:dev)
 	docker build --target console -t $(CONSOLE_IMAGE) .
 
 install-dev-tools: ## Install rustfmt, clippy, llvm-tools and cargo-llvm-cov

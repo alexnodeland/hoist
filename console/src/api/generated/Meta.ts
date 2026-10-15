@@ -15,6 +15,6 @@ auth: boolean,
  */
 key_set: boolean, 
 /**
- * The `stretto` CLI the jobs run.
+ * The `hoist` CLI the jobs run.
  */
-stretto: Binary | null, proxy: Binary | null, };
+hoist: Binary | null, proxy: Binary | null, };

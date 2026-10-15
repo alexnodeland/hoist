@@ -5,7 +5,7 @@ import { Ban, CircleCheck, CircleX, Clock, LoaderCircle, Siren } from '@lucide/v
 import type { JobStatus } from '@/api/types'
 import UiBadge from './ui/UiBadge.vue'
 
-/** `alarm`: it succeeded, and found something to act on (`stretto drift`'s alarm). */
+/** `alarm`: it succeeded, and found something to act on (`hoist drift`'s alarm). */
 const props = defineProps<{ status: JobStatus; alarm?: boolean }>()
 
 interface View {

@@ -51,7 +51,7 @@ function toggle(line: number) {
 function fromOf(value: unknown): string {
   if (value && typeof value === 'object' && 'from' in value)
     return String((value as { from: unknown }).from)
-  if (value && typeof value === 'object' && 'stretto_mcp_log' in value) return 'header'
+  if (value && typeof value === 'object' && 'hoist_mcp_log' in value) return 'header'
   return ''
 }
 
@@ -194,9 +194,9 @@ const tones: Record<string, 'neutral' | 'accent' | 'outline' | 'dashed'> = {
 
 .lines {
   list-style: none;
-  border: 1px solid var(--stretto-border);
+  border: 1px solid var(--hoist-border);
   border-radius: var(--c-radius-control);
-  background: var(--stretto-surface-2);
+  background: var(--hoist-surface-2);
   overflow: hidden;
 }
 
@@ -204,7 +204,7 @@ const tones: Record<string, 'neutral' | 'accent' | 'outline' | 'dashed'> = {
   display: grid;
   grid-template-columns: 52px 76px minmax(0, 1fr);
   align-items: start;
-  border-bottom: 1px solid var(--stretto-border);
+  border-bottom: 1px solid var(--hoist-border);
   font-size: 12px;
 }
 
@@ -216,14 +216,14 @@ const tones: Record<string, 'neutral' | 'accent' | 'outline' | 'dashed'> = {
   padding: 6px 10px 6px 0;
   border: 0;
   background: none;
-  color: var(--stretto-text-subtle);
-  font-family: var(--stretto-font-mono);
+  color: var(--hoist-text-subtle);
+  font-family: var(--hoist-font-mono);
   font-size: 11.5px;
   text-align: right;
 }
 
 .line-no:hover {
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
 }
 
 .line-from {
@@ -234,7 +234,7 @@ const tones: Record<string, 'neutral' | 'accent' | 'outline' | 'dashed'> = {
   display: block;
   margin: 0;
   padding: 6px 12px 6px 0;
-  font-family: var(--stretto-font-mono);
+  font-family: var(--hoist-font-mono);
   font-size: 12px;
   line-height: 1.55;
   white-space: nowrap;

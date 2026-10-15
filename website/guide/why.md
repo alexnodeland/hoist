@@ -1,12 +1,12 @@
 ---
-description: Why an agent spends turns on decisions its tools already made, what stretto takes over, and the evidence for what it saves.
+description: Why an agent spends turns on decisions its tools already made, what Hoist takes over, and the evidence for what it saves.
 ---
 
-# Why stretto?
+# Why Hoist?
 
 An LLM agent pays a model turn for every decision it makes, yet many of its decisions are fixed by what its tools returned, not by what the user said. The customer's record lists their orders, so the agent reads an order. A search found three files, so the agent reads them. Each of those reads costs a turn: the model rereads the whole context to decide on a call that the previous result already implied.
 
-stretto takes those reads off the model.
+Hoist takes those reads off the model.
 
 ## Where the turns go
 
@@ -22,7 +22,7 @@ The ceiling belongs to the domain. Where an agent walks records by the ids that 
 
 From [the claims ledger](/research/claims), which gives the evidence behind every number on this page.
 
-## What stretto does about it
+## What Hoist does about it
 
 After each of the agent's tool calls, a flow decides which reads to make before the agent's next turn, makes them, and appends their results to the call's result. The agent reads them there and does not ask. This has three properties that matter in production:
 
@@ -32,7 +32,7 @@ After each of the agent's tool calls, a flow decides which reads to make before 
 
 ## The probability that matters
 
-Speculative-action systems rank a candidate by the probability that it is the agent's *next* action. For reads, that is the wrong event: a read's result stays current until the next write, so a lookup pays off whenever the agent makes that call before its next write, not only next. stretto estimates the probability of use before the next write, by counting the same contexts for that event, and makes each read whose probability clears
+Speculative-action systems rank a candidate by the probability that it is the agent's *next* action. For reads, that is the wrong event: a read's result stays current until the next write, so a lookup pays off whenever the agent makes that call before its next write, not only next. Hoist estimates the probability of use before the next write, by counting the same contexts for that event, and makes each read whose probability clears
 
 $$\theta^\star = \frac{\delta}{\beta + \delta},$$
 
@@ -58,9 +58,9 @@ In time and money, replayed on the six agents whose episodes record each turn's 
 
 ## How it compares
 
-- **Workflow memory and induced skills** give the agent text or callable routines mined from its successes. They change what the model sees. stretto changes neither the prompt nor the tool list: its reads arrive inside results the agent asked for.
-- **Speculative tool calls** hide latency: the agent still makes each call, and its result is ready sooner. stretto spares the turn, since the agent sees the result before it would ask for it.
-- **Compiling traces into programs** removes the model where a task recurs without branching. stretto does that too, where no user speaks, as a [procedure](./concepts/procedures). While a user is present it compiles only the reads, which the environment decides.
+- **Workflow memory and induced skills** give the agent text or callable routines mined from its successes. They change what the model sees. Hoist changes neither the prompt nor the tool list: its reads arrive inside results the agent asked for.
+- **Speculative tool calls** hide latency: the agent still makes each call, and its result is ready sooner. Hoist spares the turn, since the agent sees the result before it would ask for it.
+- **Compiling traces into programs** removes the model where a task recurs without branching. Hoist does that too, where no user speaks, as a [procedure](./concepts/procedures). While a user is present it compiles only the reads, which the environment decides.
 
 The paper's [related work](/research/paper#5-related-work) has the details and the references.
 

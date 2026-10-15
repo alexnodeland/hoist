@@ -246,12 +246,12 @@
       const Y = 330;
       const agent = card(layer, { x: 330, y: Y, w: 330, h: 230, ax: 0.5, ay: 0.5, title: 'agent', tag: 'any MCP host' });
       box(agent.body, { x: 22, y: 22, w: 286, cls: 'note', html: '<span style="color:#eceff0">LLM</span><br>reads the conversation,<br>picks a step' });
-      const proxy = card(layer, { x: 960, y: Y, w: 330, h: 230, ax: 0.5, ay: 0.5, title: 'stretto-proxy', tag: 'MCP proxy', accent: 'petrol' });
+      const proxy = card(layer, { x: 960, y: Y, w: 330, h: 230, ax: 0.5, ay: 0.5, title: 'hoist-mcp', tag: 'MCP proxy', accent: 'petrol' });
       box(proxy.body, { x: 22, y: 26, html: markSvg(52) });
       box(proxy.body, { x: 100, y: 22, w: 210, cls: 'note', html: '<span style="color:#5dd2d8">the flow</span><br>makes the reads<br>that come next' });
       const server = card(layer, { x: 1590, y: Y, w: 330, h: 230, ax: 0.5, ay: 0.5, title: 'MCP server', tag: 'your tools' });
       code(server.body, ['get_user_details', 'get_order_details', '<span class="am">cancel_pending_order</span>'], { x: 22, y: 12, size: 19, lh: 1.8 });
-      // Wires: agent ↔ server first; stretto slides into the middle.
+      // Wires: agent ↔ server first; Hoist slides into the middle.
       const direct = arrow(svg, `M 495 ${Y} L 1425 ${Y}`, { color: C.border, width: 2, head: false });
       const w1 = arrow(svg, `M 495 ${Y - 40} L 795 ${Y - 40}`, { color: C.faint, width: 2 });
       const w2 = arrow(svg, `M 1125 ${Y - 40} L 1425 ${Y - 40}`, { color: C.faint, width: 2 });
@@ -290,13 +290,13 @@
         show(proxy, t, tSlide, { d: 0.7, dy: -40 });
         w1.set(ramp(t, tProxy - 0.1, tProxy + 0.4)); w2.set(ramp(t, tProxy, tProxy + 0.5));
         r2.set(ramp(t, tProxy + 0.1, tProxy + 0.6)); r1.set(ramp(t, tProxy + 0.2, tProxy + 0.7));
-        // The call goes out: agent → stretto → server; its result comes back to stretto.
+        // The call goes out: agent → Hoist → server; its result comes back to Hoist.
         const c1 = ramp(t, tCall, tCall + 0.6, E.io2), c2 = ramp(t, tCall + 0.6, tCall + 1.1, E.io2);
         show(callTag, t, tCall, { d: 0.3, dy: 4 });
         if (t < tCall + 0.6) pk[0].set(w1.at(c1), c1 > 0 && c1 < 1 ? 1 : 0);
         else if (t < tCall + 1.1) pk[0].set(w2.at(c2), 1);
         else { const c3 = ramp(t, tCall + 1.1, tNames + 0.2, E.io2); pk[0].set(r2.at(c3), c3 < 1 ? 1 : 0); }
-        // stretto makes the two reads, and their results come back.
+        // Hoist makes the two reads, and their results come back.
         show(readTag, t, tReads, { d: 0.35, dy: 4 });
         q1.set(ramp(t, tReads, tReads + 0.5, E.io2));
         q2.set(ramp(t, tReads + 0.5, tReads + 1.0, E.io2));
@@ -385,7 +385,7 @@
       // Recorded sessions: each a strip of calls.
       const R = rng(11);
       const pool = [['get_user_details', 'r'], ['get_order_details', 'r'], ['get_order_details', 'r'], ['get_product_details', 'r'], ['cancel_pending_order', 'w'], ['find_user_id_by_email', 'r'], ['return_delivered_order_items', 'w'], ['reply', 'n']];
-      const sess = card(layer, { x: 120, y: 150, w: 560, h: 640, title: '~/.stretto/logs/retail', tag: 'sessions' });
+      const sess = card(layer, { x: 120, y: 150, w: 560, h: 640, title: '~/.hoist/logs/retail', tag: 'sessions' });
       const strips = Array.from({ length: 8 }, (_, i) => {
         const s = box(sess.body, { x: 22, y: 18 + i * 70, w: 514, h: 54 });
         box(s, { x: 0, y: 27, ay: 0.5, cls: 'code', text: `${String(i + 1).padStart(2, '0')}`, style: { fontSize: '16px', color: C.faint } });
@@ -398,8 +398,8 @@
         });
         return s;
       });
-      // What stretto counts: from docs/examples/retail-10-sessions.flow.json.
-      const counts = card(layer, { x: 740, y: 150, w: 520, h: 640, title: 'stretto learn', tag: 'counts' });
+      // What Hoist counts: from docs/examples/retail-10-sessions.flow.json.
+      const counts = card(layer, { x: 740, y: 150, w: 520, h: 640, title: 'hoist learn', tag: 'counts' });
       const seenHd = box(counts.body, { x: 492, y: 0, ax: 1, cls: 'label', text: 'times seen', style: { fontSize: '13px', top: '-6px' } });
       const cRows = [
         ['after', 'get_user_details'], ['next', 'get_order_details', '7'],
@@ -415,11 +415,11 @@
       ];
       const src = box(counts.body, { x: 22, y: 548, w: 470, cls: 'code', text: 'docs/examples/retail-10-sessions.flow.json', style: { fontSize: '14px', color: C.faint } });
       // The flow: a file, reviewed like code.
-      // The flow, reviewed: stretto flow-diff's own output for five sessions
+      // The flow, reviewed: hoist flow-diff's own output for five sessions
       // against ten (docs/review.md, diff-5-10).
-      const file = card(layer, { x: 1320, y: 150, w: 480, h: 640, title: 'stretto flow-diff', tag: 'review', accent: 'petrol' });
+      const file = card(layer, { x: 1320, y: 150, w: 480, h: 640, title: 'hoist flow-diff', tag: 'review', accent: 'petrol' });
       const diff = code(file.body, [
-        '<span class="c">$ stretto flow-diff \\</span>',
+        '<span class="c">$ hoist flow-diff \\</span>',
         '<span class="c">    retail-5-sessions.flow.json \\</span>',
         '<span class="c">    retail-10-sessions.flow.json</span>',
         '',
@@ -456,7 +456,7 @@
 
   // ============================================================== console
   // The real console, from brand/media/console/ (Playwright screenshots of
-  // stretto-console on its test fixtures, 1440 x 900): the overview, a served
+  // hoist-console on its test fixtures, 1440 x 900): the overview, a served
   // session, and a flow. The frame moves in on what each line names.
   function sceneConsole(ctx) {
     scene(ctx, 'console', (layer, b) => {
@@ -471,7 +471,7 @@
       // (image pixels), how far, and a ring around what the line names.
       const shots = [
         { src: 'overview', url: '127.0.0.1:7878', fx: 720, fy: 450, s: 1, ring: [10, 66, 214, 196] },
-        { src: 'session', url: '127.0.0.1:7878/sessions/shop/20260928T020401.195Z-14715', fx: 760, fy: 800, s: 1.26, ring: [346, 676, 1040, 224] },
+        { src: 'session', url: '127.0.0.1:7878/sessions/shop/20261015T155518.625Z-67333', fx: 760, fy: 800, s: 1.26, ring: [346, 676, 1040, 224] },
         { src: 'flow', url: '127.0.0.1:7878/flows/shop', fx: 840, fy: 640, s: 1.24, ring: [270, 462, 1138, 370] },
       ].map(sh => {
         const holder = box(view, { x: 0, y: 0, w: IW, h: IH, style: { transformOrigin: `${sh.fx * K}px ${sh.fy * K}px` } });
@@ -575,7 +575,7 @@
       const at = ctx.at;
       const title = box(layer, { x: 240, y: 168, html: '<span style="font:600 46px/1.1 Inter;letter-spacing:-.025em;color:#eceff0">Fewer LLM turns, with a flow</span>' });
       const scope = box(layer, { x: 240, y: 236, cls: 'note', html: 'Live · 28 τ²-bench retail and airline tasks · the reach decider, no model of its own' });
-      const chart = bars(layer, [['Claude Sonnet 5', 20.5, '16.5–24.4%'], ['Claude Haiku 4.5', 22.4, '15.8–29.4%'], ['GLM-5.3', 27.9, '19.1–35.9%']], { x: 240, y: 380, w: 1100, max: 32, label: 'LLM turns saved, against the same agent without stretto' });
+      const chart = bars(layer, [['Claude Sonnet 5', 20.5, '16.5–24.4%'], ['Claude Haiku 4.5', 22.4, '15.8–29.4%'], ['GLM-5.3', 27.9, '19.1–35.9%']], { x: 240, y: 380, w: 1100, max: 32, label: 'LLM turns saved, against the same agent without hoist' });
       const foot = box(layer, { x: 240, y: 742, w: 1440, cls: 'note', html: 'Claude models: pre-registered, three trials, paired by task. GLM-5.3: one trial, against its recorded baseline.<br>The savings are in retail; in airline they are not established. Pass rates are underpowered.' });
       foot.style.fontSize = '18px';
       foot.style.color = C.faint;
@@ -621,10 +621,10 @@
       const at = ctx.at;
       const term = card(layer, { x: 120, y: 170, w: 1680, h: 380, title: '<span style="color:#606b6f">●&nbsp;●&nbsp;●</span>&nbsp;&nbsp; ~', tag: 'zsh' });
       const cmds = [
-        ['$ ', 'cargo install --locked --git https://github.com/alexnodeland/stretto stretto-report stretto-proxy'],
-        ['$ ', 'stretto init --host claude-code --domain notes -- npx -y @modelcontextprotocol/server-filesystem ~/notes 2>/dev/null'],
+        ['$ ', 'cargo install --locked --git https://github.com/alexnodeland/hoist hoist-report hoist-mcp'],
+        ['$ ', 'hoist init --host claude-code --domain notes -- npx -y @modelcontextprotocol/server-filesystem ~/notes 2>/dev/null'],
       ];
-      const out = 'claude mcp add notes -- stretto-proxy --record ~/.stretto/logs/notes --domain notes -- npx -y @modelcontextprotocol/server-filesystem /home/me/notes';
+      const out = 'claude mcp add notes -- hoist-mcp --record ~/.hoist/logs/notes --domain notes -- npx -y @modelcontextprotocol/server-filesystem /home/me/notes';
       const lines = cmds.map((c, i) => {
         const row = box(term.body, { x: 26, y: 18 + i * 96, w: 1620, cls: 'code', style: { fontSize: '22px', lineHeight: '1.55', whiteSpace: 'pre-wrap' } });
         const p = el('span', { style: { color: C.petrol } }, row, c[0]);
@@ -635,9 +635,9 @@
       const badges = [
         chip(layer, 'open source · MIT', { x: 120, y: 610, kind: 'call', size: 20 }),
         chip(layer, 'Rust', { x: 386, y: 610, kind: 'call', size: 20 }),
-        chip(layer, 'github.com/alexnodeland/stretto', { x: 500, y: 610, kind: 'read', size: 20 }),
+        chip(layer, 'github.com/alexnodeland/hoist', { x: 500, y: 610, kind: 'read', size: 20 }),
       ];
-      const after = box(layer, { x: 120, y: 710, cls: 'note', html: 'then: use the agent as usual, <span class="code" style="color:#5dd2d8">stretto learn</span>, review the flow, and serve it' });
+      const after = box(layer, { x: 120, y: 710, cls: 'note', html: 'then: use the agent as usual, <span class="code" style="color:#5dd2d8">hoist learn</span>, review the flow, and serve it' });
       after.style.fontSize = '22px';
       const tOpen = at('start1', 'open source'), tRun = at('start2', 'Run'), tLearn = at('start3', 'learns');
       const T1 = Math.max(b.t0 + 0.6, tOpen - 1.2);
@@ -662,7 +662,7 @@
       box(g, { x: 0, y: 0, html: markSvg(30 * S) });
       box(g, { x: 31 * S + 30, y: 15 * S, ay: 0.5, html: wordmarkSvg(30 * S * 0.62) });
       const tag = box(layer, { x: 960, y: 580, ax: 0.5, ay: 0.5, text: 'Read ahead of your agent.', style: { font: '500 42px/1 Inter, sans-serif', letterSpacing: '-0.02em', color: C.text } });
-      const url = box(layer, { x: 960, y: 664, ax: 0.5, ay: 0.5, cls: 'code', html: '<span style="color:#5dd2d8">stretto.alexnodeland.com</span>  <span style="color:#606b6f">·</span>  <span style="color:#909a9d">github.com/alexnodeland/stretto</span>', style: { fontSize: '22px' } });
+      const url = box(layer, { x: 960, y: 664, ax: 0.5, ay: 0.5, cls: 'code', html: '<span style="color:#5dd2d8">hoist.alexnodeland.com</span>  <span style="color:#606b6f">·</span>  <span style="color:#909a9d">github.com/alexnodeland/hoist</span>', style: { fontSize: '22px' } });
       const L = ctx.L.end1;
       ctx.music.end = +(L.t1 + 0.4).toFixed(3);
       return t => {

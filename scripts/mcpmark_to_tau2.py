@@ -6,7 +6,7 @@ PostgreSQL, GitHub, Notion and a browser. Its trajectory log
 (huggingface.co/datasets/Jakumetsu/mcpmark-trajectory-log) keeps every run's
 messages in the OpenAI Responses format, with a verdict in `meta.json`. This
 writes each model's runs of one server as τ²-bench's results file, and a
-checkout-shaped folder that stretto reads as τ²-bench's: the tools, marked a
+checkout-shaped folder that Hoist reads as τ²-bench's: the tools, marked a
 read or a write, and a train/test split by task.
 
     mcpmark_to_tau2.py --runs DIR --service filesystem --out DIR

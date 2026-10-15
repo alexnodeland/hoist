@@ -161,7 +161,7 @@ export function serverModeLabel(mode: ServerMode): string {
   return { record: 'Recording', shadow: 'Shadow', serve: 'Serving' }[mode]
 }
 
-/** A word as a POSIX shell reads it back (as `stretto init` quotes it). A `<placeholder>` is left as it is. */
+/** A word as a POSIX shell reads it back (as `hoist init` quotes it). A `<placeholder>` is left as it is. */
 export function shellQuote(word: string): string {
   if (word !== '' && /^[A-Za-z0-9\-_./:=@%+,~]+$/.test(word)) return word
   if (/^[A-Za-z0-9\-_./:=@%+,~]*<[a-z -]+>[A-Za-z0-9\-_./:=@%+,~]*$/.test(word)) return word

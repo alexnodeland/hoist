@@ -116,31 +116,31 @@ const groups = computed<Group[]>(() => {
 .group th {
   padding-top: 9px;
   padding-bottom: 9px;
-  background: var(--stretto-surface-2);
-  color: var(--stretto-text);
+  background: var(--hoist-surface-2);
+  color: var(--hoist-text);
   font-size: 13px;
   white-space: normal;
 }
 
 .dt tbody + tbody .group th {
-  border-top: 1px solid var(--stretto-border);
+  border-top: 1px solid var(--hoist-border);
 }
 
 .group-label {
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
   font-weight: 500;
 }
 
 .small {
   font-size: 11.5px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .reason {
   margin-top: 4px;
   max-width: 320px;
   font-size: 12.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .args-text {
@@ -150,7 +150,7 @@ const groups = computed<Group[]>(() => {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 12px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 @media (max-width: 640px) {

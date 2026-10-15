@@ -5,7 +5,7 @@ The replays come from pilot/check_flow_tagged.py, run on the recorded episodes.
 usage: relearn_round.py DOMAIN REPLAY_DIR RECORDED_RESULTS VARIANT OUT
 VARIANT: unified (every call kept), used (the flow's detours dropped:
 lookups the agent never made in the recorded episode), or marked (every call
-kept, the flow's with stretto-proxy's ids for its own calls, stretto-N)."""
+kept, the flow's with hoist-mcp's ids for its own calls, hoist-N)."""
 import copy, json, sys
 from pathlib import Path
 
@@ -29,7 +29,7 @@ for ep in sorted(Path(replay_dir).glob("task-*")):
     rename = {}
     for c, (author, tool, args) in zip(calls, tags):
         if author == "flow" and variant == "marked":
-            rename[c["id"]] = f"stretto-{len(rename) + 1}"
+            rename[c["id"]] = f"hoist-{len(rename) + 1}"
         assert key(c["name"], c["arguments"]) == key(tool, args), (ep, c["name"], tool)
         if author == "flow":
             stats["flow"] += 1

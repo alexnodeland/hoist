@@ -56,8 +56,8 @@ const icons = { info: Info, success: CircleCheck, error: CircleAlert }
   width: 100%;
   padding: 12px 10px 12px 14px;
   border-radius: 12px;
-  background: var(--stretto-surface);
-  border: 1px solid var(--stretto-border);
+  background: var(--hoist-surface);
+  border: 1px solid var(--hoist-border);
   box-shadow: var(--c-shadow-lg);
   pointer-events: auto;
 }
@@ -69,7 +69,7 @@ const icons = { info: Info, success: CircleCheck, error: CircleAlert }
 
 .toast-success .toast-icon,
 .toast-info .toast-icon {
-  color: var(--stretto-accent-graphic);
+  color: var(--hoist-accent-graphic);
 }
 
 .toast-error {
@@ -93,7 +93,7 @@ const icons = { info: Info, success: CircleCheck, error: CircleAlert }
 .toast-msg {
   margin-top: 2px;
   font-size: 13px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
   overflow-wrap: anywhere;
 }
 
@@ -107,12 +107,12 @@ const icons = { info: Info, success: CircleCheck, error: CircleAlert }
   border: 0;
   border-radius: 7px;
   background: none;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .toast-x:hover {
   background: var(--c-hover);
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .toast-enter-active,

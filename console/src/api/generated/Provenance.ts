@@ -5,9 +5,9 @@
  */
 export type Provenance = { 
 /**
- * The stretto version that compiled it.
+ * The Hoist version that compiled it.
  */
-stretto: string, 
+hoist: string, 
 /**
  * The training sources, by label.
  */
@@ -27,6 +27,6 @@ compiled_unix_ms: number,
 /**
  * For a flow learned from OpenTelemetry spans (`learn --otel`), the
  * version of the GenAI semantic conventions they were read by
- * ([`stretto_trace::otel::CONVENTIONS`]).
+ * ([`hoist_trace::otel::CONVENTIONS`]).
  */
 conventions?: string | null, };

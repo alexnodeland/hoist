@@ -6,7 +6,7 @@
    ========================================================================== */
 
 :root {
-  --stretto-accent: #039298;
+  --hoist-accent: #039298;
 
   --vp-c-brand-1: #02767b;
   --vp-c-brand-2: #015f63;
@@ -29,7 +29,7 @@
 }
 
 .dark {
-  --stretto-accent: #33c0c7;
+  --hoist-accent: #33c0c7;
 
   --vp-c-brand-1: #5dd2d8;
   --vp-c-brand-2: #93e5e9;
@@ -43,7 +43,7 @@
   --vp-c-divider: #272f32;
   --vp-c-gutter: #0b0f11;
 
-  /* Text on the petrol fill is ink, not white, in dark (brand/tokens.css's --stretto-on-accent). */
+  /* Text on the petrol fill is ink, not white, in dark (brand/tokens.css's --hoist-on-accent). */
   --vp-button-brand-text: #0b0f11;
   --vp-button-brand-hover-text: #0b0f11;
   --vp-button-brand-active-text: #0b0f11;

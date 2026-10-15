@@ -1,60 +1,60 @@
 # Quickstart: the loop in under a minute, with no key
 
-[`run.sh`](run.sh) runs stretto's whole loop on `stretto-mcp-demo`, a tiny MCP server that ships with stretto: it records sessions through `stretto-proxy`, learns a flow from them, shows the flow for review, serves it to new customers and counts the calls the agent no longer makes. It needs no API key and no network, only a POSIX shell and the binaries, and it takes about a second. CI runs it, so this page cannot drift from the code.
+[`run.sh`](run.sh) runs Hoist's whole loop on `hoist-mcp-demo`, a tiny MCP server that ships with Hoist: it records sessions through `hoist-mcp`, learns a flow from them, shows the flow for review, serves it to new customers and counts the calls the agent no longer makes. It needs no API key and no network, only a POSIX shell and the binaries, and it takes about a second. CI runs it, so this page cannot drift from the code.
 
-A scripted agent stands in for an LLM. The demo's shop (`stretto-mcp-demo --world retail`) has three read tools and one write, with canned data: `cN@example.com` is `user_N`, whose orders `#WNa` and `#WNb` are pending. For each customer the agent finds the user, reads their details and both orders, then cancels the first order or says how the orders stand, one call at a time. Like a model, it takes a moment to read each result before its next call, so the proxy's log shows one LLM turn per call.
+A scripted agent stands in for an LLM. The demo's shop (`hoist-mcp-demo --world retail`) has three read tools and one write, with canned data: `cN@example.com` is `user_N`, whose orders `#WNa` and `#WNb` are pending. For each customer the agent finds the user, reads their details and both orders, then cancels the first order or says how the orders stand, one call at a time. Like a model, it takes a moment to read each result before its next call, so the proxy's log shows one LLM turn per call.
 
 ## Run it
 
 From a checkout:
 
 ```sh
-cargo build --release -p stretto-report -p stretto-proxy
+cargo build --release -p hoist-report -p hoist-mcp
 examples/quickstart/run.sh
 ```
 
-With stretto installed ([docs/install.md](../../docs/install.md)), the binaries are on PATH, and the script is all you need from the repository:
+With Hoist installed ([docs/install.md](../../docs/install.md)), the binaries are on PATH, and the script is all you need from the repository:
 
 ```sh
-curl -fsSLO https://raw.githubusercontent.com/alexnodeland/stretto/main/examples/quickstart/run.sh
+curl -fsSLO https://raw.githubusercontent.com/alexnodeland/hoist/main/examples/quickstart/run.sh
 sh run.sh
 ```
 
 In the container image, which has the script:
 
 ```sh
-docker run --rm --entrypoint /usr/local/share/stretto/quickstart/run.sh ghcr.io/alexnodeland/stretto
+docker run --rm --entrypoint /usr/local/share/hoist/quickstart/run.sh ghcr.io/alexnodeland/hoist
 ```
 
-`--bin DIR` names the directory with `stretto`, `stretto-proxy` and `stretto-mcp-demo` (by default: PATH, else the checkout's `target/release` or `target/debug`). `--work DIR` keeps everything in a new or empty directory of your choosing (by default: a new temporary one). The script exits non-zero if a step does not do what this page says.
+`--bin DIR` names the directory with `hoist`, `hoist-mcp` and `hoist-mcp-demo` (by default: PATH, else the checkout's `target/release` or `target/debug`). `--work DIR` keeps everything in a new or empty directory of your choosing (by default: a new temporary one). The script exits non-zero if a step does not do what this page says.
 
 ## What it shows
 
 ### 1. Record
 
 ```text
-1. Record six customers of the demo shop, served by the scripted agent through stretto-proxy
+1. Record six customers of the demo shop, served by the scripted agent through hoist-mcp
    c1@example.com (cancel): 5 calls
    c2@example.com (status): 4 calls
    ...
-   6 session logs in /tmp/stretto-quickstart.Xa9Qz2/logs
+   6 session logs in /tmp/hoist-quickstart.Xa9Qz2/logs
 ```
 
-Each session runs the demo behind the proxy as an MCP host would: `stretto-proxy --record logs --domain shop --context FILE -- stretto-mcp-demo --world retail`. The proxy forwards every message and writes one log per session. The context file holds the conversation, which MCP never carries: the script appends each customer's and agent's line to it, as a host can.
+Each session runs the demo behind the proxy as an MCP host would: `hoist-mcp --record logs --domain shop --context FILE -- hoist-mcp-demo --world retail`. The proxy forwards every message and writes one log per session. The context file holds the conversation, which MCP never carries: the script appends each customer's and agent's line to it, as a host can.
 
 ### 2. Learn a flow, with no key
 
 ```text
 2. Learn a flow from them, with no key
-   $ stretto learn --sessions logs --domain shop --habit-only --out shop.flow.json
-   stretto: learned the shop flow from 6 sessions (4 tools) and wrote /tmp/stretto-quickstart.Xa9Qz2/shop.flow.json
+   $ hoist learn --sessions logs --domain shop --habit-only --out shop.flow.json
+   hoist: learned the shop flow from 6 sessions (4 tools) and wrote /tmp/hoist-quickstart.Xa9Qz2/shop.flow.json
 ```
 
 `--habit-only` asks no System-One model. The flow learns which lookup followed which call, which came before the agent's next write, and where each lookup's arguments came from.
 
 ### 3. Review it
 
-`stretto flow-show` renders the flow for a reviewer. The script prints its tools, sites and bindings; `shop.flow.md` also has the program the flow runs:
+`hoist flow-show` renders the flow for a reviewer. The script prints its tools, sites and bindings; `shop.flow.md` also has the program the flow runs:
 
 ```text
    | After | Lookups it may make next (times seen) | What the agent did next in training | With `reach` |
@@ -94,5 +94,5 @@ The probabilities in the log differ from flow-show's pooled shares: served, `rea
 
 ## Next
 
-- `stretto init --host claude-code|claude-desktop|cursor|vscode --domain NAME -- <server command>` prints the configuration that runs your own MCP server behind the proxy, and the steps from recording to a served flow ([the CLI reference](../../docs/cli.md#stretto-init)).
-- `stretto doctor` checks the installation ([docs/install.md](../../docs/install.md)).
+- `hoist init --host claude-code|claude-desktop|cursor|vscode --domain NAME -- <server command>` prints the configuration that runs your own MCP server behind the proxy, and the steps from recording to a served flow ([the CLI reference](../../docs/cli.md#hoist-init)).
+- `hoist doctor` checks the installation ([docs/install.md](../../docs/install.md)).

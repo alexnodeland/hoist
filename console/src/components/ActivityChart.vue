@@ -1,8 +1,8 @@
 <script setup lang="ts">
 /**
  * Tool calls per day over the last 14 days: the agent's own calls (the
- * baseline, slate) with the reads stretto made on top (petrol), as the brand
- * charts stretto against a baseline. One axis; sessions per day ride in the
+ * baseline, slate) with the reads Hoist made on top (petrol), as the brand
+ * charts Hoist against a baseline. One axis; sessions per day ride in the
  * tooltip and the table, not on a second scale. Hover or focus a day for its
  * numbers; the table view has every value without hovering.
  */
@@ -117,7 +117,7 @@ const tip = computed(() => {
 const summary = computed(() => {
   const calls = props.days.reduce((s, d) => s + d.tool_calls, 0)
   const lookups = props.days.reduce((s, d) => s + d.flow_lookups, 0)
-  return `Tool calls per day over the last ${props.days.length} days: ${formatCount(calls)} by the agent and ${formatCount(lookups)} read ahead by stretto.`
+  return `Tool calls per day over the last ${props.days.length} days: ${formatCount(calls)} by the agent and ${formatCount(lookups)} read ahead by Hoist.`
 })
 
 function onKey(event: KeyboardEvent) {
@@ -147,7 +147,7 @@ function onKey(event: KeyboardEvent) {
     <div class="activity-top">
       <ul class="legend" aria-label="Legend">
         <li><span class="key key-agent" aria-hidden="true" />Agent’s calls</li>
-        <li><span class="key key-lookups" aria-hidden="true" />Read ahead by stretto</li>
+        <li><span class="key key-lookups" aria-hidden="true" />Read ahead by Hoist</li>
       </ul>
       <button
         type="button"
@@ -239,7 +239,7 @@ function onKey(event: KeyboardEvent) {
           <span class="line line-lookups" /><strong>{{
             formatCount(tip.bar.day.flow_lookups)
           }}</strong>
-          read ahead by stretto
+          read ahead by Hoist
         </p>
         <p class="tip-row">
           <span class="line line-agent" /><strong>{{ formatCount(tip.bar.day.tool_calls) }}</strong>
@@ -264,7 +264,7 @@ function onKey(event: KeyboardEvent) {
             <th scope="col">Day</th>
             <th scope="col" class="num">Sessions</th>
             <th scope="col" class="num">Agent’s calls</th>
-            <th scope="col" class="num">Read ahead by stretto</th>
+            <th scope="col" class="num">Read ahead by Hoist</th>
           </tr>
         </thead>
         <tbody>
@@ -302,7 +302,7 @@ function onKey(event: KeyboardEvent) {
   list-style: none;
   flex: 1;
   font-size: 12.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .legend li {
@@ -318,11 +318,11 @@ function onKey(event: KeyboardEvent) {
 }
 
 .key-agent {
-  background: var(--stretto-chart-baseline);
+  background: var(--hoist-chart-baseline);
 }
 
 .key-lookups {
-  background: var(--stretto-chart-accent);
+  background: var(--hoist-chart-accent);
 }
 
 .view-toggle {
@@ -331,17 +331,17 @@ function onKey(event: KeyboardEvent) {
   gap: 6px;
   height: 28px;
   padding: 0 9px;
-  border: 1px solid var(--stretto-border);
+  border: 1px solid var(--hoist-border);
   border-radius: 7px;
-  background: var(--stretto-surface);
-  color: var(--stretto-text-muted);
+  background: var(--hoist-surface);
+  color: var(--hoist-text-muted);
   font-size: 12.5px;
   font-weight: 500;
 }
 
 .view-toggle:hover {
-  color: var(--stretto-text);
-  background: var(--stretto-surface-2);
+  color: var(--hoist-text);
+  background: var(--hoist-surface-2);
 }
 
 .plot {
@@ -371,28 +371,28 @@ function onKey(event: KeyboardEvent) {
 }
 
 .grid line {
-  stroke: var(--stretto-border);
+  stroke: var(--hoist-border);
   stroke-width: 1;
   shape-rendering: crispEdges;
 }
 
 .grid line.base {
-  stroke: color-mix(in oklab, var(--stretto-border-strong) 55%, var(--stretto-border));
+  stroke: color-mix(in oklab, var(--hoist-border-strong) 55%, var(--hoist-border));
 }
 
 .y-labels text,
 .x-labels text {
   font-size: 11.5px;
-  fill: var(--stretto-text-subtle);
+  fill: var(--hoist-text-subtle);
   font-variant-numeric: tabular-nums;
 }
 
 .bar-agent {
-  fill: var(--stretto-chart-baseline);
+  fill: var(--hoist-chart-baseline);
 }
 
 .bar-lookups {
-  fill: var(--stretto-chart-accent);
+  fill: var(--hoist-chart-accent);
 }
 
 .bars g {
@@ -409,7 +409,7 @@ function onKey(event: KeyboardEvent) {
 
 .empty-note {
   font-size: 13px;
-  fill: var(--stretto-text-subtle);
+  fill: var(--hoist-text-subtle);
 }
 
 .tip {
@@ -418,8 +418,8 @@ function onKey(event: KeyboardEvent) {
   min-width: 176px;
   padding: 10px 12px;
   border-radius: 10px;
-  background: var(--stretto-surface);
-  border: 1px solid var(--stretto-border);
+  background: var(--hoist-surface);
+  border: 1px solid var(--hoist-border);
   box-shadow: var(--c-shadow-md);
   transform: translate(-50%, -100%);
   pointer-events: none;
@@ -433,14 +433,14 @@ function onKey(event: KeyboardEvent) {
 .tip-day {
   margin-bottom: 6px;
   font-weight: 600;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .tip-row {
   display: flex;
   align-items: center;
   gap: 7px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
   white-space: nowrap;
 }
 
@@ -449,7 +449,7 @@ function onKey(event: KeyboardEvent) {
 }
 
 .tip-row strong {
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
@@ -457,7 +457,7 @@ function onKey(event: KeyboardEvent) {
 .tip-sessions {
   margin-top: 6px !important;
   padding-top: 6px;
-  border-top: 1px solid var(--stretto-border);
+  border-top: 1px solid var(--hoist-border);
 }
 
 .line {
@@ -467,10 +467,10 @@ function onKey(event: KeyboardEvent) {
 }
 
 .line-agent {
-  background: var(--stretto-chart-baseline);
+  background: var(--hoist-chart-baseline);
 }
 
 .line-lookups {
-  background: var(--stretto-chart-accent);
+  background: var(--hoist-chart-accent);
 }
 </style>

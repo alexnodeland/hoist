@@ -7,9 +7,9 @@ version = "0.1.0"
 edition = "2021"
 rust-version = "1.88"
 license = "MIT"
-repository = "https://github.com/alexnodeland/stretto"
+repository = "https://github.com/alexnodeland/hoist"
 authors = ["Alex Nodeland"]
-homepage = "https://stretto.alexnodeland.com/"
+homepage = "https://hoist.alexnodeland.com/"
 readme = "README.md"
 keywords = ["mcp", "llm", "agents", "bayesian", "speculation"]
 
@@ -25,8 +25,8 @@ reqwest = { version = "0.12", default-features = false, features = ["blocking", 
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["float_roundtrip"] }
 sha2 = "0.10"
-stretto-model = { path = "crates/stretto-model" }
-stretto-oracle = { path = "crates/stretto-oracle" }
-stretto-report = { path = "crates/stretto-report" }
-stretto-trace = { path = "crates/stretto-trace" }
+hoist-model = { path = "crates/hoist-model" }
+hoist-oracle = { path = "crates/hoist-oracle" }
+hoist-report = { path = "crates/hoist-report" }
+hoist-trace = { path = "crates/hoist-trace" }
 ts-rs = "12"

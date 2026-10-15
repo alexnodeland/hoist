@@ -7,7 +7,7 @@ import { computed, ref } from 'vue'
 
 export type ThemeChoice = 'system' | 'light' | 'dark'
 
-export const THEME_KEY = 'stretto-console:theme'
+export const THEME_KEY = 'hoist-console:theme'
 
 function stored(): ThemeChoice {
   try {

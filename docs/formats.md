@@ -1,19 +1,19 @@
 # File formats
 
-Two kinds of stretto file are meant to be kept, reviewed and shared:
+Two kinds of Hoist file are meant to be kept, reviewed and shared:
 
-- **a flow** (`*.flow.json`), written by `stretto compile` and `stretto learn` and served by `stretto serve`, `stretto flow-serve` and `stretto-proxy --flow`;
-- **an arbiter** (`data/arbiters/*.json`), written by `stretto export-arbiter` and read by `stretto learn --arbiter-from`.
+- **a flow** (`*.flow.json`), written by `hoist compile` and `hoist learn` and served by `hoist serve`, `hoist flow-serve` and `hoist-mcp --flow`;
+- **an arbiter** (`data/arbiters/*.json`), written by `hoist export-arbiter` and read by `hoist learn --arbiter-from`.
 
 A deployment's staged flow and its committed flow's history are described [below](#a-deployments-staged-flow-and-history).
 
-Both are JSON. This page names every field, says what sets it, and says what a reviewer should check. The proxy's session logs are documented in [its README](../crates/stretto-proxy/README.md#log-format). The Rust types are `Flow`, `Arbiter` and `Fitted` in `crates/stretto-report/src/flow.rs` and `arbitrate.rs`; a test (`crates/stretto-report/tests/formats.rs`) fails when a serialized field is missing from this page.
+Both are JSON. This page names every field, says what sets it, and says what a reviewer should check. The proxy's session logs are documented in [its README](../crates/hoist-mcp/README.md#log-format). The Rust types are `Flow`, `Arbiter` and `Fitted` in `crates/hoist-report/src/flow.rs` and `arbitrate.rs`; a test (`crates/hoist-report/tests/formats.rs`) fails when a serialized field is missing from this page.
 
 Flows are written on one line. `jq . some.flow.json` prints one for reading. Maps whose keys are not strings are written as lists of `[key, value]` pairs sorted by key, so two flows compiled from the same data differ only in `compiled_unix_ms`.
 
 ## Reviewing a flow
 
-A flow makes read-only calls on the agent's behalf, so a review asks what it may call, when, and with what. `stretto flow-show` renders these fields for a reviewer, and `stretto flow-diff` lists what changed between two flows ([reviewing flows](review.md)). In the file:
+A flow makes read-only calls on the agent's behalf, so a review asks what it may call, when, and with what. `hoist flow-show` renders these fields for a reviewer, and `hoist flow-diff` lists what changed between two flows ([reviewing flows](review.md)). In the file:
 
 1. **`manifest.tools`.** The flow calls only tools marked `read`. A tool that writes but is marked `read` is the one mistake that matters here. Kinds come from the server's `readOnlyHint` annotations or a `--manifest` file, so check them against what the tools do.
 2. **`sites.next`.** After each call, these are the lookups the flow may make next, with how often the agent made each in training. A lookup seen once or twice is a thin basis.
@@ -21,11 +21,11 @@ A flow makes read-only calls on the agent's behalf, so a review asks what it may
 4. **`provenance`.** Check which sources the flow learned from, how many successful episodes (`habit_episodes`) and how many held-out decisions (`arbiter_cases`). The [cold start](results/cold-start-2026-09-24.md) found an arbiter fitted on a handful of decisions worse than none.
 5. **`map.ids`.** Holds values copied from training outputs, such as user ids. Treat a flow with features like the data it was learned from before sharing it. The rest of the file holds tool names, argument names, JSON paths, counts, the tools' documentation, and the questions' text.
 
-## The flow IR (`stretto_flow: 1` or `2`)
+## The flow IR (`hoist_flow: 1` or `2`)
 
 | Field | What it holds |
 |---|---|
-| `stretto_flow` | The format version, 1 |
+| `hoist_flow` | The format version, 1 |
 | `provenance` | Where the flow came from |
 | `vocab` | The actions the habit predicts, in id order |
 | `manifest` | The domain's tools, their kinds and their documentation |
@@ -38,15 +38,15 @@ A flow makes read-only calls on the agent's behalf, so a review asks what it may
 | `bindings` | Where each lookup's arguments came from in training, and how often binding them that way matched the agent |
 | `model` | The System-One model the flow asks |
 | `program` | The flow's run after each call, as a fugue program |
-| `promoted` | Where the flow may act, once promoted; absent until `stretto promote` writes it |
+| `promoted` | Where the flow may act, once promoted; absent until `hoist promote` writes it |
 | `thresholds` | Per-site thresholds, in place of the served one at those sites; absent unless a search set them |
-| `contracts` | Each tool's input contract when the flow was learned from recorded sessions: `{tool: "order_id:string!, reason:string"}`, each argument with its JSON type and `!` when required. `stretto-proxy` makes no lookup of a tool whose server lists another. Absent for a flow compiled from τ²-bench results |
+| `contracts` | Each tool's input contract when the flow was learned from recorded sessions: `{tool: "order_id:string!, reason:string"}`, each argument with its JSON type and `!` when required. `hoist-mcp` makes no lookup of a tool whose server lists another. Absent for a flow compiled from τ²-bench results |
 | `reach` | Over the habit's histories, how often each action came before the agent's next write, for `--decider reach`; absent in a flow learned before flows counted it |
 | `surprise` | When the flow hands back for the rest of a session that surprises it; absent unless `learn --surprise` set it |
 
 ### `provenance`
 
-- `stretto`: the version of stretto that wrote the flow.
+- `hoist`: the version of Hoist that wrote the flow.
 - `sources`: the training sources, by label. For `compile` these are τ²-bench's agent models. For `learn` it is the agent model the session logs name: the proxy's `--agent-model`, or else the name the host gave in `initialize`; from spans (`learn --otel`), the model the inference spans name. A flow serving an arbiter from elsewhere also lists that arbiter's sources, as `arbiter (<domain>): <source>` when the arbiter came from a file and `arbiter: <source>` when it came from another flow.
 - `habit_episodes`: the successful training episodes the habit learned from.
 - `arbiter_cases`: the held-out decisions the arbiter was fitted on; 0 for a flow with no arbiter. A flow serving a shipped arbiter carries that arbiter's count.
@@ -60,7 +60,7 @@ The actions the habit predicts: `"Respond"` (a message to the customer with no t
 ### `manifest`
 
 - `domain`: the domain's name, from `--domain`.
-- `tools`: each tool's kind: `read` (reads without changing anything), `write` (changes state) or `generic` (neither, or unknown). `compile` takes kinds from τ²-bench's tool types. `learn` takes them from the servers' `readOnlyHint` annotations in the recorded `tools/list`, or from `--manifest`. A tool that gave no hint is `generic`. Only `read` tools are ever looked up by the flow. A flow learned from sessions of several servers names each tool after its server, `docs::search`, everywhere in the file, and after a call looks up only that call's server's tools ([several servers](../crates/stretto-proxy/README.md#several-servers)).
+- `tools`: each tool's kind: `read` (reads without changing anything), `write` (changes state) or `generic` (neither, or unknown). `compile` takes kinds from τ²-bench's tool types. `learn` takes them from the servers' `readOnlyHint` annotations in the recorded `tools/list`, or from `--manifest`. A tool that gave no hint is `generic`. Only `read` tools are ever looked up by the flow. A flow learned from sessions of several servers names each tool after its server, `docs::search`, everywhere in the file, and after a call looks up only that call's server's tools ([several servers](../crates/hoist-mcp/README.md#several-servers)).
 - `docs`: each tool's documentation, where the source had any: `summary`, one paragraph, and `args`, each argument's description. The System-One questions show it.
 
 ### `map`
@@ -78,7 +78,7 @@ The habit's condition for a live episode. The habit can be conditioned on an epi
 
 ### `habit`
 
-The habit: a hierarchical Dirichlet back-off model of the agent's next action, given its last `order` steps (RFC-001 §3.3; `stretto_model::world`). With `c_j` the last `j` steps,
+The habit: a hierarchical Dirichlet back-off model of the agent's next action, given its last `order` steps (RFC-001 §3.3; `hoist_model::world`). With `c_j` the last `j` steps,
 
 ```text
 P_j(a | c_j) = (n(c_j, a) + α · P_{j-1}(a | c_{j-1})) / (n(c_j) + α)
@@ -95,7 +95,7 @@ and `P_{-1}` uniform over the vocabulary, so a history never seen in training fa
 
 ### `reach`
 
-The habit's histories counted for another event: not which action came next, but whether an action came at all before the agent's next write (`stretto_model::world::BackoffModel::fit_reach`). It has the fields of `habit.base`, and each history's `total` counts the steps that followed it, where `by_action` counts, for each action, the steps from which that action came before the next write. Each action is then its own Beta–Bernoulli, backed off as the habit is:
+The habit's histories counted for another event: not which action came next, but whether an action came at all before the agent's next write (`hoist_model::world::BackoffModel::fit_reach`). It has the fields of `habit.base`, and each history's `total` counts the steps that followed it, where `by_action` counts, for each action, the steps from which that action came before the next write. Each action is then its own Beta–Bernoulli, backed off as the habit is:
 
 ```text
 R_j(a | c_j) = (m(c_j, a) + α · R_{j-1}(a | c_{j-1})) / (n(c_j) + α)
@@ -150,7 +150,7 @@ The System-One model id the flow requests, `jev-latest` by default. It is part o
 
 ### `program`
 
-The flow's run after each of the agent's calls, as a program in fugue's serializable format (`fugue::program`; [RFC-001 §3.5](rfc/001-habit-compiler.md#35-compiling-flows)). It is a JSON object: the format's version, `fugue_program` (1), then the program's `body` and `ret`, whose nodes fugue documents. `stretto compile` and `stretto learn` write the standard run, which `stretto flow-show` prints as text:
+The flow's run after each of the agent's calls, as a program in fugue's serializable format (`fugue::program`; [RFC-001 §3.5](rfc/001-habit-compiler.md#35-compiling-flows)). It is a JSON object: the format's version, `fugue_program` (1), then the program's `body` and `ret`, whose nodes fugue documents. `hoist compile` and `hoist learn` write the standard run, which `hoist flow-show` prints as text:
 
 ```text
 let prev = call;
@@ -174,32 +174,32 @@ pure(prev)
 
 The proxy decides at each `decide#i` with the decider it serves the flow with (`--flow-decider`: the arbiter, the habit alone, or `reach`), and takes each `outcome#i` from the server.
 
-Check: any program other than the standard run is code the proxy runs. `stretto flow-diff` lists a change to it as needing review.
+Check: any program other than the standard run is code the proxy runs. `hoist flow-diff` lists a change to it as needing review.
 
 ### `promoted`
 
-Written by `stretto promote` ([RFC-001 §3.7](rfc/001-habit-compiler.md)), and absent until then. A promoted flow acts only after the calls whose record met the bar. After the rest it hands back, with the reason `the site is not promoted`.
+Written by `hoist promote` ([RFC-001 §3.7](rfc/001-habit-compiler.md)), and absent until then. A promoted flow acts only after the calls whose record met the bar. After the rest it hands back, with the reason `the site is not promoted`.
 
 - `bar`: `threshold`, the one the flow was scored at, as it will be served; `min_used`, the least share of its lookups at a site that the agent made in a later LLM turn; `min_lower`, the least lower bound on that share (Wilson, 90% two-sided); and `min_tasks`, the fewest distinct tasks the lookups came from. Each recorded session counts as its own task.
 - `sites`: for each site scored, by name (the tool, and ` (error)` after a failed call): `decisions`, the times the flow decided there; `lookups`, the lookups it would have made; `used`, the ones the agent made in a later LLM turn; `served`, the ones the proxy had already made in the session, serving a flow, which count as neither (the rest are detours; 0 in promotions from before they were counted apart); `tasks`; `lower`, on the share of the lookups that were not served; and `promoted`. A site never scored is not promoted.
 
-Check: a site newly promoted lets the flow act where it handed back, and `stretto flow-diff` lists it as needing review.
+Check: a site newly promoted lets the flow act where it handed back, and `hoist flow-diff` lists it as needing review.
 
 ### `thresholds`
 
-A map from site to threshold, written when a flow's settings come from `stretto search` ([RFC-001 §3.10](rfc/001-habit-compiler.md)), and absent otherwise. A flow with thresholds is format version 2 ([Versions](#versions)). At a listed site the flow takes a lookup when it clears that site's threshold instead of the one it is served with (`--threshold`). Above 1, the flow never acts at the site: it hands back with the reason `the site is switched off`, before asking anything.
+A map from site to threshold, written when a flow's settings come from `hoist search` ([RFC-001 §3.10](rfc/001-habit-compiler.md)), and absent otherwise. A flow with thresholds is format version 2 ([Versions](#versions)). At a listed site the flow takes a lookup when it clears that site's threshold instead of the one it is served with (`--threshold`). Above 1, the flow never acts at the site: it hands back with the reason `the site is switched off`, before asking anything.
 
 ### `surprise`
 
-Written by `stretto learn --surprise Q` ([RFC-001 §3.6](rfc/001-habit-compiler.md)), and absent otherwise. A flow with a gate is format version 2 ([Versions](#versions)).
+Written by `hoist learn --surprise Q` ([RFC-001 §3.6](rfc/001-habit-compiler.md)), and absent otherwise. A flow with a gate is format version 2 ([Versions](#versions)).
 
 - `window`: how many of the agent's steps in a row the gate averages, at least 1.
 - `threshold`: the mean surprise, in nats, above which the flow hands back.
 - `quantile`: the quantile of the training sessions it was learned at; absent when the threshold was set by hand.
 
-A step's surprise is −ln of the habit's probability of what the agent did next, after a call where the flow decides. A step the flow does not offer there, such as a reply or a write, counts as handing back. The flow's own lookups (the proxy's `stretto-N` calls) are not the agent's steps. Once any `window` of the agent's steps in a row average more than `threshold`, the flow hands back after every call for the rest of the session, with the reason `the session surprised the flow`. The gate reads the habit alone, whichever decider serves the flow, and asks no one.
+A step's surprise is −ln of the habit's probability of what the agent did next, after a call where the flow decides. A step the flow does not offer there, such as a reply or a write, counts as handing back. The flow's own lookups (the proxy's `hoist-N` calls) are not the agent's steps. Once any `window` of the agent's steps in a row average more than `threshold`, the flow hands back after every call for the rest of the session, with the reason `the session surprised the flow`. The gate reads the habit alone, whichever decider serves the flow, and asks no one.
 
-`learn` sets `threshold` from the training sessions. Each successful session is scored by a habit learned without its fold of tasks (the arbiter's five folds). The threshold is the `quantile` of each session's most surprising window, among sessions with at least `window` steps to score. `stretto stage` learns the gate again at its quantile, and keeps one set by hand. `--surprise off|NATS` in `serve` and `flow-serve`, and `--flow-surprise` in the proxy, serve a flow without its gate or with another threshold.
+`learn` sets `threshold` from the training sessions. Each successful session is scored by a habit learned without its fold of tasks (the arbiter's five folds). The threshold is the `quantile` of each session's most surprising window, among sessions with at least `window` steps to score. `hoist stage` learns the gate again at its quantile, and keeps one set by hand. `--surprise off|NATS` in `serve` and `flow-serve`, and `--flow-surprise` in the proxy, serve a flow without its gate or with another threshold.
 
 ## A flow, walked through
 
@@ -218,13 +218,13 @@ A step's surprise is −ln of the habit's probability of what the agent did next
 - **`bindings.agreed`**: the binding picked the agent's own order id at all 10 of its `get_order_details` calls, a chance of 11/12. For `get_product_details` it matched 2 of 4 times, all where the customer had mentioned the product, a chance of 3/6.
 - **`folds`** holds five copies of one fit. Jev's pick matched the agent at 9 of the 15 held-out decisions (`agree` 0.6), and the agent's step was always among the options (`cover` 1.0). At `get_order_details` Jev matched 3 of 9, so the arbiter trusts it less there than elsewhere.
 
-## The procedure IR (`stretto_procedure: 1`)
+## The procedure IR (`hoist_procedure: 1`)
 
-A whole workflow compiled once from agents' traces, writes included, for where no user speaks: `scripts/telecom_workflow.py --export` writes it from τ²-bench telecom's solo runs, and `stretto-procedure` runs it against an MCP server with no model ([results](results/telecom-workflow-2026-09-26.md)). [The published one](results/telecom-workflow-2026-09-26.procedure.json) is the workflow of those results, with its identifiers held as where they came from.
+A whole workflow compiled once from agents' traces, writes included, for where no user speaks: `scripts/telecom_workflow.py --export` writes it from τ²-bench telecom's solo runs, and `hoist-procedure` runs it against an MCP server with no model ([results](results/telecom-workflow-2026-09-26.md)). [The published one](results/telecom-workflow-2026-09-26.procedure.json) is the workflow of those results, with its identifiers held as where they came from.
 
 | Field | What it holds |
 |---|---|
-| `stretto_procedure` | The format version, 1 |
+| `hoist_procedure` | The format version, 1 |
 | `domain` | The domain it was compiled for |
 | `provenance` | `sources`, the runs it was compiled from, and `training_tasks`, how many tasks they cover |
 | `symbolic` | Whether its identifiers are held as where they came from and bound again at run time, or are constants of the traces |
@@ -241,13 +241,13 @@ A tree's node is a question, `{"feature": F, "yes": NODE, "no": NODE}`, which go
 
 A run's state is a set of features: `ticket: WORD` for each word of the ticket in `vocab`; `called TOOL` and `made ACTION` for each tool called and write made; and, from each tool's last result, `TOOL:error` or `TOOL:error=False`, and for a record `TOOL:FIELD=value` for each short field (ids and free text left out), `TOOL:len(FIELD)=0`, `1` or `2+` for its lists, and `TOOL:FIELD.*.status=value` for a map of records; for a list `TOOL:len($)`; and for a phone's check, `TOOL:KEY=value` for each part of each `Key: value` line and `TOOL:says LINE` for a short line of its own, parts with digits left out. After a record that holds a value the ticket gives (the line with the ticket's number), another record of its kind does not replace it in the state.
 
-## The arbiter file (`stretto_arbiter: 1`)
+## The arbiter file (`hoist_arbiter: 1`)
 
-A flow's arbiter on its own, to serve with a habit learned elsewhere ([data/arbiters](../data/arbiters/README.md)). `stretto export-arbiter` writes it from a flow whose folds share one fit, and refuses a flow whose five folds were fitted apart, since none of those is the arbiter for new tasks. It is pretty-printed.
+A flow's arbiter on its own, to serve with a habit learned elsewhere ([data/arbiters](../data/arbiters/README.md)). `hoist export-arbiter` writes it from a flow whose folds share one fit, and refuses a flow whose five folds were fitted apart, since none of those is the arbiter for new tasks. It is pretty-printed.
 
 | Field | What it holds |
 |---|---|
-| `stretto_arbiter` | The format version, 1 |
+| `hoist_arbiter` | The format version, 1 |
 | `domain` | The domain whose decisions it was fitted on |
 | `provenance` | The flow it came from, as in a flow |
 | `predicates`, `weighed` | The questions it asks and weighs, as in a flow |
@@ -258,14 +258,14 @@ A flow's arbiter on its own, to serve with a habit learned elsewhere ([data/arbi
 
 ## A deployment's staged flow and history
 
-`stretto stage` and `stretto flow-commit` keep three things beside a committed flow `NAME.flow.json` ([staged flows](https://stretto.alexnodeland.com/guide/concepts/staged-flows)):
+`hoist stage` and `hoist flow-commit` keep three things beside a committed flow `NAME.flow.json` ([staged flows](https://hoist.alexnodeland.com/guide/concepts/staged-flows)):
 
 - `NAME.staged.flow.json`, a flow like any other.
-- `NAME.stage.json`, the staged learner's state (`stretto_stage: 1`), on one line:
+- `NAME.stage.json`, the staged learner's state (`hoist_stage: 1`), on one line:
 
   | Field | What it holds |
   |---|---|
-  | `stretto_stage` | The format version, 1 |
+  | `hoist_stage` | The format version, 1 |
   | `domain` | The domain of both flows |
   | `sessions` | The ids of the sessions the staged flow learned from, in the order it took them in |
   | `ledger` | The last 1,000 sessions as each flow did on them when they arrived: `session`, and `committed` and `staged`, each absent when that flow was not there. A flow's side has `sites` (per site: `decisions`, `lookups`, `used`, `served`) and `unanswered` |

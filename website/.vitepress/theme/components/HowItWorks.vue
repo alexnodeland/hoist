@@ -5,26 +5,26 @@ import { withBase } from 'vitepress'
 const steps = [
   {
     title: 'Record',
-    text: 'stretto init prints your MCP host’s config, with stretto-proxy in place of the server’s command. The proxy forwards every message and logs each session.',
-    code: 'stretto init --host cursor --domain orders -- <server>',
+    text: 'hoist init prints your MCP host’s config, with hoist-mcp in place of the server’s command. The proxy forwards every message and logs each session.',
+    code: 'hoist init --host cursor --domain orders -- <server>',
     link: '/guide/concepts/sessions'
   },
   {
     title: 'Learn',
-    text: 'stretto learn counts which reads followed which calls, and where each argument came from. Learning is counting: no model, no key.',
-    code: 'stretto learn --sessions ~/.stretto/logs/orders --habit-only …',
+    text: 'hoist learn counts which reads followed which calls, and where each argument came from. Learning is counting: no model, no key.',
+    code: 'hoist learn --sessions ~/.hoist/logs/orders --habit-only …',
     link: '/guide/concepts/flows'
   },
   {
     title: 'Review',
     text: 'A flow is a file. flow-show renders it for a reviewer, flow-diff lists what changed, and shadow mode runs it without letting it act.',
-    code: 'stretto flow-show orders.flow.json',
+    code: 'hoist flow-show orders.flow.json',
     link: '/guide/concepts/audit-and-review'
   },
   {
     title: 'Serve',
     text: 'After each of the agent’s calls, the flow’s lookups ride in the same tool result, so the agent skips the turns it would have spent asking.',
-    code: 'stretto init --host cursor --flow orders.flow.json -- <server>',
+    code: 'hoist init --host cursor --flow orders.flow.json -- <server>',
     link: '/guide/concepts/lookups'
   }
 ]

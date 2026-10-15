@@ -32,13 +32,13 @@ const flows = buildFlows({
 })
 
 describe('the session timeline', () => {
-  it('shows the customer, the agent’s calls and what stretto read ahead under them', () => {
+  it('shows the customer, the agent’s calls and what Hoist read ahead under them', () => {
     const w = mount(SessionTimeline, { props: { detail, threshold: 0.3 } })
     const text = w.text()
     expect(text).toContain('Hi, I’m c41@example.com'.replace('’', "'"))
     expect(text).toContain('Turn 1')
     expect(text).toContain('find_user_id_by_email')
-    expect(text).toContain('Read ahead by stretto: 3 lookups')
+    expect(text).toContain('Read ahead by Hoist: 3 lookups')
     expect(w.findAll('[data-testid="decision-made"]')).toHaveLength(3)
     expect(w.findAll('[data-testid="decision-back"]')).toHaveLength(2)
     expect(text).toContain('get_order_details at 0.05, below 0.3')
@@ -89,14 +89,14 @@ describe('the activity chart', () => {
     flow_lookups: i > 6 ? 3 : 0,
   }))
 
-  it('draws the agent’s calls and the reads stretto made for each day', () => {
+  it('draws the agent’s calls and the reads Hoist made for each day', () => {
     const w = mount(ActivityChart, { props: { days } })
     expect(w.findAll('.bar-agent')).toHaveLength(14)
     expect(w.findAll('.bar-lookups')).toHaveLength(7)
     expect(w.text()).toContain('Agent’s calls')
-    expect(w.text()).toContain('Read ahead by stretto')
+    expect(w.text()).toContain('Read ahead by Hoist')
     expect(w.find('[role="img"]').attributes('aria-label')).toContain(
-      '161 by the agent and 21 read ahead by stretto',
+      '161 by the agent and 21 read ahead by Hoist',
     )
   })
 
@@ -179,7 +179,7 @@ describe('a staged flow', () => {
     expect(total.text()).toContain('12 lookups')
     expect(total.text()).toContain('9 used (75%')
     expect(w.find('[data-testid="stage-delta"]').text()).toBe('+1 used, −2 detours')
-    expect(w.text()).toContain('as stretto promote counts it')
+    expect(w.text()).toContain('as hoist promote counts it')
     expect(w.text()).not.toContain('The proxy had already made')
   })
 

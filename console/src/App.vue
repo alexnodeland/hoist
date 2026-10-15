@@ -29,7 +29,7 @@ setClientHooks({
 const route = useRoute()
 const palette = ref(false)
 const drawer = ref(false)
-const SIDEBAR_KEY = 'stretto-console:sidebar'
+const SIDEBAR_KEY = 'hoist-console:sidebar'
 const collapsed = ref(false)
 try {
   collapsed.value = localStorage.getItem(SIDEBAR_KEY) === 'collapsed'
@@ -126,7 +126,7 @@ onMounted(start)
       <h1>The console server did not answer</h1>
       <p class="muted">{{ metaError }}</p>
       <p class="caption">
-        Start it with <span class="mono">stretto-console</span> (it listens on 127.0.0.1:7878), then
+        Start it with <span class="mono">hoist-console</span> (it listens on 127.0.0.1:7878), then
         try again.
       </p>
       <UiButton variant="primary" :icon="RotateCcw" @click="start">Try again</UiButton>
@@ -174,8 +174,8 @@ onMounted(start)
 
 .shell-side {
   z-index: 30;
-  background: var(--stretto-surface);
-  border-right: 1px solid var(--stretto-border);
+  background: var(--hoist-surface);
+  border-right: 1px solid var(--hoist-border);
 }
 
 .shell-side > :deep(.side) {
@@ -203,14 +203,14 @@ onMounted(start)
   z-index: 200;
   padding: 8px 12px;
   border-radius: 8px;
-  background: var(--stretto-accent-fill);
-  color: var(--stretto-on-accent);
+  background: var(--hoist-accent-fill);
+  color: var(--hoist-on-accent);
   font-weight: 600;
 }
 
 .skip:focus {
   top: 12px;
-  color: var(--stretto-on-accent);
+  color: var(--hoist-on-accent);
 }
 
 .shell-scrim {
@@ -276,8 +276,8 @@ onMounted(start)
   width: min(460px, 100%);
   padding: 28px;
   border-radius: 16px;
-  background: var(--stretto-surface);
-  border: 1px solid var(--stretto-border);
+  background: var(--hoist-surface);
+  border: 1px solid var(--hoist-border);
   box-shadow: var(--c-shadow-md);
 }
 

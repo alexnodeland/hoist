@@ -139,41 +139,41 @@ const attrs = computed(() => {
 }
 
 .btn-primary {
-  background: var(--stretto-accent-fill);
-  color: var(--stretto-on-accent);
+  background: var(--hoist-accent-fill);
+  color: var(--hoist-on-accent);
   box-shadow: 0 1px 1px rgb(0 0 0 / 0.06);
 }
 
 .btn-primary:hover {
-  background: var(--stretto-accent-hover);
-  color: var(--stretto-on-accent);
+  background: var(--hoist-accent-hover);
+  color: var(--hoist-on-accent);
 }
 
 .btn-secondary {
-  background: var(--stretto-surface);
-  border-color: var(--stretto-border);
-  color: var(--stretto-text);
+  background: var(--hoist-surface);
+  border-color: var(--hoist-border);
+  color: var(--hoist-text);
   box-shadow: var(--c-shadow-sm);
 }
 
 .btn-secondary:hover {
-  border-color: color-mix(in oklab, var(--stretto-border-strong) 60%, var(--stretto-border));
-  background: color-mix(in oklab, var(--stretto-surface) 70%, var(--stretto-surface-2));
-  color: var(--stretto-text);
+  border-color: color-mix(in oklab, var(--hoist-border-strong) 60%, var(--hoist-border));
+  background: color-mix(in oklab, var(--hoist-surface) 70%, var(--hoist-surface-2));
+  color: var(--hoist-text);
 }
 
 .btn-ghost {
   background: transparent;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .btn-ghost:hover {
   background: var(--c-hover);
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .btn-danger {
-  background: var(--stretto-surface);
+  background: var(--hoist-surface);
   border-color: var(--c-danger-border);
   color: var(--c-danger);
 }
@@ -189,17 +189,17 @@ const attrs = computed(() => {
 }
 
 .btn-primary:disabled:hover {
-  background: var(--stretto-accent-fill);
+  background: var(--hoist-accent-fill);
 }
 
 .btn-secondary:disabled:hover {
-  border-color: var(--stretto-border);
-  background: var(--stretto-surface);
+  border-color: var(--hoist-border);
+  background: var(--hoist-surface);
 }
 
 .btn-ghost:disabled:hover {
   background: transparent;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .is-loading {

@@ -3,7 +3,7 @@ import type { SiteCounts } from "./SiteCounts";
 
 /**
  * How the staged flow compared with the committed one on the last
- * sessions: `stretto stage`'s report, as data.
+ * sessions: `hoist stage`'s report, as data.
  */
 export type ComparisonView = { 
 /**

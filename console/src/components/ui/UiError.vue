@@ -48,7 +48,7 @@ defineEmits<{ retry: [] }>()
 .error-message {
   max-width: 560px;
   margin-bottom: 12px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
   font-size: 13.5px;
   overflow-wrap: anywhere;
 }

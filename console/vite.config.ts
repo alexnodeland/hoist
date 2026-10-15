@@ -6,9 +6,9 @@ import { mockApi } from './mock/plugin.ts'
 const brand = fileURLToPath(new URL('../brand', import.meta.url))
 
 // The console server `npm run dev` and `vite preview` pass /api on to
-// (stretto-console's default listen address). The Host is rewritten to the
+// (hoist-console's default listen address). The Host is rewritten to the
 // server's own, which a server started with --no-auth insists on.
-const server = process.env.STRETTO_CONSOLE_URL ?? 'http://127.0.0.1:7878'
+const server = process.env.HOIST_CONSOLE_URL ?? 'http://127.0.0.1:7878'
 const proxy = {
   '/api': { target: server, changeOrigin: true },
   // `?token=` on any page: the server sets its cookie and redirects without it.

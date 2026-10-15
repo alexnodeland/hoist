@@ -5,7 +5,7 @@
  */
 import { ref, watch } from 'vue'
 
-const KEY = 'stretto-console:domain'
+const KEY = 'hoist-console:domain'
 
 function stored(): string | null {
   try {

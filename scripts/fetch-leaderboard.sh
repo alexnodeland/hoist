@@ -10,7 +10,7 @@
 #   Models: glm-5 qwen3.5 qwen3-max gpt-5.2 gpt-5.2-none claude-opus-4.5
 #           claude-sonnet-4.5 gemini-3-pro gemini-3-flash, or "all".
 # Prints one label=path pair per file (retail, airline, then telecom), ready to pass
-# to `stretto phase0 --source` or `--target`.
+# to `hoist phase0 --source` or `--target`.
 set -euo pipefail
 
 dest=".data/tau2-targets"

@@ -8,12 +8,12 @@ import type { Provenance } from "./Provenance";
 import type { SiteView } from "./SiteView";
 
 /**
- * One flow as a reviewer reads it, at a threshold: `stretto flow-show`'s
+ * One flow as a reviewer reads it, at a threshold: `hoist flow-show`'s
  * review ([`review::view`], and the same text in `review_markdown`).
  */
 export type FlowDetail = { summary: FlowSummary, threshold: number, tools: Array<FlowTool>, sites: Array<SiteView>, bindings: Array<BindingView>, provenance: Provenance, promotion: PromotionView | null, 
 /**
- * `stretto flow-show` at this threshold.
+ * `hoist flow-show` at this threshold.
  */
 review_markdown: string, 
 /**
@@ -22,6 +22,6 @@ review_markdown: string,
  */
 warnings: Array<string>, 
 /**
- * The last `stretto drift` job on it that ran to its end.
+ * The last `hoist drift` job on it that ran to its end.
  */
 drift: DriftCheck | null, };

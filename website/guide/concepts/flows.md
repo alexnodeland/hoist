@@ -1,25 +1,25 @@
 ---
-description: What a flow is, what stretto learn puts in it, and how it is learned from recorded sessions by counting.
+description: What a flow is, what hoist learn puts in it, and how it is learned from recorded sessions by counting.
 ---
 
 # Flows
 
-A *flow* is what stretto serves behind an agent: a JSON file that says, for one server's tools (or [several servers'](./sessions#several-servers)), which lookups the agent made after each call, how often, and where each lookup's arguments came from. It holds counts, tool and argument names and JSON paths, and no model weights, so a person can read it, and a change to it can be reviewed like code.
+A *flow* is what Hoist serves behind an agent: a JSON file that says, for one server's tools (or [several servers'](./sessions#several-servers)), which lookups the agent made after each call, how often, and where each lookup's arguments came from. It holds counts, tool and argument names and JSON paths, and no model weights, so a person can read it, and a change to it can be reviewed like code.
 
 ## Learn one
 
 ```sh
-stretto learn --sessions ~/.stretto/logs/orders --domain orders \
-  --habit-only --out ~/.stretto/orders.flow.json
+hoist learn --sessions ~/.hoist/logs/orders --domain orders \
+  --habit-only --out ~/.hoist/orders.flow.json
 ```
 
-- `--sessions DIR` reads the session logs `stretto-proxy --record` wrote.
+- `--sessions DIR` reads the session logs `hoist-mcp --record` wrote.
 - `--domain NAME` names the flow's domain.
 - `--habit-only` learns from counts alone and asks no model. Without it, `learn` also fits an *arbiter* on held-out sessions, which asks a System-One model and needs `TYPESAFE_API_KEY` ([deciders](./deciders)).
 - `--manifest FILE` gives tool kinds when the server's `tools/list` has no `readOnlyHint` annotations ([tool kinds](./sessions#tool-kinds)).
 - `--constants` also learns arguments the agent always passes the same way, such as a page size ([bindings](./bindings#lists-searches-and-constants)).
 
-Every option is in [the CLI reference](/reference/cli#stretto-learn). `stretto compile` writes a flow from τ²-bench's published results instead, for research.
+Every option is in [the CLI reference](/reference/cli#hoist-learn). `hoist compile` writes a flow from τ²-bench's published results instead, for research.
 
 [The console](../console) runs `learn` as a job, and its page for a flow draws the flow's graph of calls and lookups. Its threshold slider shows which lookups would act at another threshold.
 
@@ -36,7 +36,7 @@ Every option is in [the CLI reference](/reference/cli#stretto-learn). `stretto c
 | `program` | The flow's run after each call, as a [fugue](https://github.com/alexnodeland/fugue) program. |
 | `provenance` | What the flow learned from: the agent model the logs name, and how many successful sessions. |
 
-A flow may also hold an arbiter (`folds`, `predicates`, `model`), code features (`map`), a promotion record (`promoted`) and per-site thresholds (`thresholds`). [File formats](/reference/formats) names every field and says what a reviewer should check. Flows are written on one line; `jq . orders.flow.json` prints one for reading, and `stretto flow-show` renders one for review.
+A flow may also hold an arbiter (`folds`, `predicates`, `model`), code features (`map`), a promotion record (`promoted`) and per-site thresholds (`thresholds`). [File formats](/reference/formats) names every field and says what a reviewer should check. Flows are written on one line; `jq . orders.flow.json` prints one for reading, and `hoist flow-show` renders one for review.
 
 ## The counts
 
@@ -56,13 +56,13 @@ Every estimate in a flow is a posterior predictive of conjugate counts, so learn
 
 1. Serve a flow, and keep recording.
 2. Learn again from the sessions recorded since, or from all of them.
-3. Compare the new flow with the one being served, with [`stretto flow-diff`](./audit-and-review#compare-two-flows). It exits with 1 when the new flow can do something the old one could not, such as a new lookup or a new source for an argument.
+3. Compare the new flow with the one being served, with [`hoist flow-diff`](./audit-and-review#compare-two-flows). It exits with 1 when the new flow can do something the old one could not, such as a new lookup or a new source for an argument.
 
 Other agents' sessions can teach a flow too. Where agents act alike, they teach as much as the agent's own; where they do not, only the agent's own sessions teach its habits. Replayed in τ²-bench's telecom domain, a hundred of an agent's own sessions saved 15.2% of its turns, against 12.6% from all 1,184 of four other agents' ([the paper, §4.3](/research/paper#43-learning-from-few-sessions)).
 
 ## The run after each call
 
-A flow's run after each of the agent's calls is a probabilistic program, in fugue's serializable format. `stretto flow-show` prints it:
+A flow's run after each of the agent's calls is a probabilistic program, in fugue's serializable format. `hoist flow-show` prints it:
 
 ```text
 let prev = call;
@@ -79,7 +79,7 @@ for i in 0..max_lookups {
 pure(prev)
 ```
 
-`Decide` is a decision between handing back (0) and the lookups offered after the call just made; `Outcome` is whether a lookup succeeds. The proxy decides each `decide#i` with the flow's decider and takes each `outcome#i` from the server. Because the run is a fugue program, the same flow can be executed against a server, simulated, and used to score a recorded session: that is how [`stretto audit`](./audit-and-review#audit-a-flow) works.
+`Decide` is a decision between handing back (0) and the lookups offered after the call just made; `Outcome` is whether a lookup succeeds. The proxy decides each `decide#i` with the flow's decider and takes each `outcome#i` from the server. Because the run is a fugue program, the same flow can be executed against a server, simulated, and used to score a recorded session: that is how [`hoist audit`](./audit-and-review#audit-a-flow) works.
 
 ## Related
 

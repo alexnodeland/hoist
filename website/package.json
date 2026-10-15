@@ -1,8 +1,8 @@
 {
-  "name": "stretto-website",
+  "name": "hoist-website",
   "private": true,
   "type": "module",
-  "description": "The stretto documentation site, built with VitePress.",
+  "description": "The Hoist documentation site, built with VitePress.",
   "license": "MIT",
   "scripts": {
     "dev": "node scripts/copy-notebook.mjs && node scripts/copy-brand.mjs && node scripts/copy-paper.mjs && vitepress dev",

@@ -1,12 +1,12 @@
 cff-version: 1.2.0
-message: "If you use stretto or its results, please cite the software and the paper."
-title: "stretto: compile what the environment decides"
+message: "If you use Hoist or its results, please cite the software and the paper."
+title: "Hoist: compile what the environment decides"
 type: software
 authors:
   - family-names: Nodeland
     given-names: Alex
-repository-code: "https://github.com/alexnodeland/stretto"
-url: "https://stretto.alexnodeland.com/"
+repository-code: "https://github.com/alexnodeland/hoist"
+url: "https://hoist.alexnodeland.com/"
 license: MIT
 version: 0.1.0
 keywords:
@@ -23,4 +23,4 @@ preferred-citation:
       given-names: Alex
   year: 2026
   status: preprint
-  url: "https://github.com/alexnodeland/stretto/blob/main/paper/stretto.md"
+  url: "https://github.com/alexnodeland/hoist/blob/main/paper/hoist.md"

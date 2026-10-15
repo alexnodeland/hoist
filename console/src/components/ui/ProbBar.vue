@@ -59,19 +59,19 @@ const relation = computed(() =>
   flex: none;
   height: 8px;
   border-radius: 4px;
-  background: var(--stretto-surface-2);
-  box-shadow: inset 0 0 0 1px var(--stretto-border);
+  background: var(--hoist-surface-2);
+  box-shadow: inset 0 0 0 1px var(--hoist-border);
 }
 
 .pb-fill {
   position: absolute;
   inset: 0 auto 0 0;
   border-radius: 4px;
-  background: var(--stretto-chart-baseline);
+  background: var(--hoist-chart-baseline);
 }
 
 .pb-fill.acts {
-  background: var(--stretto-chart-accent);
+  background: var(--hoist-chart-accent);
 }
 
 .pb-tick {
@@ -81,21 +81,21 @@ const relation = computed(() =>
   width: 2px;
   margin-left: -1px;
   border-radius: 1px;
-  background: var(--stretto-text);
+  background: var(--hoist-text);
 }
 
 .pb-text {
   font-size: 12.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .pb-text strong {
   font-weight: 600;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .pb-rel {
   margin-left: 4px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 </style>

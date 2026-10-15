@@ -8,7 +8,7 @@
       "lines": [
         {
           "key": "title1",
-          "text": "stretto reads ahead of your agent.",
+          "text": "hoist reads ahead of your agent.",
           "em": [
             "reads ahead"
           ],
@@ -107,7 +107,7 @@
       "lines": [
         {
           "key": "idea1",
-          "text": "stretto sits between the agent and its tools, as an MCP proxy.",
+          "text": "hoist sits between the agent and its tools, as an MCP proxy.",
           "em": [
             "MCP proxy"
           ],
@@ -115,7 +115,7 @@
         },
         {
           "key": "idea2",
-          "text": "When a result names what comes next, stretto makes those reads at once.",
+          "text": "When a result names what comes next, hoist makes those reads at once.",
           "em": [
             "makes those reads"
           ],
@@ -178,7 +178,7 @@
         },
         {
           "key": "learn2",
-          "text": "stretto counts which reads follow each call, and where each argument came from.",
+          "text": "hoist counts which reads follow each call, and where each argument came from.",
           "em": [
             "which reads follow",
             "where each argument came from"
@@ -251,7 +251,7 @@
         },
         {
           "key": "rule2",
-          "text": "stretto makes it when the chance it's used before the next write clears the line.",
+          "text": "hoist makes it when the chance it's used before the next write clears the line.",
           "em": [
             "before the next write"
           ],
@@ -349,7 +349,7 @@
       "lines": [
         {
           "key": "start1",
-          "text": "stretto is open source, written in Rust, under the MIT license.",
+          "text": "hoist is open source, written in Rust, under the MIT license.",
           "em": [
             "open source"
           ],
@@ -357,9 +357,9 @@
         },
         {
           "key": "start2",
-          "text": "Run stretto init in front of any MCP server.",
+          "text": "Run hoist init in front of any MCP server.",
           "em": [
-            "stretto init"
+            "hoist init"
           ],
           "post": 0.4
         },
@@ -380,7 +380,7 @@
       "lines": [
         {
           "key": "end1",
-          "text": "stretto. Read ahead of your agent.",
+          "text": "hoist. Read ahead of your agent.",
           "em": [
             "Read ahead of your agent."
           ],

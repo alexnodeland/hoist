@@ -1,8 +1,8 @@
 {
-  "name": "stretto-brand",
+  "name": "hoist-brand",
   "private": true,
   "type": "module",
-  "description": "Sources and render scripts for stretto's brand kit, explainer and videos.",
+  "description": "Sources and render scripts for hoist's brand kit, explainer and videos.",
   "scripts": {
     "contrast": "node tools/contrast.mjs --check",
     "assets": "node tools/render_assets.mjs",

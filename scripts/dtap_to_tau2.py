@@ -7,7 +7,7 @@ fourteen domains. It publishes every run's trajectory
 (`<harness>/<model>/<domain>/benign/<task>/<time>.json`) with a judge's
 verdict (`judge_result.json`). This writes each harness and model's runs of
 one domain as τ²-bench's results file, and a checkout-shaped folder that
-stretto reads as τ²-bench's: the tools, marked a read or a write, and a
+hoist reads as τ²-bench's: the tools, marked a read or a write, and a
 train/test split by task.
 
     dtap_to_tau2.py --runs DIR --domain customer-service --out DIR [--name NAME]

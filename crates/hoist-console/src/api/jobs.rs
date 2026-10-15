@@ -1,0 +1,878 @@
+//! Jobs: the `hoist` CLI's `learn`, `promote`, `audit`, `stage`,
+//! `redact` and `doctor`, run one at a time as subprocesses
+//! ([`crate::jobs`]).
+
+use super::{blocking, ApiError, ApiResult};
+use crate::data::registry::DeciderName;
+use crate::data::{self, paths};
+use crate::{Shared, State};
+use axum::body::{Body, Bytes};
+use axum::extract::{Path, State as AxumState};
+use axum::http::{header, HeaderValue, StatusCode};
+use axum::response::{IntoResponse, Response};
+use axum::Json;
+use hoist_report::init::check_domain;
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use std::path::PathBuf;
+#[cfg(feature = "ts")]
+use ts_rs::TS;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(TS))]
+#[serde(rename_all = "snake_case")]
+pub enum JobKind {
+    Learn,
+    Promote,
+    Audit,
+    Stage,
+    Drift,
+    Redact,
+    Doctor,
+}
+
+impl JobKind {
+    /// The exit code with which the kind's command says it found something
+    /// to act on, rather than that it failed: `hoist drift`'s alarm.
+    pub fn alarm_exit(self) -> Option<i32> {
+        match self {
+            JobKind::Drift => Some(1),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(TS))]
+#[serde(rename_all = "snake_case")]
+pub enum JobStatus {
+    Queued,
+    Running,
+    Succeeded,
+    Failed,
+    /// Stopped by `POST /api/jobs/:id/cancel`: before it started, or
+    /// killed while it ran.
+    Cancelled,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(TS))]
+#[serde(rename_all = "snake_case")]
+pub enum ArtifactKind {
+    /// A flow the job wrote.
+    Flow,
+    /// A report: Markdown or JSON.
+    Report,
+    /// A directory of files, such as redacted sessions.
+    Dir,
+}
+
+/// Something a job writes.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(TS))]
+pub struct Artifact {
+    pub kind: ArtifactKind,
+    /// Relative to the data directory, or `~/…` outside it.
+    pub path: String,
+    /// For a flow in the data directory, its key.
+    pub key: Option<String>,
+}
+
+/// A run of the `hoist` CLI.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(TS))]
+pub struct Job {
+    pub id: String,
+    pub kind: JobKind,
+    pub title: String,
+    /// The request, with its defaults filled in.
+    #[cfg_attr(feature = "ts", ts(type = "unknown"))]
+    pub params: Value,
+    pub status: JobStatus,
+    pub created_unix_ms: u64,
+    pub started_unix_ms: Option<u64>,
+    pub finished_unix_ms: Option<u64>,
+    pub exit_code: Option<i32>,
+    /// Whether it ended with an alarm, which is not a failure: `hoist
+    /// drift` found the agent changed under the flow.
+    #[serde(default)]
+    pub alarm: bool,
+    /// What it printed, stdout and stderr as they came: the last 64 KiB in
+    /// lists and events, all of it from `GET /api/jobs/:id`.
+    pub output: String,
+    /// What it writes; after it ends, only what exists.
+    pub artifacts: Vec<Artifact>,
+}
+
+/// `GET /api/jobs`
+#[derive(Clone, Debug, Serialize)]
+#[cfg_attr(feature = "ts", derive(TS))]
+pub struct JobList {
+    pub items: Vec<Job>,
+}
+
+/// `POST /api/jobs`: what to run.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "ts", derive(TS))]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum JobRequest {
+    /// `hoist learn`: a flow from recorded sessions.
+    Learn {
+        domain: String,
+        /// The sessions' directory: relative to the data directory, or `~/…`.
+        sessions: String,
+        /// Where to write the flow; by default `<domain>.flow.json` in the
+        /// data directory.
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        out: Option<String>,
+        /// Replace `out` if it exists; else a job that would is refused.
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        overwrite: Option<bool>,
+        /// Ask no System-One model (the default): without it, an arbiter is
+        /// fitted, which needs a key.
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        habit_only: Option<bool>,
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        constants: Option<bool>,
+    },
+    /// `hoist promote`: keep a flow to the sites where its lookups were the
+    /// agent's own.
+    Promote {
+        /// The flow's key.
+        flow: String,
+        sessions: String,
+        /// The answers the proxy cached in shadow; by default `oracle-cache`
+        /// in the data directory.
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        oracle_cache: Option<String>,
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        threshold: Option<f64>,
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        min_used: Option<f64>,
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        min_lower: Option<f64>,
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        min_tasks: Option<usize>,
+        /// By default `<flow name>.promoted.flow.json` beside the flow.
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        out: Option<String>,
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        overwrite: Option<bool>,
+    },
+    /// `hoist audit`, with its report as JSON.
+    Audit {
+        flow: String,
+        sessions: String,
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        decider: Option<DeciderName>,
+    },
+    /// `hoist drift`: score the flow's sessions in the order they ran,
+    /// and sound an alarm when the agent seems to have changed under it.
+    /// The CLI exits with 1 while its alarm sounds, which the job records as
+    /// an alarm, not a failure.
+    Drift {
+        flow: String,
+        sessions: String,
+        /// How the flow decides as it is scored: `habit` by default.
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        decider: Option<DeciderName>,
+        /// How recent a change the alarm reports, in sessions (10; at
+        /// least 3, as a change needs three sessions of the new run).
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        window: Option<usize>,
+        /// The probability of a recent change that sounds the alarm (0.5).
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        threshold: Option<f64>,
+    },
+    /// `hoist stage`: learn the staged flow beside a committed one from
+    /// its sessions, scoring each new session with both flows first.
+    Stage {
+        /// The committed flow's key, or its staged flow's.
+        flow: String,
+        sessions: String,
+        /// Compare the flows on the last this many sessions both were scored
+        /// on (50).
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        window: Option<usize>,
+        /// How both flows decide as they are scored; by default each as the
+        /// proxy serves it.
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        decider: Option<DeciderName>,
+        /// Forget old sessions: one this many sessions older than the newest
+        /// counts half.
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        half_life: Option<f64>,
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        constants: Option<bool>,
+    },
+    /// `hoist redact`: needs `HOIST_REDACT_SALT` in the console's
+    /// environment.
+    Redact {
+        sessions: String,
+        out: String,
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        keep_shared: Option<usize>,
+        #[serde(default)]
+        #[cfg_attr(feature = "ts", ts(optional = nullable))]
+        hash_fields: Option<Vec<String>>,
+    },
+    /// `hoist doctor`.
+    Doctor,
+}
+
+/// What a request runs: the CLI's arguments, what it writes, and how the
+/// list names it.
+#[derive(Clone, Debug)]
+pub struct Plan {
+    pub kind: JobKind,
+    pub title: String,
+    pub params: Value,
+    pub args: Vec<String>,
+    pub artifacts: Vec<Artifact>,
+}
+
+/// `GET /api/jobs`
+pub async fn list(AxumState(state): AxumState<Shared>) -> Json<JobList> {
+    Json(JobList {
+        items: state.jobs.list(),
+    })
+}
+
+/// `GET /api/jobs/:id`
+pub async fn detail(
+    AxumState(state): AxumState<Shared>,
+    Path(id): Path<String>,
+) -> ApiResult<Json<Job>> {
+    state
+        .jobs
+        .get(&id)
+        .map(Json)
+        .ok_or_else(|| ApiError::not_found(format!("no job {id:?}")))
+}
+
+/// `POST /api/jobs`: 202 with the job, queued.
+pub async fn create(
+    AxumState(state): AxumState<Shared>,
+    body: Bytes,
+) -> ApiResult<(StatusCode, Json<Job>)> {
+    let request: JobRequest = serde_json::from_slice(&body)
+        .map_err(|e| ApiError::bad_request(format!("the job is not as expected: {e}")))?;
+    let id = crate::jobs::new_id(state.now());
+    let plan = {
+        let id = id.clone();
+        blocking(&state, move |state| plan(state, &id, request)).await?
+    };
+    Ok((
+        StatusCode::ACCEPTED,
+        Json(state.jobs.submit(id, plan, state.now())),
+    ))
+}
+
+/// `POST /api/jobs/:id/cancel`: a queued job is cancelled now, and never
+/// runs; a running one's `hoist` is killed, and the job is cancelled when
+/// it has ended (a `job` event says so). 409 for a job that has ended.
+pub async fn cancel(
+    AxumState(state): AxumState<Shared>,
+    Path(id): Path<String>,
+) -> ApiResult<Json<Job>> {
+    match state.jobs.cancel(&id, state.now()) {
+        Ok(job) => Ok(Json(job)),
+        Err(crate::jobs::CancelError::NotFound) => {
+            Err(ApiError::not_found(format!("no job {id:?}")))
+        }
+        Err(crate::jobs::CancelError::Ended(status)) => Err(ApiError::conflict(format!(
+            "job {id} has ended ({}): there is nothing to cancel",
+            serde_json::to_value(status)
+                .ok()
+                .and_then(|v| v.as_str().map(String::from))
+                .unwrap_or_default()
+        ))),
+    }
+}
+
+/// `GET /api/jobs/:id/artifacts/:index`: a report or flow the job wrote,
+/// to show.
+pub async fn artifact(
+    AxumState(state): AxumState<Shared>,
+    Path((id, index)): Path<(String, usize)>,
+) -> ApiResult<Response> {
+    let job = state
+        .jobs
+        .get(&id)
+        .ok_or_else(|| ApiError::not_found(format!("no job {id:?}")))?;
+    let artifact = job
+        .artifacts
+        .get(index)
+        .ok_or_else(|| ApiError::not_found(format!("job {id} has no artifact {index}")))?;
+    if artifact.kind == ArtifactKind::Dir {
+        return Err(ApiError::bad_request(format!(
+            "{} is a directory",
+            artifact.path
+        )));
+    }
+    let path = paths::resolve(
+        state.data_dir(),
+        state.config.home.as_deref(),
+        &artifact.path,
+    )
+    .map_err(ApiError::forbidden)?;
+    let bytes = tokio::fs::read(&path)
+        .await
+        .map_err(|e| ApiError::not_found(format!("{}: {e}", artifact.path)))?;
+    let kind = if artifact.path.ends_with(".json") {
+        "application/json"
+    } else if artifact.path.ends_with(".md") {
+        "text/markdown; charset=utf-8"
+    } else {
+        "text/plain; charset=utf-8"
+    };
+    let mut response = Body::from(bytes).into_response();
+    response
+        .headers_mut()
+        .insert(header::CONTENT_TYPE, HeaderValue::from_static(kind));
+    Ok(response)
+}
+
+/// The last `hoist drift` job on a flow that ran to its end: whether its
+/// alarm sounded, and what its report says.
+#[derive(Clone, Debug, PartialEq, Serialize)]
+#[cfg_attr(feature = "ts", derive(TS))]
+pub struct DriftCheck {
+    /// The job.
+    pub job: String,
+    pub finished_unix_ms: u64,
+    /// Whether the alarm sounded after the last session: the agent may
+    /// have changed under the flow.
+    pub alarm: bool,
+    /// The sessions it scored.
+    pub sessions: usize,
+    /// With the alarm: the sessions since the likeliest change.
+    pub since: Option<usize>,
+    /// With the alarm: the probability of a change within the window.
+    pub probability: Option<f64>,
+    /// With the alarm: the sites where the flow's surprise rose most, at
+    /// most three.
+    pub sites: Vec<String>,
+    /// The tools the agent called that training never saw.
+    pub unknown_tools: Vec<String>,
+}
+
+/// The newest drift job on flow `key` that ran to its end, as its JSON
+/// report says it went.
+pub fn latest_drift(state: &State, key: &str) -> Option<DriftCheck> {
+    let job = state.jobs.list().into_iter().find(|j| {
+        j.kind == JobKind::Drift
+            && j.status == JobStatus::Succeeded
+            && j.params.get("flow").and_then(Value::as_str) == Some(key)
+    })?;
+    let report = job
+        .artifacts
+        .iter()
+        .filter(|a| a.path.ends_with(".json"))
+        .find_map(|a| {
+            let path =
+                paths::resolve(state.data_dir(), state.config.home.as_deref(), &a.path).ok()?;
+            serde_json::from_slice::<Value>(&std::fs::read(path).ok()?).ok()
+        })
+        .unwrap_or(Value::Null);
+    let sessions = report["sessions"].as_array().map_or(0, Vec::len);
+    let last = report["alarms"]
+        .as_array()
+        .and_then(|a| a.last())
+        .filter(|_| job.alarm);
+    Some(DriftCheck {
+        finished_unix_ms: job.finished_unix_ms.unwrap_or(job.created_unix_ms),
+        alarm: job.alarm,
+        sessions,
+        since: last
+            .and_then(|a| a["change"].as_u64())
+            .map(|change| sessions.saturating_sub(change as usize)),
+        probability: last.and_then(|a| a["probability"].as_f64()),
+        sites: last
+            .and_then(|a| a["moved"].as_array())
+            .into_iter()
+            .flatten()
+            .filter_map(|m| m["site"].as_str().map(str::to_string))
+            .take(3)
+            .collect(),
+        unknown_tools: report["unknown_tools"]
+            .as_object()
+            .map(|o| o.keys().cloned().collect())
+            .unwrap_or_default(),
+        job: job.id,
+    })
+}
+
+/// A request's plan, or why it cannot run.
+pub fn plan(state: &State, id: &str, request: JobRequest) -> ApiResult<Plan> {
+    let root = state.data_dir();
+    let home = state.config.home.as_deref();
+    let resolve = |what: &str, p: &str| {
+        paths::resolve(root, home, p).map_err(|e| ApiError::bad_request(format!("{what}: {e}")))
+    };
+    let dir = |what: &str, p: &str| -> ApiResult<PathBuf> {
+        let path = resolve(what, p)?;
+        if !path.is_dir() {
+            return Err(ApiError::bad_request(format!(
+                "{what}: {p} is not a directory"
+            )));
+        }
+        Ok(path)
+    };
+    // A file to write: not over one that exists unless asked, and in a
+    // directory that exists, as the CLI does not create it.
+    let fresh = |path: &PathBuf, overwrite: bool| -> ApiResult<()> {
+        if path.exists() && !overwrite {
+            return Err(ApiError::conflict(format!(
+                "{} exists: choose another path, or overwrite it",
+                shown(state, path)
+            )));
+        }
+        let parent = path.parent().unwrap_or(root);
+        std::fs::create_dir_all(parent)
+            .map_err(|e| ApiError::internal(format!("creating {}: {e}", shown(state, parent))))?;
+        Ok(())
+    };
+    let s = |p: &PathBuf| p.display().to_string();
+    let reports = root.join(data::CONSOLE_DIR).join("jobs");
+    let report = |ext: &str| reports.join(format!("{id}.{ext}"));
+    let flow_of = |key: &str| -> ApiResult<data::FlowFile> {
+        data::catalog(root)
+            .flow(key)
+            .cloned()
+            .ok_or_else(|| ApiError::bad_request(format!("no flow {key:?}")))
+    };
+    let probability = |what: &str, x: f64| -> ApiResult<f64> {
+        if x.is_finite() && (0.0..=1.0).contains(&x) {
+            Ok(x)
+        } else {
+            Err(ApiError::bad_request(format!("{what} {x}: from 0 to 1")))
+        }
+    };
+    let artifact = |kind: ArtifactKind, path: &PathBuf| Artifact {
+        kind,
+        path: shown(state, path),
+        key: None,
+    };
+    let params = |r: &JobRequest| serde_json::to_value(r).unwrap_or(Value::Null);
+    Ok(match request {
+        JobRequest::Learn {
+            domain,
+            sessions,
+            out,
+            overwrite,
+            habit_only,
+            constants,
+        } => {
+            let (overwrite, habit_only, constants) = (
+                overwrite.unwrap_or(false),
+                habit_only.unwrap_or(true),
+                constants.unwrap_or(false),
+            );
+            check_domain(&domain).map_err(|e| ApiError::bad_request(e.to_string()))?;
+            if !habit_only && !state.key_set() {
+                return Err(ApiError::bad_request(
+                    "fitting an arbiter asks TypeSafe's Jev, and neither TYPESAFE_API_KEY nor \
+                     TYPESAFE_API_KEY_FILE is set in the console's environment: learn with \
+                     habit_only",
+                ));
+            }
+            let from = dir("sessions", &sessions)?;
+            let to = match &out {
+                Some(o) => resolve("out", o)?,
+                None => root.join(format!("{domain}.flow.json")),
+            };
+            fresh(&to, overwrite)?;
+            let mut args = vec![
+                "learn".into(),
+                "--sessions".into(),
+                s(&from),
+                "--domain".into(),
+                domain.clone(),
+                "--out".into(),
+                s(&to),
+            ];
+            if habit_only {
+                args.push("--habit-only".into());
+            } else {
+                args.extend(["--oracle-cache".into(), s(&root.join("oracle-cache"))]);
+            }
+            if constants {
+                args.push("--constants".into());
+            }
+            Plan {
+                kind: JobKind::Learn,
+                title: format!("Learn {domain} from {}", shown(state, &from)),
+                params: params(&JobRequest::Learn {
+                    domain,
+                    sessions: shown(state, &from),
+                    out: Some(shown(state, &to)),
+                    overwrite: Some(overwrite),
+                    habit_only: Some(habit_only),
+                    constants: Some(constants),
+                }),
+                args,
+                artifacts: vec![artifact(ArtifactKind::Flow, &to)],
+            }
+        }
+        JobRequest::Promote {
+            flow,
+            sessions,
+            oracle_cache,
+            threshold,
+            min_used,
+            min_lower,
+            min_tasks,
+            out,
+            overwrite,
+        } => {
+            let overwrite = overwrite.unwrap_or(false);
+            let file = flow_of(&flow)?;
+            let from = dir("sessions", &sessions)?;
+            let cache = match &oracle_cache {
+                Some(c) => resolve("oracle_cache", c)?,
+                None => root.join("oracle-cache"),
+            };
+            let threshold = probability("threshold", threshold.unwrap_or(0.3))?;
+            let min_used = probability("min_used", min_used.unwrap_or(0.7))?;
+            let min_lower = probability("min_lower", min_lower.unwrap_or(0.5))?;
+            let min_tasks = min_tasks.unwrap_or(3);
+            if min_tasks == 0 {
+                return Err(ApiError::bad_request("min_tasks: at least 1"));
+            }
+            let to = match &out {
+                Some(o) => resolve("out", o)?,
+                None => file
+                    .path
+                    .with_file_name(format!("{}.promoted.flow.json", file.name)),
+            };
+            fresh(&to, overwrite)?;
+            let md = report("promote.md");
+            Plan {
+                kind: JobKind::Promote,
+                title: format!("Promote {} on {}", file.name, shown(state, &from)),
+                params: params(&JobRequest::Promote {
+                    flow,
+                    sessions: shown(state, &from),
+                    oracle_cache: Some(shown(state, &cache)),
+                    threshold: Some(threshold),
+                    min_used: Some(min_used),
+                    min_lower: Some(min_lower),
+                    min_tasks: Some(min_tasks),
+                    out: Some(shown(state, &to)),
+                    overwrite: Some(overwrite),
+                }),
+                args: vec![
+                    "promote".into(),
+                    "--flow".into(),
+                    s(&file.path),
+                    "--sessions".into(),
+                    s(&from),
+                    "--oracle-cache".into(),
+                    s(&cache),
+                    "--threshold".into(),
+                    threshold.to_string(),
+                    "--min-used".into(),
+                    min_used.to_string(),
+                    "--min-lower".into(),
+                    min_lower.to_string(),
+                    "--min-tasks".into(),
+                    min_tasks.to_string(),
+                    "--out".into(),
+                    s(&to),
+                    "--report".into(),
+                    s(&md),
+                ],
+                artifacts: vec![
+                    artifact(ArtifactKind::Flow, &to),
+                    artifact(ArtifactKind::Report, &md),
+                ],
+            }
+        }
+        JobRequest::Audit {
+            flow,
+            sessions,
+            decider,
+        } => {
+            let file = flow_of(&flow)?;
+            let from = dir("sessions", &sessions)?;
+            let (json, md) = (report("audit.json"), report("audit.md"));
+            let mut args = vec![
+                "audit".into(),
+                "--flow".into(),
+                s(&file.path),
+                "--sessions".into(),
+                s(&from),
+                "--oracle".into(),
+                "replay".into(),
+                "--oracle-cache".into(),
+                s(&root.join("oracle-cache")),
+                "--out".into(),
+                s(&md),
+                "--json".into(),
+                s(&json),
+            ];
+            if let Some(d) = decider {
+                args.extend(["--decider".into(), d.decider().name().into()]);
+            }
+            Plan {
+                kind: JobKind::Audit,
+                title: format!("Audit {} on {}", file.name, shown(state, &from)),
+                params: params(&JobRequest::Audit {
+                    flow,
+                    sessions: shown(state, &from),
+                    decider,
+                }),
+                args,
+                artifacts: vec![
+                    artifact(ArtifactKind::Report, &json),
+                    artifact(ArtifactKind::Report, &md),
+                ],
+            }
+        }
+        JobRequest::Drift {
+            flow,
+            sessions,
+            decider,
+            window,
+            threshold,
+        } => {
+            let file = flow_of(&flow)?;
+            let from = dir("sessions", &sessions)?;
+            let window = window.unwrap_or(10);
+            if window < 3 {
+                return Err(ApiError::bad_request(format!(
+                    "window {window}: at least 3 sessions, as a change needs three of the new run"
+                )));
+            }
+            let threshold = threshold.unwrap_or(0.5);
+            if !(threshold > 0.0 && threshold <= 1.0) {
+                return Err(ApiError::bad_request(format!(
+                    "threshold {threshold}: a probability above 0 and at most 1"
+                )));
+            }
+            let (json, md) = (report("drift.json"), report("drift.md"));
+            let mut args = vec![
+                "drift".into(),
+                "--flow".into(),
+                s(&file.path),
+                "--sessions".into(),
+                s(&from),
+                "--oracle".into(),
+                "replay".into(),
+                "--oracle-cache".into(),
+                s(&root.join("oracle-cache")),
+                "--window".into(),
+                window.to_string(),
+                "--threshold".into(),
+                threshold.to_string(),
+                "--out".into(),
+                s(&md),
+                "--json".into(),
+                s(&json),
+            ];
+            if let Some(d) = decider {
+                args.extend(["--decider".into(), d.decider().name().into()]);
+            }
+            Plan {
+                kind: JobKind::Drift,
+                title: format!("Drift of {} on {}", file.name, shown(state, &from)),
+                params: params(&JobRequest::Drift {
+                    flow,
+                    sessions: shown(state, &from),
+                    decider,
+                    window: Some(window),
+                    threshold: Some(threshold),
+                }),
+                args,
+                artifacts: vec![
+                    artifact(ArtifactKind::Report, &json),
+                    artifact(ArtifactKind::Report, &md),
+                ],
+            }
+        }
+        JobRequest::Stage {
+            flow,
+            sessions,
+            window,
+            decider,
+            half_life,
+            constants,
+        } => {
+            let file = flow_of(&flow)?;
+            let paths = super::stage::paths_of(&file)?;
+            let domain = match &state.flow(&file).flow {
+                Ok(f) => f.domain().to_string(),
+                Err(e) => {
+                    return Err(ApiError::new(
+                        StatusCode::UNPROCESSABLE_ENTITY,
+                        format!("{} does not load: {e}", file.rel),
+                    ))
+                }
+            };
+            let from = dir("sessions", &sessions)?;
+            let window = window.unwrap_or(50);
+            if window == 0 {
+                return Err(ApiError::bad_request("window: at least 1 session"));
+            }
+            if let Some(h) = half_life.filter(|h| !(h.is_finite() && *h > 0.0)) {
+                return Err(ApiError::bad_request(format!(
+                    "half_life {h}: a number of sessions, more than 0"
+                )));
+            }
+            let constants = constants.unwrap_or(false);
+            let (json, md) = (report("stage.json"), report("stage.md"));
+            let mut args = vec![
+                "stage".into(),
+                "--flow".into(),
+                s(&paths.committed),
+                "--domain".into(),
+                domain,
+                "--sessions".into(),
+                s(&from),
+                "--oracle-cache".into(),
+                s(&root.join("oracle-cache")),
+                "--window".into(),
+                window.to_string(),
+                "--out".into(),
+                s(&md),
+                "--json".into(),
+                s(&json),
+            ];
+            if let Some(d) = decider {
+                args.extend(["--decider".into(), d.decider().name().into()]);
+            }
+            if let Some(h) = half_life {
+                args.extend(["--half-life".into(), h.to_string()]);
+            }
+            if constants {
+                args.push("--constants".into());
+            }
+            let name = paths
+                .committed
+                .file_name()
+                .unwrap_or_default()
+                .to_string_lossy()
+                .trim_end_matches(".flow.json")
+                .to_string();
+            Plan {
+                kind: JobKind::Stage,
+                title: format!("Stage {name} from {}", shown(state, &from)),
+                params: params(&JobRequest::Stage {
+                    flow,
+                    sessions: shown(state, &from),
+                    window: Some(window),
+                    decider,
+                    half_life,
+                    constants: Some(constants),
+                }),
+                args,
+                artifacts: vec![
+                    artifact(ArtifactKind::Flow, &paths.staged),
+                    artifact(ArtifactKind::Report, &md),
+                    artifact(ArtifactKind::Report, &json),
+                ],
+            }
+        }
+        JobRequest::Redact {
+            sessions,
+            out,
+            keep_shared,
+            hash_fields,
+        } => {
+            if !state.config.env.is_set("HOIST_REDACT_SALT") {
+                return Err(ApiError::bad_request(
+                    "redacting needs a salt: set HOIST_REDACT_SALT in the console's \
+                     environment (docs/privacy.md)",
+                ));
+            }
+            let from = dir("sessions", &sessions)?;
+            let to = resolve("out", &out)?;
+            if to == from || to.starts_with(&from) || from.starts_with(&to) {
+                return Err(ApiError::bad_request(
+                    "out: the redacted copy goes in a directory of its own, apart from the \
+                     sessions",
+                ));
+            }
+            let keep = keep_shared.unwrap_or(3);
+            if keep == 0 {
+                return Err(ApiError::bad_request("keep_shared: at least 1"));
+            }
+            let fields: Vec<String> = hash_fields
+                .unwrap_or_default()
+                .iter()
+                .flat_map(|f| f.split(','))
+                .map(|f| f.trim().to_string())
+                .filter(|f| !f.is_empty())
+                .collect();
+            if fields.iter().any(|f| f.chars().any(char::is_whitespace)) {
+                return Err(ApiError::bad_request(
+                    "hash_fields: field names, without spaces",
+                ));
+            }
+            let mut args = vec![
+                "redact".into(),
+                "--sessions".into(),
+                s(&from),
+                "--out".into(),
+                s(&to),
+                "--keep-shared".into(),
+                keep.to_string(),
+            ];
+            for f in &fields {
+                args.extend(["--hash-field".into(), f.clone()]);
+            }
+            Plan {
+                kind: JobKind::Redact,
+                title: format!("Redact {}", shown(state, &from)),
+                params: params(&JobRequest::Redact {
+                    sessions: shown(state, &from),
+                    out: shown(state, &to),
+                    keep_shared: Some(keep),
+                    hash_fields: Some(fields),
+                }),
+                args,
+                artifacts: vec![artifact(ArtifactKind::Dir, &to)],
+            }
+        }
+        JobRequest::Doctor => Plan {
+            kind: JobKind::Doctor,
+            title: "Check the installation".into(),
+            params: params(&JobRequest::Doctor),
+            // The data directory the console serves, not ~/.hoist.
+            args: vec!["doctor".into(), "--data".into(), root.display().to_string()],
+            artifacts: Vec::new(),
+        },
+    })
+}
+
+/// `path` as the API shows it: relative to the data directory, else `~/…`,
+/// else as it is.
+pub fn shown(state: &State, path: &std::path::Path) -> String {
+    let root = state.data_dir();
+    if path.starts_with(root) {
+        paths::rel(root, path)
+    } else {
+        paths::display(path, state.config.home.as_deref())
+    }
+}

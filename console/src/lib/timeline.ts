@@ -1,7 +1,7 @@
 /**
  * A session, turn by turn: the conversation's messages where they fell, each
  * of the agent's turns with its calls, and under each call the flow's
- * decisions after it, with the lookup each one made ("read ahead by stretto").
+ * decisions after it, with the lookup each one made ("read ahead by Hoist").
  */
 import type {
   CallView,
@@ -32,7 +32,7 @@ export type TimelineEntry =
   | { type: 'turn'; t: number; turn: Turn; calls: CallItem[] }
 
 /** The value a decision is weighed on against the threshold: the lookup's probability times its binding's chance. */
-/** How the reason of a hand-back for surprise begins (`stretto_report::surprise::SURPRISED`). */
+/** How the reason of a hand-back for surprise begins (`hoist_report::surprise::SURPRISED`). */
 export const SURPRISED = 'the session surprised the flow'
 
 /**

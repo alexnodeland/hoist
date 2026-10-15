@@ -176,7 +176,7 @@ def main() -> None:
     parser.add_argument("--out", type=Path, default=Path("runs/pilot"))
     parser.add_argument("--tau2", type=Path, default=HERE.parent.parent / "sierra-research" / "tau2-bench")
     parser.add_argument("--oracle-cache", type=Path, required=True)
-    parser.add_argument("--flow", type=Path, help="a compiled flow (`stretto compile`), else compiled per episode")
+    parser.add_argument("--flow", type=Path, help="a compiled flow (`hoist compile`), else compiled per episode")
     parser.add_argument("--summarize-only", action="store_true")
     parser.add_argument("--arms", nargs=2, default=ARMS, help="the two arms to pair, baseline first")
     parser.add_argument("--task-ids", nargs="*", help="these tasks instead of a sample")

@@ -1,5 +1,5 @@
 """Per-site promotion against the global threshold alone, by replay
-(docs/results/promotion-2026-09-25.md; stretto #19).
+(docs/results/promotion-2026-09-25.md; hoist #19).
 
     python3 scripts/promotion_study.py --tau2 ../tau2-bench --oracle-cache .oracle-cache \
         --out runs/promotion [--domains retail airline] [--deciders arbiter habit] [--bars a b c]
@@ -22,7 +22,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-# min_used, min_lower, min_tasks; b is `stretto promote`'s default.
+# min_used, min_lower, min_tasks; b is `hoist promote`'s default.
 BARS = {"a": (0.5, 0.3, 3), "b": (0.7, 0.5, 3), "c": (0.8, 0.6, 5)}
 KEYS = ("turns", "turns_saved", "flow_lookups", "calls_skipped", "detours", "episodes", "episodes_with_detour")
 
@@ -39,7 +39,7 @@ def main() -> None:
     ap.add_argument("--tau2", type=Path, required=True, help="a τ²-bench checkout")
     ap.add_argument("--oracle-cache", type=Path, required=True)
     ap.add_argument("--out", type=Path, required=True)
-    ap.add_argument("--stretto", type=Path, default=ROOT / "target/release/stretto")
+    ap.add_argument("--hoist", type=Path, default=ROOT / "target/release/hoist")
     ap.add_argument("--results-dir", type=Path, default=ROOT / ".data/tau2-targets",
                     help="where scripts/fetch-leaderboard.sh put GLM-5's results")
     ap.add_argument("--python", default=sys.executable, help="the pilot's Python, with τ²-bench")
@@ -55,7 +55,7 @@ def main() -> None:
     def compiled(domain: str) -> Path:
         flow = out / f"{domain}.flow.json"
         if not flow.exists():
-            run([args.stretto, "compile", "--tau2", tau2, "--domain", domain, "--questions", "v2",
+            run([args.hoist, "compile", "--tau2", tau2, "--domain", domain, "--questions", "v2",
                  "--predicates", ROOT / "data/predicates-v2.json", "--oracle", "replay",
                  "--oracle-cache", cache, "--out", flow], out / f"compile-{domain}.log")
         return flow
@@ -67,7 +67,7 @@ def main() -> None:
         flow = out / f"{domain}-{decider}-{bar}-{half}.flow.json"
         if not flow.exists():
             used, lower, tasks = BARS[bar]
-            run([args.stretto, "promote", "--flow", compiled(domain), "--results", results(domain),
+            run([args.hoist, "promote", "--flow", compiled(domain), "--results", results(domain),
                  "--task-ids", ",".join(train), "--oracle", "replay", "--oracle-cache", cache,
                  "--decider", decider, "--threshold", "0.3", "--min-used", used,
                  "--min-lower", lower, "--min-tasks", tasks, "--out", flow,

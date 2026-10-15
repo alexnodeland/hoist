@@ -119,23 +119,23 @@ const allMarks = computed(() => {
   border-radius: 3px;
   background: linear-gradient(
     to right,
-    var(--stretto-accent-graphic) var(--fill),
-    var(--stretto-surface-2) var(--fill)
+    var(--hoist-accent-graphic) var(--fill),
+    var(--hoist-surface-2) var(--fill)
   );
-  box-shadow: inset 0 0 0 1px var(--stretto-border);
+  box-shadow: inset 0 0 0 1px var(--hoist-border);
 }
 
 .ts-range::-moz-range-track {
   height: 6px;
   border-radius: 3px;
-  background: var(--stretto-surface-2);
-  box-shadow: inset 0 0 0 1px var(--stretto-border);
+  background: var(--hoist-surface-2);
+  box-shadow: inset 0 0 0 1px var(--hoist-border);
 }
 
 .ts-range::-moz-range-progress {
   height: 6px;
   border-radius: 3px;
-  background: var(--stretto-accent-graphic);
+  background: var(--hoist-accent-graphic);
 }
 
 .ts-range::-webkit-slider-thumb {
@@ -144,8 +144,8 @@ const allMarks = computed(() => {
   height: 18px;
   margin-top: -6px;
   border-radius: 50%;
-  background: var(--stretto-surface);
-  border: 2px solid var(--stretto-accent-fill);
+  background: var(--hoist-surface);
+  border: 2px solid var(--hoist-accent-fill);
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.2);
 }
 
@@ -153,8 +153,8 @@ const allMarks = computed(() => {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: var(--stretto-surface);
-  border: 2px solid var(--stretto-accent-fill);
+  background: var(--hoist-surface);
+  border: 2px solid var(--hoist-accent-fill);
 }
 
 .ts-range:focus-visible {
@@ -162,7 +162,7 @@ const allMarks = computed(() => {
 }
 
 .ts-range:focus-visible::-webkit-slider-thumb {
-  box-shadow: 0 0 0 4px color-mix(in oklab, var(--stretto-focus) 30%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--hoist-focus) 30%, transparent);
 }
 
 .ts-marks {
@@ -185,12 +185,12 @@ const allMarks = computed(() => {
 .ts-tick {
   width: 1px;
   height: 5px;
-  background: var(--stretto-border-strong);
+  background: var(--hoist-border-strong);
 }
 
 .ts-mark-label {
   font-size: 11px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
   white-space: nowrap;
 }
 
@@ -206,15 +206,15 @@ const allMarks = computed(() => {
   flex: none;
   width: 34px;
   height: 34px;
-  border: 1px solid var(--stretto-border);
+  border: 1px solid var(--hoist-border);
   border-radius: 8px;
-  background: var(--stretto-surface);
-  color: var(--stretto-text-muted);
+  background: var(--hoist-surface);
+  color: var(--hoist-text-muted);
 }
 
 .ts-reset:hover:not(:disabled) {
-  color: var(--stretto-text);
-  background: var(--stretto-surface-2);
+  color: var(--hoist-text);
+  background: var(--hoist-surface-2);
 }
 
 .ts-reset:disabled {

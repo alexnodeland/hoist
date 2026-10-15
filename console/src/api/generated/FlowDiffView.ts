@@ -2,7 +2,7 @@
 import type { DiffSection } from "./DiffSection";
 
 /**
- * What changed from one flow to another, as `stretto flow-diff` lists it.
+ * What changed from one flow to another, as `hoist flow-diff` lists it.
  */
 export type FlowDiffView = { 
 /**
@@ -26,6 +26,6 @@ changes: Array<string>,
  */
 sections: Array<DiffSection>, 
 /**
- * `stretto flow-diff`'s change list.
+ * `hoist flow-diff`'s change list.
  */
 markdown: string, };

@@ -117,8 +117,8 @@ dependencies = [
  "fugue-ppl",
  "rand",
  "serde_json",
- "stretto-model",
- "stretto-trace",
+ "hoist-model",
+ "hoist-trace",
 ]
 
 [[package]]
@@ -259,18 +259,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "stretto-model"
+name = "hoist-model"
 version = "0.1.0"
 dependencies = [
  "fugue-ppl",
  "rand",
  "serde",
  "serde_json",
- "stretto-trace",
+ "hoist-trace",
 ]
 
 [[package]]
-name = "stretto-trace"
+name = "hoist-trace"
 version = "0.1.0"
 dependencies = [
  "anyhow",

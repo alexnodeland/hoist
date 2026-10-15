@@ -37,7 +37,7 @@ const heading = computed(() => {
       : 'In shadow: the flow’s decision'
   }
   if (made.value)
-    return `Read ahead by stretto: ${made.value} ${made.value === 1 ? 'lookup' : 'lookups'}`
+    return `Read ahead by Hoist: ${made.value} ${made.value === 1 ? 'lookup' : 'lookups'}`
   return 'The flow’s decision'
 })
 </script>
@@ -135,8 +135,8 @@ const heading = computed(() => {
   gap: 8px;
   padding: 12px 14px;
   border-radius: 12px;
-  border: 1px solid var(--stretto-border);
-  background: var(--stretto-surface);
+  border: 1px solid var(--hoist-border);
+  background: var(--hoist-surface);
   box-shadow: var(--c-shadow-sm);
   min-width: 0;
 }
@@ -172,7 +172,7 @@ const heading = computed(() => {
 
 .caret {
   flex: none;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
   transition: transform 0.12s var(--c-ease);
 }
 
@@ -211,18 +211,18 @@ const heading = computed(() => {
 .call-args {
   flex: 0 1 auto;
   max-width: 45%;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .call-result {
   flex: 1 1 0;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .call-arrow {
   flex: none;
   align-self: center;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .call-payload {
@@ -236,7 +236,7 @@ const heading = computed(() => {
   margin: 4px 0 0 22px;
   padding: 10px;
   border-radius: 10px;
-  background: color-mix(in oklab, var(--stretto-accent-soft) 55%, var(--stretto-surface));
+  background: color-mix(in oklab, var(--hoist-accent-soft) 55%, var(--hoist-surface));
 }
 
 .ahead-title {
@@ -246,7 +246,7 @@ const heading = computed(() => {
   gap: 6px;
   font-size: 12.5px;
   font-weight: 600;
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
 }
 
 .ahead-surprise {

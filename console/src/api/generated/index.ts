@@ -1,4 +1,4 @@
-// The API's types, generated from the Rust by ts-rs (crates/stretto-console/src/api/typescript.rs).
+// The API's types, generated from the Rust by ts-rs (crates/hoist-console/src/api/typescript.rs).
 // Do not edit these files: `make types` writes them.
 export type * from "./ArgView";
 export type * from "./Artifact";

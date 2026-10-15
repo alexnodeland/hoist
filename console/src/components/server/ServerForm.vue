@@ -3,7 +3,7 @@
  * A server's setup: its name (the domain), where it is (a command or an
  * HTTP URL, with the variables it needs by name only), what the proxy does
  * with it (record, shadow, serve), the flow and its settings, and the
- * guards, the confirmation judge, stretto_commit and how long sessions are
+ * guards, the confirmation judge, hoist_commit and how long sessions are
  * kept.
  */
 import { computed, reactive, ref, toRaw, watch } from 'vue'
@@ -76,7 +76,7 @@ const envError = ref<string | null>(null)
 
 const split = computed(() => splitCommand(m.command))
 const flowPath = (f: FlowSummary) =>
-  props.dataDir.endsWith('/.stretto') ? `~/.stretto/${f.path}` : `${props.dataDir}/${f.path}`
+  props.dataDir.endsWith('/.hoist') ? `~/.hoist/${f.path}` : `${props.dataDir}/${f.path}`
 const flowOptions = computed(() =>
   props.flows
     .filter((f) => !f.error)
@@ -112,7 +112,7 @@ const toolsText = computed({
 const gateHint = computed(() => {
   const flow = props.flows.find((f) => flowPath(f) === m.flow)
   if (!flow)
-    return 'Hand back for the rest of a session that surprises the flow (stretto learn --surprise).'
+    return 'Hand back for the rest of a session that surprises the flow (hoist learn --surprise).'
   const g = flow.surprise
   if (!g)
     return 'The flow has no gate: it never hands back for surprise. A threshold gives it one over five steps.'
@@ -183,12 +183,12 @@ function onFlowChange(event: Event) {
 }
 
 const defaultRecord = computed(
-  () => `~/.stretto/${m.mode === 'shadow' ? 'shadow' : 'logs'}/${m.name || '<name>'}`,
+  () => `~/.hoist/${m.mode === 'shadow' ? 'shadow' : 'logs'}/${m.name || '<name>'}`,
 )
 const preview = computed(() => {
   const i = toInput()
   const args = [
-    'stretto-proxy',
+    'hoist-mcp',
     '--record',
     i.record_dir ?? defaultRecord.value,
     '--domain',
@@ -252,7 +252,7 @@ const modes: { value: ServerMode; title: string; body: string }[] = [
   {
     value: 'shadow',
     title: 'Shadow',
-    body: 'Run a flow that decides and logs what it would look up, and looks nothing up: the sessions stretto promote scores.',
+    body: 'Run a flow that decides and logs what it would look up, and looks nothing up: the sessions hoist promote scores.',
   },
   {
     value: 'serve',
@@ -484,7 +484,7 @@ const modes: { value: ServerMode; title: string; body: string }[] = [
                 class="input mono"
                 :aria-describedby="describedby"
                 :aria-invalid="invalid"
-                placeholder="~/.stretto/orders.flow.json"
+                placeholder="~/.hoist/orders.flow.json"
                 spellcheck="false"
               />
               <UiButton v-if="flowOptions.length" @click="flowIsOther = false">Choose</UiButton>
@@ -674,7 +674,7 @@ const modes: { value: ServerMode; title: string; body: string }[] = [
             class="input mono"
             :aria-describedby="describedby"
             :aria-invalid="invalid"
-            :placeholder="`~/.stretto/context/${m.name || '<name>'}.jsonl`"
+            :placeholder="`~/.hoist/context/${m.name || '<name>'}.jsonl`"
             spellcheck="false"
             data-testid="server-context"
             @blur="touched.add('context')"
@@ -684,7 +684,7 @@ const modes: { value: ServerMode; title: string; body: string }[] = [
       <label class="check">
         <input v-model="m.commit" type="checkbox" data-testid="server-commit" />
         <span class="check-text">
-          <span class="check-title"><span class="mono">stretto_commit</span></span>
+          <span class="check-title"><span class="mono">hoist_commit</span></span>
           <span class="caption"
             >Offer the agent a tool that makes several calls in one, in order, each checked by the
             guards (<span class="mono">--commit</span>).</span
@@ -764,7 +764,7 @@ const modes: { value: ServerMode; title: string; body: string }[] = [
             v-model="m.listen_token"
             class="input mono"
             :aria-describedby="describedby"
-            placeholder="~/.stretto/proxy-token"
+            placeholder="~/.hoist/proxy-token"
             spellcheck="false"
             data-testid="server-listen-token"
             @blur="touched.add('listen')"
@@ -803,8 +803,8 @@ const modes: { value: ServerMode; title: string; body: string }[] = [
   gap: 14px;
   padding: 20px;
   border-radius: var(--c-radius-card);
-  border: 1px solid var(--stretto-border);
-  background: var(--stretto-surface);
+  border: 1px solid var(--hoist-border);
+  background: var(--hoist-surface);
 }
 
 .sf-h {
@@ -846,12 +846,12 @@ const modes: { value: ServerMode; title: string; body: string }[] = [
   border: 0;
   border-radius: 4px;
   background: none;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
 }
 
 .chip-x:hover {
   background: var(--c-hover);
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .headers {
@@ -894,8 +894,8 @@ const modes: { value: ServerMode; title: string; body: string }[] = [
   gap: 4px;
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1px solid var(--stretto-border);
-  background: var(--stretto-surface);
+  border: 1px solid var(--hoist-border);
+  background: var(--hoist-surface);
   cursor: pointer;
   transition:
     border-color 0.12s var(--c-ease),
@@ -903,13 +903,13 @@ const modes: { value: ServerMode; title: string; body: string }[] = [
 }
 
 .mode:hover {
-  border-color: color-mix(in oklab, var(--stretto-border-strong) 55%, var(--stretto-border));
+  border-color: color-mix(in oklab, var(--hoist-border-strong) 55%, var(--hoist-border));
 }
 
 .mode.on {
-  border-color: var(--stretto-accent-graphic);
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--stretto-accent-graphic) 16%, transparent);
-  background: color-mix(in oklab, var(--stretto-accent-soft) 45%, var(--stretto-surface));
+  border-color: var(--hoist-accent-graphic);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--hoist-accent-graphic) 16%, transparent);
+  background: color-mix(in oklab, var(--hoist-accent-soft) 45%, var(--hoist-surface));
 }
 
 .mode.shadow.on {
@@ -917,7 +917,7 @@ const modes: { value: ServerMode; title: string; body: string }[] = [
 }
 
 .mode:has(input:focus-visible) {
-  outline: 2px solid var(--stretto-focus);
+  outline: 2px solid var(--hoist-focus);
   outline-offset: 2px;
 }
 
@@ -928,7 +928,7 @@ const modes: { value: ServerMode; title: string; body: string }[] = [
 
 .mode-body {
   font-size: 12.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .flow-pick {

@@ -65,8 +65,8 @@ function onKey(event: KeyboardEvent, index: number) {
   gap: 2px;
   padding: 3px;
   border-radius: 10px;
-  background: var(--stretto-surface-2);
-  border: 1px solid var(--stretto-border);
+  background: var(--hoist-surface-2);
+  border: 1px solid var(--hoist-border);
   max-width: 100%;
   overflow-x: auto;
   scrollbar-width: none;
@@ -81,7 +81,7 @@ function onKey(event: KeyboardEvent, index: number) {
   border: 0;
   border-radius: 7px;
   background: transparent;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
   font-size: 13px;
   font-weight: 500;
   white-space: nowrap;
@@ -97,15 +97,15 @@ function onKey(event: KeyboardEvent, index: number) {
 }
 
 .seg-option:hover {
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .seg-option[aria-checked='true'] {
-  background: var(--stretto-surface);
-  color: var(--stretto-text);
+  background: var(--hoist-surface);
+  color: var(--hoist-text);
   box-shadow:
     0 1px 2px rgb(20 28 30 / 0.08),
-    0 0 0 1px var(--stretto-border);
+    0 0 0 1px var(--hoist-border);
 }
 
 /* On a phone an option's words may wrap, rather than push the next option out of view. */

@@ -3,7 +3,7 @@ import type { ComparisonView } from "./ComparisonView";
 import type { VersionKind } from "./VersionKind";
 
 /**
- * One version of the committed flow, as `stretto flow-log` lists it.
+ * One version of the committed flow, as `hoist flow-log` lists it.
  */
 export type VersionView = { 
 /**
@@ -23,7 +23,7 @@ restored: number | null,
  */
 note: string | null, 
 /**
- * What changed from the version before, as `stretto flow-diff` lists
+ * What changed from the version before, as `hoist flow-diff` lists
  * it.
  */
 changes: Array<string>, 

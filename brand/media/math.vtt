@@ -2,7 +2,7 @@ WEBVTT
 
 1
 00:00:02.600 --> 00:00:05.789
-The math inside stretto, as the code computes it.
+The math inside hoist, as the code computes it.
 
 2
 00:00:06.289 --> 00:00:10.891
@@ -154,7 +154,7 @@ Alpha sets how fast the counts outweigh the prior.
 
 39
 00:02:47.666 --> 00:02:49.399
-stretto doesn't tune it by hand.
+hoist doesn't tune it by hand.
 
 40
 00:02:49.849 --> 00:02:54.471
@@ -190,7 +190,7 @@ A lookup also needs its arguments.
 
 48
 00:03:21.173 --> 00:03:23.190
-stretto counts where each one came from.
+hoist counts where each one came from.
 
 49
 00:03:23.640 --> 00:03:26.380

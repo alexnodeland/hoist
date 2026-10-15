@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/** The stretto CLI, run by the console: each job, newest first. */
+/** The Hoist CLI, run by the console: each job, newest first. */
 import { useRouter } from 'vue-router'
 import { FileText, FolderOpen, Plus, SquareTerminal, Workflow } from '@lucide/vue'
 import UiPageHeader from '@/components/ui/UiPageHeader.vue'
@@ -37,8 +37,8 @@ const icons = { flow: Workflow, report: FileText, dir: FolderOpen }
 <template>
   <div class="page">
     <UiPageHeader title="Jobs">
-      The stretto CLI, run for you: learn, promote, audit, redact and doctor. Jobs run one at a
-      time, in the order they were started.
+      The Hoist CLI, run for you: learn, promote, audit, redact and doctor. Jobs run one at a time,
+      in the order they were started.
       <template #actions>
         <UiButton
           variant="primary"
@@ -71,7 +71,7 @@ const icons = { flow: Workflow, report: FileText, dir: FolderOpen }
             >Learn a flow</UiButton
           >
           <UiButton :to="{ name: 'job-new', query: { kind: 'doctor' } }" :disabled="readOnly"
-            >Run stretto doctor</UiButton
+            >Run hoist doctor</UiButton
           >
         </template>
       </UiEmpty>
@@ -141,12 +141,12 @@ const icons = { flow: Workflow, report: FileText, dir: FolderOpen }
 }
 
 .title a {
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   font-weight: 500;
 }
 
 .title a:hover {
-  color: var(--stretto-accent);
+  color: var(--hoist-accent);
 }
 
 .job-id {
@@ -165,7 +165,7 @@ const icons = { flow: Workflow, report: FileText, dir: FolderOpen }
   display: flex;
   align-items: center;
   gap: 5px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
   white-space: nowrap;
 }
 

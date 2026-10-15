@@ -82,8 +82,8 @@ const unsourced = (b: BindingView) =>
 .binding {
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1px solid var(--stretto-border);
-  background: var(--stretto-surface);
+  border: 1px solid var(--hoist-border);
+  background: var(--hoist-surface);
 }
 
 .binding.unbindable {
@@ -102,7 +102,7 @@ const unsourced = (b: BindingView) =>
 }
 
 .b-chance strong {
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   font-weight: 600;
 }
 
@@ -125,13 +125,13 @@ const unsourced = (b: BindingView) =>
 .b-name {
   padding: 1px 7px;
   border-radius: 6px;
-  background: var(--stretto-surface-2);
-  border: 1px solid var(--stretto-border);
+  background: var(--hoist-surface-2);
+  border: 1px solid var(--hoist-border);
   font-size: 12px;
 }
 
 .b-arrow {
-  color: var(--stretto-accent-graphic);
+  color: var(--hoist-accent-graphic);
 }
 
 .b-src {
@@ -144,8 +144,8 @@ const unsourced = (b: BindingView) =>
 .b-path {
   padding: 1px 6px;
   border-radius: 5px;
-  background: var(--stretto-accent-soft);
-  color: var(--stretto-accent);
+  background: var(--hoist-accent-soft);
+  color: var(--hoist-accent);
   font-size: 12px;
 }
 

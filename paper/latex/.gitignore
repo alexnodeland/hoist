@@ -1,4 +1,4 @@
-# LaTeX's intermediate files; stretto.tex, figures/*.pdf and stretto.pdf are kept.
+# LaTeX's intermediate files; hoist.tex, figures/*.pdf and hoist.pdf are kept.
 *.aux
 *.bbl
 *.blg

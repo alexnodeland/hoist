@@ -1,11 +1,11 @@
-"""How many LLM turns `stretto_commit` could save (docs/results/commit-bound-2026-09-25.md; stretto #7),
+"""How many LLM turns `hoist_commit` could save (docs/results/commit-bound-2026-09-25.md; hoist #7),
 and, on WorkBench's write-heavy tasks, what bundling writes could save at all
-(docs/results/write-bound-2026-09-28.md; stretto #37).
+(docs/results/write-bound-2026-09-28.md; hoist #37).
 
     python3 scripts/commit_bound.py TAU2_CHECKOUT [EPISODE_DIR ...]
     python3 scripts/commit_bound.py --workbench CONVERTED_DIR
 
-`stretto_commit` makes several writes in one call. Its saving is bounded by
+`hoist_commit` makes several writes in one call. Its saving is bounded by
 the turns an agent spends on consecutive writes after the customer last
 spoke: a run of k assistant turns that each make only writes (the agent's
 own, not the customer's) could be one call, saving k − 1 turns. Turns that

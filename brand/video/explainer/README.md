@@ -1,12 +1,12 @@
 # The explainer video
 
-A narrated explainer of stretto, 3 minutes 20 seconds long with the current voice-over: ten chapters between the title and an end card, each one diagram on a still stage, built up as the voice names its parts. Its pacing and look follow Auracle's films ([`../PACING.md`](../PACING.md)). It renders to `brand/media/`:
+A narrated explainer of Hoist, 3 minutes 20 seconds long with the current voice-over: ten chapters between the title and an end card, each one diagram on a still stage, built up as the voice names its parts. Its pacing and look follow Auracle's films ([`../PACING.md`](../PACING.md)). It renders to `brand/media/`:
 
 | File | What it is |
 |---|---|
 | `explainer.mp4` | 1920 × 1080, 30 fps, H.264 High with faststart (`h264Args`, tuned below) and AAC sound: the voice and the music bed; 10.9 MB with the current voice-over (it must stay under 20 MB) |
 | `explainer.vtt` | Captions: each line's `text` from `narration.json`, timed by the voice's own words |
-| `explainer-poster.png` | The frame where the agent's one result carries the two reads stretto made, and its turns have closed up from five to three (`window.__poster`) |
+| `explainer-poster.png` | The frame where the agent's one result carries the two reads Hoist made, and its turns have closed up from five to three (`window.__poster`) |
 | `explainer-teaser.gif`, `.webm` | An 8-second loop at 1280 × 720, for the README: a `get_user_details` result comes back with the proxy's own block under it, `--- Also looked up automatically (current results; no need to repeat these calls) ---`, and the two `get_order_details` reads in it; the agent's five turns close up to three. It is drawn only for the teaser: the film opens on its title |
 
 ## Rendering
@@ -46,7 +46,7 @@ Every frame is drawn by `window.__render(t)`, screenshotted by headless Chromium
 | `narration.json` | The script: chapters (`beats`), each with a `lead`, a `tail`, a least length `min`, and its lines: `text` (captions), `say` (what the voice says), `em` (the phrases lit in petrol), `post` (the pause after) |
 | `index.html` | The page: the shared stage (`../stage/`) with this film's chapters |
 | `film.js` | The chapters, from the title to the end card, and the teaser |
-| `../stage/` | What the films share: `style.css` (the dot grid, the layers, the brand's dark palette), `logo.js` (the wordmark's outline, from `brand/logo/stretto-wordmark-dark.svg`), `stage.js` (easing, a seeded generator, and the pieces: cards, chips, arrows, packets, code, typing, bar charts, captions) and `main.js` (the timeline the voice sets, the frame's furniture, and `window.__render`) |
+| `../stage/` | What the films share: `style.css` (the dot grid, the layers, the brand's dark palette), `logo.js` (the wordmark's outline, from `brand/logo/hoist-wordmark-dark.svg`), `stage.js` (easing, a seeded generator, and the pieces: cards, chips, arrows, packets, code, typing, bar charts, captions) and `main.js` (the timeline the voice sets, the frame's furniture, and `window.__render`) |
 | `../film.mjs` | The renderer, for any film on the stage: frames, the sound mix, captions, poster, and this film's teaser |
 
 ## The chapters
@@ -56,14 +56,14 @@ Every frame is drawn by `window.__render(t)`, screenshotted by headless Chromium
 | | `title` | The mark's three bars enter one after another, each before the last has finished, with the music's three entries; the wordmark; "Read ahead of your agent." |
 | 01 | `turns` | The conversation grows on the left; on the right, each LLM turn reads the whole conversation (a bar, longer each turn) and picks one step |
 | 02 | `decided` | The first result's record: the two order ids light, and arrows run to the next two turns, which read them; each is typed out again, one LLM turn each |
-| 03 | `idea` | The agent, `stretto-proxy` and the MCP server. The call goes through; stretto makes the two reads; one result rides back with them in it; the turns close up, five to three; no new tools, the same prompt |
+| 03 | `idea` | The agent, `hoist-mcp` and the MCP server. The call goes through; Hoist makes the two reads; one result rides back with them in it; the turns close up, five to three; no new tools, the same prompt |
 | 04 | `reads` | Some of τ²-bench retail's tools with their read and write marks: a flow may call the reads, not the writes. A detour costs tokens and leaves the state as it was |
-| 05 | `learn` | Recorded sessions; what `stretto learn` counts after each call and where each argument came from, with the counts of `docs/examples/retail-10-sessions.flow.json`; `stretto flow-diff` between five sessions and ten; the replay result for ten of an agent's own sessions |
+| 05 | `learn` | Recorded sessions; what `hoist learn` counts after each call and where each argument came from, with the counts of `docs/examples/retail-10-sessions.flow.json`; `hoist flow-diff` between five sessions and ten; the replay result for ten of an agent's own sessions |
 | 06 | `console` | The console's own screens (`brand/media/console/`): the overview, a served session with the lookups the flow made and why, and a flow's graph at a threshold |
 | 07 | `rule` | The two costs, a turn saved and a detour (live, GLM-5.3: 6,000 and 2,530 input tokens), the line between them at about 0.3, and example lookups on the chance they are used before the next write: those above are made |
 | 08 | `results` | Fewer LLM turns, live on 28 τ²-bench retail and airline tasks: Claude Sonnet 5 20.5%, Claude Haiku 4.5 22.4%, GLM-5.3 27.9%, each with its interval and scope |
 | 09 | `prompt` | Anthropic's sample prompt for parallel tool calls (3.4%, 5.9%, 7.6%, with their intervals; not all of it established) against the prompt plus a flow, for the two Claude models (22.9%, 17.2%) |
-| 10 | `start` | A terminal: `cargo install`, then `stretto init` and the `claude mcp add` line it prints |
+| 10 | `start` | A terminal: `cargo install`, then `hoist init` and the `claude mcp add` line it prints |
 | | `end` | The lockup, the tagline, the docs and the repository, and the music's closing motif |
 
 ## How timing follows the voice
@@ -86,5 +86,5 @@ The page publishes what the renderer needs: `window.__duration`, `__marks` (chap
 ## Notes
 
 - Every number on screen is from `docs/results/claims.md` or `brand/messaging.md`, with its scope beside it. The flow's counts are those of `docs/examples/retail-10-sessions.flow.json`; the chances on the rule's line are marked as illustrative, not measured. The `flow-diff` card is the command's own output for five sessions against ten (`docs/review.md`).
-- The terminal's command has `--domain notes`: `stretto init` requires `--domain` (or `--flow`). Its output is what `stretto init` prints for that command, as the walkthrough recorded it (the shell expands `~/notes` to `/home/me/notes`).
+- The terminal's command has `--domain notes`: `hoist init` requires `--domain` (or `--flow`). Its output is what `hoist init` prints for that command, as the walkthrough recorded it (the shell expands `~/notes` to `/home/me/notes`).
 - The text is sized for a phone, where the video plays 360 to 400 px wide: the captions are 40 px at 1080p, and the labels 17 px or more.

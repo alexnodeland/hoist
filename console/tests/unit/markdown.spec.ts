@@ -24,7 +24,7 @@ describe('markdown from the server', () => {
 
   it('opens links in a new tab without a referrer, and drops javascript: links', () => {
     const html = renderMarkdown(
-      '[privacy](https://github.com/alexnodeland/stretto/blob/main/docs/privacy.md) [x](javascript:alert(1))',
+      '[privacy](https://github.com/alexnodeland/hoist/blob/main/docs/privacy.md) [x](javascript:alert(1))',
     )
     expect(html).toContain('target="_blank"')
     expect(html).toContain('rel="noopener noreferrer"')

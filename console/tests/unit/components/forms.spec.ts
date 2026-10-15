@@ -44,7 +44,7 @@ function form(initial: Partial<ServerModel> = {}, taken: string[] = []) {
       editing: false,
       taken,
       flows: [flow],
-      dataDir: '/home/me/.stretto',
+      dataDir: '/home/me/.hoist',
       saving: false,
       serverError: null,
     },
@@ -91,7 +91,7 @@ describe('the server form', () => {
     })
   })
 
-  it('sets the guards, the judge, stretto_commit and how long sessions are kept', async () => {
+  it('sets the guards, the judge, hoist_commit and how long sessions are kept', async () => {
     // Only retail and airline have guards.
     const shop = form({ name: 'shop', command: 'shop-mcp' })
     expect(shop.find('[data-testid="server-guards"]').attributes('disabled')).toBeDefined()
@@ -102,19 +102,19 @@ describe('the server form', () => {
     await w.find('form').trigger('submit')
     expect(w.text()).toContain('Name the file the host appends the conversation to.')
     expect(w.emitted('submit')).toBeUndefined()
-    await w.find('[data-testid="server-context"]').setValue(' ~/.stretto/context/retail.jsonl ')
+    await w.find('[data-testid="server-context"]').setValue(' ~/.hoist/context/retail.jsonl ')
     await w.find('[data-testid="server-commit"]').setValue(true)
     await w.find('[data-testid="server-retain"]').setValue('30')
     await w.find('form').trigger('submit')
     const [input] = w.emitted('submit')![0] as [ServerInput]
     expect(input).toMatchObject({
       guards: true,
-      judge: { mode: 'enforce', context: '~/.stretto/context/retail.jsonl' },
+      judge: { mode: 'enforce', context: '~/.hoist/context/retail.jsonl' },
       commit: true,
       retain_days: 30,
     })
     expect(w.text()).toContain(
-      '--retain-days 30 --guards --confirm-judge enforce --context ~/.stretto/context/retail.jsonl --commit -- retail-mcp',
+      '--retain-days 30 --guards --confirm-judge enforce --context ~/.hoist/context/retail.jsonl --commit -- retail-mcp',
     )
     // The guards off take the judge with them.
     await w.find('[data-testid="server-guards"]').setValue(false)
@@ -138,15 +138,15 @@ describe('the server form', () => {
         editing: false,
         taken: [],
         flows: [flow, gated],
-        dataDir: '/home/me/.stretto',
+        dataDir: '/home/me/.hoist',
         saving: false,
         serverError: null,
       },
     })
     const select = w.find('select[data-testid="server-flow"]')
-    await select.setValue('~/.stretto/orders.flow.json')
+    await select.setValue('~/.hoist/orders.flow.json')
     expect(w.text()).toContain('The flow has no gate')
-    await select.setValue('~/.stretto/gated.flow.json')
+    await select.setValue('~/.hoist/gated.flow.json')
     expect(w.text()).toContain(
       'The flow hands back once 3 of the agent’s steps in a row average more than 2.50 nats of surprise (learned at the 0.95 quantile).',
     )
@@ -158,7 +158,7 @@ describe('the server form', () => {
     await w.find('form').trigger('submit')
     const [input] = w.emitted('submit')![0] as [ServerInput]
     expect(input.surprise).toEqual({ kind: 'threshold', nats: 4 })
-    expect(w.text()).toContain('--flow ~/.stretto/gated.flow.json --flow-surprise 4 -- orders-mcp')
+    expect(w.text()).toContain('--flow ~/.hoist/gated.flow.json --flow-surprise 4 -- orders-mcp')
     await w.find('[data-testid="server-surprise"]').setValue('off')
     await w.find('form').trigger('submit')
     expect((w.emitted('submit')![1] as [ServerInput])[0].surprise).toEqual({ kind: 'off' })
@@ -176,12 +176,12 @@ describe('the server form', () => {
         editing: false,
         taken: [],
         flows: [known],
-        dataDir: '/home/me/.stretto',
+        dataDir: '/home/me/.hoist',
         saving: false,
         serverError: null,
       },
     })
-    await w.find('select[data-testid="server-flow"]').setValue('~/.stretto/orders.flow.json')
+    await w.find('select[data-testid="server-flow"]').setValue('~/.hoist/orders.flow.json')
     expect(w.find('[data-testid="server-flow-tool-choices"]').exists()).toBe(false)
     await w.find('[data-testid="server-flow-tools-only"]').setValue(true)
     await w.find('form').trigger('submit')
@@ -220,12 +220,12 @@ describe('the server form', () => {
     await w.find('[data-testid="server-listen-addr"]').setValue('localhost')
     expect(w.text()).toContain('An address and a port, such as 127.0.0.1:8931.')
     await w.find('[data-testid="server-listen-addr"]').setValue('0.0.0.0:8931')
-    await w.find('[data-testid="server-listen-token"]').setValue('~/.stretto/proxy-token')
+    await w.find('[data-testid="server-listen-token"]').setValue('~/.hoist/proxy-token')
     await w.find('form').trigger('submit')
     const [input] = w.emitted('submit')![0] as [ServerInput]
-    expect(input.listen).toEqual({ addr: '0.0.0.0:8931', token_file: '~/.stretto/proxy-token' })
+    expect(input.listen).toEqual({ addr: '0.0.0.0:8931', token_file: '~/.hoist/proxy-token' })
     expect(w.text()).toContain(
-      '--listen 0.0.0.0:8931 --listen-token-file ~/.stretto/proxy-token -- orders-mcp',
+      '--listen 0.0.0.0:8931 --listen-token-file ~/.hoist/proxy-token -- orders-mcp',
     )
   })
 
@@ -242,19 +242,19 @@ describe('the server form', () => {
     expect(w.text()).toContain('Serving runs a flow: choose one.')
     const select = w.find('select[data-testid="server-flow"]')
     expect(select.findAll('option').map((o) => o.attributes('value'))).toContain(
-      '~/.stretto/orders.flow.json',
+      '~/.hoist/orders.flow.json',
     )
-    await select.setValue('~/.stretto/orders.flow.json')
+    await select.setValue('~/.hoist/orders.flow.json')
     await w.find('input[placeholder="0.3"]').setValue('0.45')
     await w.find('form').trigger('submit')
     const [input] = w.emitted('submit')![0] as [ServerInput]
     expect(input).toMatchObject({
       mode: 'serve',
-      flow: '~/.stretto/orders.flow.json',
+      flow: '~/.hoist/orders.flow.json',
       threshold: 0.45,
     })
     expect(w.text()).toContain(
-      '--flow ~/.stretto/orders.flow.json --flow-threshold 0.45 -- orders-mcp',
+      '--flow ~/.hoist/orders.flow.json --flow-threshold 0.45 -- orders-mcp',
     )
   })
 

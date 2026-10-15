@@ -1,12 +1,12 @@
 ---
-description: Answers to common questions about stretto - keys, safety, hosts, models, latency, data, and the name.
+description: Answers to common questions about Hoist - keys, safety, hosts, models, latency, data, and the name.
 ---
 
 # FAQ
 
-## Does stretto change my agent's prompt or tools?
+## Does Hoist change my agent's prompt or tools?
 
-No. A flow's lookups arrive inside the results of calls the agent made, as one more text item. The agent's prompt and its tool list are unchanged. The one option that adds a tool, `--commit` (`stretto_commit`, for confirmed writes in one call), also adds a sentence on it to the server's instructions, which hosts put in the prompt. It is off unless you ask for it.
+No. A flow's lookups arrive inside the results of calls the agent made, as one more text item. The agent's prompt and its tool list are unchanged. The one option that adds a tool, `--commit` (`hoist_commit`, for confirmed writes in one call), also adds a sentence on it to the server's instructions, which hosts put in the prompt. It is off unless you ask for it.
 
 ## Do I need an API key?
 
@@ -26,11 +26,11 @@ Deciding took under a millisecond per tool response in the live run (at most 4 m
 
 ## Which hosts and servers does it work with?
 
-Any host that runs MCP servers over stdio, and any MCP server: one run as a command, or one reached over Streamable HTTP with `--upstream`. For Claude Code, Claude Desktop, Cursor and VS Code, `stretto init` prints the configuration ([integrations](/integrations/)). One proxy wraps one server; an agent with several servers needs one proxy for each, and a flow can learn across them ([several servers](/guide/concepts/sessions#several-servers)).
+Any host that runs MCP servers over stdio, and any MCP server: one run as a command, or one reached over Streamable HTTP with `--upstream`. For Claude Code, Claude Desktop, Cursor and VS Code, `hoist init` prints the configuration ([integrations](/integrations/)). One proxy wraps one server; an agent with several servers needs one proxy for each, and a flow can learn across them ([several servers](/guide/concepts/sessions#several-servers)).
 
 ## Is there a UI?
 
-Yes: [the console](/guide/console), `stretto-console`, a web app on your machine over the files stretto writes. It shows each session as a timeline with the lookups the flow made, each flow's graph and review, and your servers with their host configuration and a connection test. It runs the CLI's jobs from the page. It runs from a checkout, or in a container.
+Yes: [the console](/guide/console), `hoist-console`, a web app on your machine over the files Hoist writes. It shows each session as a timeline with the lookups the flow made, each flow's graph and review, and your servers with their host configuration and a connection test. It runs the CLI's jobs from the page. It runs from a checkout, or in a container.
 
 ## Which models does it work with?
 
@@ -46,15 +46,15 @@ Fewer than you might think, if they cover the kinds of request the agent sees. R
 
 ## Does any data leave my machine?
 
-Only to the MCP server the proxy fronts, unless you ask a System-One model: serving with the arbiter, running the confirmation judge, or learning an arbiter (`stretto learn` without `--habit-only`) sends questions, with parts of the conversation and recent results, to Jev. Session logs hold everything the tools read and return, verbatim, so keep them where that data may live ([privacy](/guide/concepts/privacy)).
+Only to the MCP server the proxy fronts, unless you ask a System-One model: serving with the arbiter, running the confirmation judge, or learning an arbiter (`hoist learn` without `--habit-only`) sends questions, with parts of the conversation and recent results, to Jev. Session logs hold everything the tools read and return, verbatim, so keep them where that data may live ([privacy](/guide/concepts/privacy)).
 
 ## Can I use it where there is no user?
 
-Yes: where the agent works through a procedure against the tools with no one to talk to, a whole workflow can be compiled once and run with no model by `stretto-procedure`, which hands back what its outcome check cannot confirm ([procedures](/guide/concepts/procedures)).
+Yes: where the agent works through a procedure against the tools with no one to talk to, a whole workflow can be compiled once and run with no model by `hoist-procedure`, which hands back what its outcome check cannot confirm ([procedures](/guide/concepts/procedures)).
 
 ## Why is it not on crates.io?
 
-It depends on a feature of [fugue](https://github.com/alexnodeland/fugue) (`program`) that is not in a fugue release yet. The crate named `stretto` on crates.io is an unrelated cache library; this project's crates are named `stretto-*`. Install from source until the first release is tagged; from then on, each release also ships binaries, install scripts and a container image ([installation](/guide/installation)).
+It depends on a feature of [fugue](https://github.com/alexnodeland/fugue) (`program`) that is not in a fugue release yet. The crate named `hoist` on crates.io is an unrelated tool; this project's crates are named `hoist-*`, and exist there only as empty 0.0.0 placeholders that hold their names. Install from source until the first release is tagged; from then on, each release also ships binaries, install scripts and a container image ([installation](/guide/installation)).
 
 ## What are fugue and Jev?
 
@@ -62,4 +62,4 @@ It depends on a feature of [fugue](https://github.com/alexnodeland/fugue) (`prog
 
 ## Why the name?
 
-In a fugue, a *stretto* is where entries of the subject overlap and compress. stretto does that to an agent's tool calls.
+To hoist is to move work earlier than where it was written. Hoist makes the reads an agent would make next before it asks for them.

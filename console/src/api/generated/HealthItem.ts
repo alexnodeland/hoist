@@ -2,6 +2,6 @@
 import type { HealthLevel } from "./HealthLevel";
 
 /**
- * A check, as `stretto doctor` words its own.
+ * A check, as `hoist doctor` words its own.
  */
 export type HealthItem = { level: HealthLevel, message: string, };

@@ -185,7 +185,7 @@ async function remove() {
           <UiBadge
             v-if="summary.stage?.staged"
             tone="dashed"
-            title="Learned by stretto stage: commit it on the Staged tab"
+            title="Learned by hoist stage: commit it on the Staged tab"
             >staged</UiBadge
           >
           <UiBadge
@@ -198,7 +198,7 @@ async function remove() {
       </template>
       <p v-if="summary" class="sub">
         Domain <span class="mono">{{ summary.domain }}</span
-        >. Learned by stretto {{ summary.stretto_version }} from
+        >. Learned by Hoist {{ summary.hoist_version }} from
         {{ plural(summary.habit_episodes, 'session') }} of
         {{ summary.sources.join(', ') || 'no named source' }}, on
         {{ formatDateTime(summary.compiled_unix_ms) }}. {{ deciderText }}
@@ -210,8 +210,8 @@ async function remove() {
           <RouterLink :to="{ name: 'flow', params: { key: summary.stage.other } }" class="mono">{{
             summary.stage.other
           }}</RouterLink></template
-        >: <span class="mono">stretto stage</span> learns it as sessions arrive, and a commit makes
-        it the committed flow.
+        >: <span class="mono">hoist stage</span> learns it as sessions arrive, and a commit makes it
+        the committed flow.
       </p>
       <template #actions>
         <UiButton
@@ -269,7 +269,7 @@ async function remove() {
       <div v-if="drift?.alarm" class="notice warn" role="status" data-testid="drift-alarm">
         <Siren :size="16" :stroke-width="2" aria-hidden="true" />
         <span
-          >The agent may have changed under this flow: stretto drift sounded its alarm on
+          >The agent may have changed under this flow: hoist drift sounded its alarm on
           {{ formatDateTime(drift.finished_unix_ms)
           }}<template v-if="drift.since !== null"
             >, with a change likeliest {{ plural(drift.since, 'session') }} ago<template
@@ -409,7 +409,7 @@ async function remove() {
             <UiCard
               v-if="detail?.promotion"
               title="Promotion"
-              caption="The bar stretto promote held each site to"
+              caption="The bar hoist promote held each site to"
             >
               <dl class="kv">
                 <dt>Threshold</dt>
@@ -442,7 +442,7 @@ async function remove() {
         <UiCard
           v-else-if="tab === 'review'"
           title="Review"
-          :caption="`stretto flow-show, at a threshold of ${asked.toFixed(2)}`"
+          :caption="`hoist flow-show, at a threshold of ${asked.toFixed(2)}`"
         >
           <MarkdownView v-if="detail" :text="detail.review_markdown" />
           <UiSkeleton v-else :lines="10" />
@@ -514,7 +514,7 @@ async function remove() {
 
 .fact {
   padding: 14px 18px;
-  border-right: 1px solid var(--stretto-border);
+  border-right: 1px solid var(--hoist-border);
   min-width: 0;
 }
 
@@ -525,7 +525,7 @@ async function remove() {
 .fact-label {
   font-size: 12.5px;
   font-weight: 500;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .fact-value {
@@ -538,7 +538,7 @@ async function remove() {
 .fact-of {
   font-size: 13px;
   font-weight: 500;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
   letter-spacing: 0;
 }
 
@@ -559,7 +559,7 @@ async function remove() {
 .fact-hint {
   margin-top: 2px;
   font-size: 11.5px;
-  color: var(--stretto-text-subtle);
+  color: var(--hoist-text-subtle);
   overflow-wrap: anywhere;
 }
 
@@ -569,17 +569,17 @@ async function remove() {
 
 .acting {
   font-size: 13.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .acting svg {
   margin-right: 6px;
   vertical-align: -3px;
-  color: var(--stretto-accent-graphic);
+  color: var(--hoist-accent-graphic);
 }
 
 .acting strong {
-  color: var(--stretto-text);
+  color: var(--hoist-text);
   font-weight: 600;
 }
 
@@ -589,7 +589,7 @@ async function remove() {
   gap: 6px 18px;
   list-style: none;
   font-size: 12.5px;
-  color: var(--stretto-text-muted);
+  color: var(--hoist-text-muted);
 }
 
 .graph-legend li {
@@ -602,28 +602,28 @@ async function remove() {
   width: 22px;
   height: 3px;
   border-radius: 2px;
-  background: var(--stretto-border-strong);
+  background: var(--hoist-border-strong);
 }
 
 .lg-line.acts {
-  background: var(--stretto-chart-accent);
+  background: var(--hoist-chart-accent);
 }
 
 .lg-width {
   width: 22px;
   height: 8px;
-  background: linear-gradient(to bottom right, transparent 45%, var(--stretto-border-strong) 45%);
+  background: linear-gradient(to bottom right, transparent 45%, var(--hoist-border-strong) 45%);
   border-radius: 1px;
 }
 
 .lg-pill {
   padding: 0 6px;
   border-radius: 999px;
-  border: 1px solid var(--stretto-border);
-  background: var(--stretto-surface);
+  border: 1px solid var(--hoist-border);
+  background: var(--hoist-surface);
   font-size: 11px;
   font-weight: 600;
-  color: var(--stretto-text);
+  color: var(--hoist-text);
 }
 
 .two {
@@ -649,7 +649,7 @@ async function remove() {
   }
 
   .fact:nth-child(-n + 2) {
-    border-bottom: 1px solid var(--stretto-border);
+    border-bottom: 1px solid var(--hoist-border);
   }
 
   .two {

@@ -4,7 +4,7 @@ test('settings show the data dir, the installation, access and the theme', async
   await page.goto('/settings')
   await expect(page.getByText(/test-results\/real\/home/).first()).toBeVisible()
   await expect(page.getByText('Session logs').first()).toBeVisible()
-  await expect(page.getByText(/\/stretto-proxy$/).first()).toBeVisible()
+  await expect(page.getByText(/\/hoist-mcp$/).first()).toBeVisible()
   await expect(page.getByText('--no-auth')).toBeVisible()
   await page.getByRole('radio', { name: 'Dark' }).click()
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')

@@ -1,4 +1,4 @@
-% Figure 3: the two regimes in stretto (the Mermaid diagram of paper/stretto.md, §2.6).
+% Figure 3: the two regimes in Hoist (the Mermaid diagram of paper/hoist.md, §2.6).
 \begin{tikzpicture}[
   font=\sffamily\footnotesize,
   node distance=9mm and 12mm,
@@ -14,14 +14,14 @@
 ]
 % A user is present.
 \node[box] (H) {agent host (LLM)};
-\node[box, below=of H] (P) {\texttt{stretto-proxy}\\speculator};
+\node[box, below=of H] (P) {\texttt{hoist-mcp}\\speculator};
 \node[box, below=of P] (S1) {MCP server};
 \node[store, right=16mm of H, yshift=-3mm] (R) {sessions};
 \node[file, right=16mm of S1, yshift=3mm] (F) {flow IR};
 \draw[both] (H) -- node[lab]{MCP} (P);
 \draw[both] (P) -- node[lab]{MCP} (S1);
 \draw[arr] (P.north east) -- node[lab, sloped, above=1pt, fill=none]{records} (R.south west);
-\draw[arr] (R) -- node[lab, right=1pt, fill=none, align=left] (learn) {\texttt{stretto learn}:\\counts} (F);
+\draw[arr] (R) -- node[lab, right=1pt, fill=none, align=left] (learn) {\texttt{hoist learn}:\\counts} (F);
 \draw[arr] (F.north west) -- (P.south east);
 \begin{scope}[on background layer]
   \node[panel, fit=(H)(S1)(R)(F)(learn)] (L) {};
@@ -30,7 +30,7 @@
 % No user speaks.
 \begin{scope}[xshift=86mm]
   \node[box] (T) {ticket};
-  \node[box, below=of T] (Q) {\texttt{stretto-procedure}};
+  \node[box, below=of T] (Q) {\texttt{hoist-procedure}};
   \node[box, below=of Q] (S2) {MCP server};
   \node[file, right=10mm of T] (C) {procedure IR};
   \node[box, right=21mm of Q] (M) {model};
