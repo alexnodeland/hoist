@@ -531,7 +531,9 @@ pub fn write_new(path: &Path, text: &str, force: bool) -> Result<()> {
         options.create_new(true);
     }
     let mut file = match options.open(path) {
-        Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => bail!(
+        // With --force an existing file is replaced, so AlreadyExists is a directory in the way, which
+        // `--force` would not fix: it falls through to the plain write error below.
+        Err(e) if !force && e.kind() == std::io::ErrorKind::AlreadyExists => bail!(
             "{} exists: merge the configuration into it by hand, or pass --force to replace the \
              whole file, with any other servers in it",
             path.display()

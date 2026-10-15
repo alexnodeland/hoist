@@ -528,10 +528,7 @@ fn turns(log: &McpLog, calls: &mut [Pending], context: &[ContextMessage]) -> Vec
             .iter()
             .filter(|e| {
                 e.from != Peer::Proxy
-                    || !e
-                        .message
-                        .as_ref()
-                        .is_some_and(|m| m.get("method").is_some())
+                    || e.message.as_ref().is_none_or(|m| m.get("method").is_none())
             })
             .cloned()
             .collect(),
