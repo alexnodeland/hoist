@@ -147,7 +147,7 @@ def lookup(path: Path) -> None:
 
     # (a) Two lanes: the same episode without and with the speculator.
     text(out, 6, 16, "(a) A lookup spares an LLM turn", weight="700", size=13)
-    lanes = [(6, "Without hoist"), (246, "With hoist")]
+    lanes = [(6, "Without Hoist"), (246, "With Hoist")]
     row = 27
 
     def turn(x: float, y: float, n: int, call: str, sans: bool = False) -> None:

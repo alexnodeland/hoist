@@ -131,8 +131,7 @@
 }]
 \thispagestyle{plain}
 
-\hypertarget{introduction}{%
-\section{Introduction}\label{introduction}}
+\section{Introduction}\label{introduction}
 
 Tool-using agents spend most of their cost in the LLM turns that decide the next call. Work that reuses traces to cut that cost either keeps the model in the loop (workflow memory \citep{wang2025awm}, induced skills \citep{wang2025asi, zheng2025skillweaver}) or compiles traces into programs that run without it \citep{elyadouni2026tracecompiler, trooskens2026compiledai, li2026preact}; work that speculates on the next action overlaps it with the model's own latency \citep{ye2026speculativeactions, liu2026macrocommit}. Two questions sit under all of these: \emph{which} of an agent's decisions a program learned from traces can take over at all, and \emph{when} acting on a prediction pays.
 
@@ -168,18 +167,15 @@ Contributions:
 
 Both run in Hoist: an MCP proxy that serves the speculator between any agent and any MCP server, and a runtime that executes a compiled procedure against one. And because the replay rule counts only what a recorded call answered, a speculator can be replayed from a benchmark's published trajectories alone, with no environment: every benchmark that publishes its agents' runs is a test set, and we use six more (§3).
 
-\hypertarget{model}{%
-\section{Model}\label{model}}
+\section{Model}\label{model}
 
-\hypertarget{episodes-reads-and-writes}{%
-\subsection{Episodes, reads and writes}\label{episodes-reads-and-writes}}
+\subsection{Episodes, reads and writes}\label{episodes-reads-and-writes}
 
 An episode is a sequence of LLM turns. In turn \(k\) the agent emits either a message to the user or a set of calls \(C_k\), each \(c = (t, a)\) a tool \(t\) with arguments \(a\), whose results the environment returns before the next turn. Tools are \emph{reads} \(\mathcal R\), which leave the environment's state unchanged, or \emph{writes} \(\mathcal W\). We write \(x_k\) for the \emph{tool state} before turn \(k\) (every call and result so far) and \(w_k\) for the user's words so far.
 
 A turn is \emph{decided by the environment} when the agent's choice depends on \(x_k\) alone: its policy satisfies \(\pi(\cdot \mid x_k, w_k) = \pi(\cdot \mid x_k)\). A program learned from traces can represent such decisions and no others, since traces show it \(x\) and, for the user's words, only their surface.
 
-\hypertarget{speculation-and-its-replay-semantics}{%
-\subsection{Speculation and its replay semantics}\label{speculation-and-its-replay-semantics}}
+\subsection{Speculation and its replay semantics}\label{speculation-and-its-replay-semantics}
 
 A \emph{speculator} \(\sigma\) maps a tool state to a set of reads with bound arguments, \(\sigma(x) \subseteq \mathcal R\), which it makes after a tool response, before the agent's next turn, and whose results it appends to that response. A read made at time \(s\) \emph{answers} a later call \(c\) of the agent at time \(u > s\) if it is the same call and returned what \(c\) would return at \(u\); each read answers at most one call. With no write (the agent's or the user's) in \((s, u)\) it always does, since reads leave the state unchanged. A turn is \emph{saved} when every call in it is answered; a read that answers no call is a \emph{detour}.
 
@@ -195,8 +191,7 @@ So a speculator can change an episode's outcome only through the agent's context
 
 We measure this ceiling on recorded episodes (§4.1). A read can also answer across a write that left its result unchanged, so a replay may save turns outside it: at least 1.5\% of the turns the use-before-write speculator saves in §4.2 are, and 0.5\% of the next-step speculator's.
 
-\hypertarget{the-optimal-speculator-decomposes}{%
-\subsection{The optimal speculator decomposes}\label{the-optimal-speculator-decomposes}}
+\subsection{The optimal speculator decomposes}\label{the-optimal-speculator-decomposes}
 
 At a decision point with state \(x\), let \(U(x)\) be the multiset of reads the agent would make, absent the speculator, before the next write, the agent's or the user's: the reads a lookup made now is sure to answer. For a candidate read \(c\), answering one of the agent's calls is worth \(\beta_c\) (the LLM turn it spares, and the call's tokens), and a detour costs \(\delta_c\) (its result's tokens in every later turn's context, and the tool's own cost). We take these values to be additive over calls. That is exact when the agent makes one call per turn, as in 84\% of the turns in the ceiling (§4.1); in a turn of parallel reads the turn is spared only when all are answered, so their values are complements, and the sum below is a first-order approximation.
 
@@ -221,8 +216,7 @@ Three consequences follow. First, the next-step probability is the wrong quantit
 
 The contrast with speculative decoding is the point. A drafted token is wasted when any token before it is rejected, because a sequence must match as a whole, so draft trees rank tokens by the product of confidences along their path \citep{li2024eagle2, huang2024specdecpp}. Reads form a set: each is used or not on its own, whenever the agent gets to it, and the path product is the wrong criterion.
 
-\hypertarget{estimating-the-probability-of-use-by-counting}{%
-\subsection{Estimating the probability of use by counting}\label{estimating-the-probability-of-use-by-counting}}
+\subsection{Estimating the probability of use by counting}\label{estimating-the-probability-of-use-by-counting}
 
 We factor a candidate read's probability of use into its tool and its arguments, \(q_c \approx r(t \mid h)\,\rho(a \mid t, x)\), and estimate both from other agents' traces by conjugate updating.
 
@@ -234,15 +228,13 @@ The speculator makes the reads that clear \(\theta\) one at a time, each conditi
 
 \input{algorithm1}
 
-\hypertarget{compile-once-where-no-user-speaks}{%
-\subsection{Compile once where no user speaks}\label{compile-once-where-no-user-speaks}}
+\subsection{Compile once where no user speaks}\label{compile-once-where-no-user-speaks}
 
 Where the environment decides every branch, we compile the policy itself. At each \emph{site} (the tool that just returned, or the start), a decision tree over the tool state's features predicts the next call, as decision mining learns the branches of a process from its logs \citep{rozinat2006decision} (ID3, depth by cross-validation over tasks). Its actions are whole calls, whose identifiers are learned as \emph{provenance}: the path of the result that held the value (with, in a list of records, the fields that set the chosen record apart), or the shape it had in the task's ticket. They are bound again at run time from that run's results. A guard forbids repeating a read before a write, or a write. The run stops when the tree says so, and then checks the ticket's stated outcome with a read. It hands the task to a model only when that check fails, with its calls and their results as the model's context: a \emph{cascade}, in which, as in model cascades \citep{chen2023frugalgpt, madaan2024automix}, the expensive model sees only what a cheap check cannot confirm. The procedure is data, a file of trees, bindings and checks, which a small runtime executes against any MCP server.
 
-\hypertarget{the-system}{%
-\subsection{The system}\label{the-system}}
+\subsection{The system}\label{the-system}
 
-Hoist implements both regimes for any agent and any MCP server (Figure 3). \texttt{hoist-mcp} sits between the agent's host and the server as a stdio MCP server, forwards every message, records sessions, and, after each of the agent's calls, runs the speculator: the lookups it makes ride in the same tool result, so the agent sees them with no new tool and no change to its prompt. The speculator is a file, the flow IR: the counts of §2.4, the lookups each site may make, and where each argument comes from. \texttt{Hoist\ learn} writes it from recorded sessions, and since every estimate is a posterior predictive of conjugate counts, learning from another session adds its counts; the flow can be reviewed as a diff, shadowed, and promoted site by site. Its run after each call is a probabilistic program \citep{nodeland2026fugue} whose three interpreters simulate it, execute it against the server, and score a recorded session under it. A compiled procedure is also a file, the procedure IR, and \texttt{hoist-procedure} runs it against a server and returns its calls and verdict. Nothing in either file is a model weight: a flow or a procedure is data a person can read.
+Hoist implements both regimes for any agent and any MCP server (Figure 3). \texttt{hoist-mcp} sits between the agent's host and the server as a stdio MCP server, forwards every message, records sessions, and, after each of the agent's calls, runs the speculator: the lookups it makes ride in the same tool result, so the agent sees them with no new tool and no change to its prompt. The speculator is a file, the flow IR: the counts of §2.4, the lookups each site may make, and where each argument comes from. \texttt{hoist\ learn} writes it from recorded sessions, and since every estimate is a posterior predictive of conjugate counts, learning from another session adds its counts; the flow can be reviewed as a diff, shadowed, and promoted site by site. Its run after each call is a probabilistic program \citep{nodeland2026fugue} whose three interpreters simulate it, execute it against the server, and score a recorded session under it. A compiled procedure is also a file, the procedure IR, and \texttt{hoist-procedure} runs it against a server and returns its calls and verdict. Nothing in either file is a model weight: a flow or a procedure is data a person can read.
 
 Serving is guarded where a deployment needs it, from tools a flow may call to shadow mode and pseudonymized sessions (Appendix D). Deciding takes under a millisecond per tool response (§4.4).
 
@@ -253,8 +245,7 @@ Serving is guarded where a deployment needs it, from tools a flow may call to sh
 \label{fig:regimes}
 \end{figure*}
 
-\hypertarget{setup}{%
-\section{Setup}\label{setup}}
+\section{Setup}\label{setup}
 
 \runin{Tasks.} τ²-bench \citep{barres2025tau2} has three customer-service domains with a simulated user: retail (114 tasks), airline (50) and telecom (114), where in telecom the user also operates a phone, and a solo mode of telecom in which the agent operates it and no user speaks. We use its train/test split (74/40, 30/20, 74/40) throughout: nothing is learned from a test task.
 
@@ -272,11 +263,9 @@ Serving is guarded where a deployment needs it, from tools a flow may call to sh
 
 \runin{Costs.} A detour's cost \(\delta\) and a saved turn's value \(\beta\) are in input tokens. On the live paired run the flow's 17 detours carried 43,000 input tokens over the rest of their episodes, and its 260 saved turns saved 1.56M: \(\beta \approx 6{,}000\), \(\delta \approx 2{,}530\) and \(\theta^\star = \delta/(\beta+\delta) \approx 0.30\). Counted in the recorded episodes (Appendix B), retail's costs give \(\theta^\star = 0.298\), what the live run measured; airline's and telecom's, whose contexts are longer and detours shorter, 0.13 and 0.12; solo telecom's 0.06. Utilities are at each domain's own costs.
 
-\hypertarget{results}{%
-\section{Results}\label{results}}
+\section{Results}\label{results}
 
-\hypertarget{what-decides-an-agents-turns}{%
-\subsection{What decides an agent's turns}\label{what-decides-an-agents-turns}}
+\subsection{What decides an agent's turns}\label{what-decides-an-agents-turns}
 
 Over 39,298 LLM turns of nine agents' test episodes (§3), 46.8\% reply to the user, 12.2\% write and 41.0\% only read (Table 1, Figure 4). A speculator that binds arguments from the tool state could have saved at most the reads whose every argument sits in an earlier result, after a tool response since the last write: 29.0\% of all turns (retail 34.2\%, airline 29.5\%, telecom 24.7\%), from 16\% to 41\% by agent and domain. Allowing an argument to be a value the user wrote raises the ceiling by 0.7 points. In 84\% of the turns in the ceiling the agent made one call (78\% in airline, 87\% in telecom); the rest are parallel reads. The rest of the turns, seven in ten, stay with the model: they reply, write, or read what only the user's words can name.
 
@@ -338,8 +327,7 @@ MCPMark (4 servers) & 9 & 6,531 & 5.1\% & 50.9\% & 43.9\% & 7.0\% {[}2.5--10.9{]
 \label{fig:ceilings}
 \end{figure*}
 
-\hypertarget{speculation-in-replay}{%
-\subsection{Speculation in replay}\label{speculation-in-replay}}
+\subsection{Speculation in replay}\label{speculation-in-replay}
 
 \runin{The next-step probability understates the probability of use.} Replays log every lookup a speculator weighed with whether the agent made that call before its next write. After a user's details, GLM-5 and Claude Sonnet 4.5 read an order \emph{next} with probability 0.64 under the habit, but read it before their next write 94\% of the time; after an order, a product comes next with probability 0.08, but before the next write 38\% of the time, once the agent has told the user what the order holds. Over all lookups the share used ran far above the habit's score: 0.94 of lookups scored 0.4--0.5 were used, 0.97 of those scored 0.5--0.6, and 0.48 of those scored 0.05--0.10 (GLM-5, retail). Counting the right event (§2.4) lowers the calibration error and the Brier score in every domain, each interval excluding zero, and ranks lookups better everywhere but telecom, where the two rank alike (Table 2, Figure 6).
 
@@ -448,8 +436,7 @@ DTap-Bench legal, finance and research, own sessions & 3.3\% & 2.7\% & +0.54 {[}
 
 \runin{Acting at once.} Of the lookups the use-before-write speculator made at \(\theta = 0.3\) that the agent then used, 96.5\% in retail, 93.6\% in airline and 90.8\% in telecom came before the speculator's next decision, when no later decision could have made them in time. Waiting, Proposition 4's second rule, has little to gain, and estimating what it needs from other agents' traces gives the gain back (Appendix C).
 
-\hypertarget{learning-from-few-sessions}{%
-\subsection{Learning from few sessions}\label{learning-from-few-sessions}}
+\subsection{Learning from few sessions}\label{learning-from-few-sessions}
 
 A deployment learns from the sessions it serves (§3). From ten of an agent's own sessions, the speculator saves 27.5\% of its retail turns and 14.9\% of its airline turns, 96\% and 93\% of what it saves from all of them; telecom needs about thirty (80\% of the final savings at ten, 97\% at thirty) (Table 4, Figure 9). Past that, more sessions buy fewer detours, not more saved turns: from 0.64 to 0.52 per episode in retail and from 0.74 to 0.40 in airline. Where agents act alike, other agents' sessions teach as much as the agent's own: in retail and airline the two protocols stay within two points of each other at every \(n\). Where they do not, only the agent's own sessions teach its habits: in telecom, a hundred of an agent's own sessions save 15.2\% of its turns, more than all 1,184 of the other agents' (12.6\%), and more for each of the three agents; for GLM-5, 8.8\% against 3.4\%.
 
@@ -488,8 +475,7 @@ Telecom & the agent's own sessions & 12.4\% · 0.56 & 15.1\% · 1.17 & 15.2\% ·
 
 \runin{Which sessions come first.} Table 4 averages three orders. Twenty random draws of five and of ten sessions per agent and domain, for Qwen3.5-397B, Claude Sonnet 4.5 and Claude Opus 4.5, show how much a start depends on which sessions it sees. They were run with the earlier flow's deciders \citep{nodeland2026rfc}. With the next-step habit alone, one five-session start in eight saved less than half of what every training session gives (16 of 120), and one ten-session start in 120 did. The earlier flow's arbiter, which weighs an LLM's answers about the state, gave two different starts. Fitted elsewhere and shipped, it lifted 13 of the 17 narrow starts above half, at no more than 3.3 points of the median. Fitted on the draw's own sessions, it saved under half in 27 of the 120 five-session draws.
 
-\hypertarget{live}{%
-\subsection{Live}\label{live}}
+\subsection{Live}\label{live}
 
 Live, the speculator runs in \texttt{hoist-mcp} between the agent and the tools, over MCP: GLM-5.3 in Claude Code on τ²-bench's own prompts, with GLM-5.3 as the user. The earlier flow, which weighs the habit's next-step probability with an LLM's answers about the state \citep{nodeland2026rfc}, cut LLM turns by 25.5\% (95\% CI 20.5--30.4\%) over 80 paired retail and airline tasks, with 71 passed without it and 70 with it. The speculator of §2.4, deciding on the probability of use before the next write at \(\theta = 0.3\), the live-measured \(\theta^\star\), and asking no model, ran on 20 retail and 8 airline test tasks drawn at random from those 80, against the same recorded baseline (Table 5). It cut turns by 27.9\% (19.1--35.9\%) over the 28, where the earlier flow had cut 23.0\% on the same tasks, and input tokens by 21.9\% (9.9--32.9\%); 23 of the 28 took fewer turns. The replay's assumption held throughout: of the speculator's 101 lookups, the agent made none again before the next write. Deciding took the speculator under a millisecond per tool response (at most 4 ms); its lookups add only the tools' own latency, where an LLM turn takes seconds. Figure 10 gathers this section's comparisons of the speculator and of the prompt.
 
@@ -598,8 +584,7 @@ BFCL, 20 held-out tasks & 40 & 444 → 451 & +1.6\% {[}−4.2, +6.3{]} & 7 / 14 
 \end{adjustbox}
 \end{table*}
 
-\hypertarget{compiling-where-no-user-speaks}{%
-\subsection{Compiling where no user speaks}\label{compiling-where-no-user-speaks}}
+\subsection{Compiling where no user speaks}\label{compiling-where-no-user-speaks}
 
 In telecom's solo mode the agent operates the phone itself, and every branch follows a tool result. The procedure compiled from the successful training episodes of four solo runs (GPT-4.1 and o4-mini, each under the written manual and the written workflow policy; 730 episodes of 74 tasks) passes 35 of the 40 held-out tasks with no model, where the agents it was compiled from pass 49--78\% (Table 6, Figure 11). Its identifiers bind for customers no trace saw: renamed throughout the database it passes the same 35, and on another customer's account 35, where constants pass 16 and 19. Its own check of the ticket's stated outcome resolves 25 runs, transfers 11 to a person as the policy directs, and hands back 4, all four failures; it misses one failure, a run it judged resolved.
 
@@ -635,8 +620,7 @@ The procedure is a file Hoist runs: \texttt{hoist-procedure} executes it against
 
 \runin{Tickets no trace showed.} Besides its 114 base tasks, τ²-bench's telecom set holds 2,171 tickets that combine the same faults, one to nine at a time, in combinations no base task has. With no model the procedure passes 1,831 of them (84.3\%). For a customer renamed throughout it passes the same tickets run for run, where constants pass 363. Its check hands back 334 tickets, all of them failures, and misses 5, all lines suspended at a contract's end. Claude Haiku 4.5 alone passed 8 of 20 drawn at random, at 21.5 LLM turns a ticket. Taking over 20 of the hand-backs it resolved 19, at 5.2 turns each, so the cascade projects to 99.0\% of the 2,171 at 0.80 LLM turns a ticket.
 
-\hypertarget{related-work}{%
-\section{Related work}\label{related-work}}
+\section{Related work}\label{related-work}
 
 \runin{Reusing traces with the model in the loop.} Workflow memory \citep{wang2025awm} and induced skills \citep{wang2025asi, prabhu2025walt, zheng2025skillweaver} give the agent text or callable routines mined from its own successes; they save 10--27\% of steps on web tasks, and AWM's workflows offered as callable actions were used in 18.5\% of tasks. Agentic plan caching reuses plan templates from earlier runs, matched by keywords and adapted to the new task by a small model, and halves the cost of several agent applications \citep{zhang2025apc}. They change what the model sees. We change neither the prompt nor the tool list: the speculator's reads arrive inside results the agent asked for.
 
@@ -648,8 +632,7 @@ The procedure is a file Hoist runs: \texttt{hoist-procedure} executes it against
 
 \runin{Counting.} The habit is MacKay and Peto's hierarchical Dirichlet language model over abstract steps \citep{mackay1995hierarchical}; the reach estimator applies the same back-off to a Bernoulli event per read; bindings are Beta--binomial rates. All updates are conjugate, so learning from a new session is adding its counts, and other agents' sessions enter as a prior whose weight is a choice (§4.3).
 
-\hypertarget{limitations}{%
-\section{Limitations}\label{limitations}}
+\section{Limitations}\label{limitations}
 
 \runin{Benchmarks, not traffic.} The evidence spans seven benchmarks: τ²-bench, where the speculator also ran against the environment and live, and six more replayed from 89 more agents' published trajectories, in more than twenty domains and three agent SDKs, with four real MCP servers among them. They agree on what sets the ceiling, where arguments come from: almost nothing where calls act on a screen or order tests, 47\% of turns where one listing names every later read. And the speculator's lead holds where there is something to take. On real MCP servers there is little: agents write their own queries, and where they walk Notion's pages block by block, a speculator cannot tell which block comes next. Two limits remain. Every task set was written by a benchmark's authors for coverage, not sampled from a deployment's traffic: a deployment with a heavy head of common requests should compile more, and one with a long tail less. And the evidence is deepest on τ²-bench: only there did the speculator run against an environment with a simulated user, and live at scale. On AgentDojo and BFCL it ran live with two agents, once per arm (§4.4); elsewhere it is replayed from the record, which counts savings conservatively and detours from below, for agents that never ran with a speculator.
 
@@ -673,8 +656,7 @@ The procedure is a file Hoist runs: \texttt{hoist-procedure} executes it against
 
 \appendix
 
-\hypertarget{proofs}{%
-\section{Proofs}\label{proofs}}
+\section{Proofs}\label{proofs}
 
 \runin{Proposition 1.} \emph{Proof.} Reads do not change the state, so the speculator's reads do not. An answered call's result is, by the definition of answering, what the call would have returned itself. The writes, their order and the states they act on are therefore unchanged. ∎
 
@@ -682,8 +664,7 @@ The procedure is a file Hoist runs: \texttt{hoist-procedure} executes it against
 
 \runin{Proposition 4.} \emph{Proof.} Drop the subscripts. Making \(c\) now is worth \(A = (\beta+\delta)(q-\theta^\star)\). If nothing more is learned, the next decision faces \(q' = (q-n)/(1-n)\) whenever \(c\) has not been called by then, so waiting, then acting if it pays, is worth \((1-n)\max\{0,(\beta+\delta)(q'-\theta^\star)\} = \max\{0, A-n\beta\}\), since \((\beta+\delta)(1-\theta^\star) = \beta\). That is at most \(A\) exactly when \(A \ge 0\); and as \(q' \le q\), a read not worth making now is not worth making later. If whether the agent will call \(c\) is learned, waiting is worth \(\beta(q-n)\), which is at most \(A\) exactly when \(n\beta \ge (1-q)\delta\); with \(n \le q\), that gives \(q\beta \ge (1-q)\delta\). Information has non-negative value, so with partial information the value of waiting lies between these two. ∎
 
-\hypertarget{costs-and-the-threshold-sweep}{%
-\section{Costs, and the threshold sweep}\label{costs-and-the-threshold-sweep}}
+\section{Costs, and the threshold sweep}\label{costs-and-the-threshold-sweep}
 
 Both costs can be counted from recorded episodes, in each agent's own input tokens: \(\beta\) as the input tokens of a turn in the ceiling, plus its calls' tokens over the turns after it, and \(\delta\) as a detour's result tokens times the turns left after the result that prompted it, over the detours a speculator makes in replay. Pooled over the eight agents whose episodes report tokens, retail's count gives \(\beta = 5{,}820\) and \(\delta = 2{,}470\), so \(\theta^\star = 0.298\), what the live run measured. Airline's and telecom's contexts are longer and their detours shorter: \(\theta^\star = 0.13\) (\(\beta = 7{,}050\), \(\delta = 1{,}020\)) and \(0.12\) (\(8{,}930\) and \(1{,}180\)); solo telecom's is \(0.06\).
 
@@ -693,13 +674,11 @@ Swept over thresholds (Figure 7) and priced at each domain's counted costs, the 
 
 \runin{Per decision.} Proposition 3 holds per read, and both costs can be counted per decision: \(\delta_c(x)\) as the looked-up tool's mean result tokens times the LLM turns left, and \(\beta(x)\) as the next turn's input tokens plus the call's tokens over the turns after it. We evaluate the rule \(q_c \ge \delta_c(x)/(\beta(x)+\delta_c(x))\) off-policy on the logged decisions of use-before-write replays at \(\theta = 0.1\), for the eight agents whose episodes report tokens. Each option is labelled with its outcome, and a rule is credited along each logged chain of lookups until it departs from the logged one. At flat thresholds this reproduces the sweep's turns saved to within 5\% on average over 36 replays. Against each domain's \(\theta^\star\), the counted utility changes by −15\% in retail (every agent, −11\% to −19\%), +7\% in airline and +10\% in telecom (\texttt{scripts/per\_decision.py}). The rule raises the threshold early, where a detour is carried longest, and lowers it late. In retail, raised early, it drops the lookups of an order's products, which the speculator scores 0.33 and the agents used 64\% of the time. In telecom it spares the agents that use fewer lookups than scored (GPT-5.2, +57\% and +102\%). In airline, lowered late, it makes five times the detours, each cheap. A threshold per decision is only as good as each score where it is priced; the average threshold forgives a score that is off where the costs are extreme. Recalibrating each site's score by the use counted there in the other half of the agent's test tasks, with the model's score as a prior of 40 lookups, shrinks retail's loss to 3.5\% and leaves the threshold per decision within 5\% of \(\theta^\star\) in every domain (with a prior of 10, it overfits airline's twenty tasks).
 
-\hypertarget{acting-at-once}{%
-\section{Acting at once}\label{acting-at-once}}
+\section{Acting at once}\label{acting-at-once}
 
 Of the lookups the use-before-write speculator made at \(\theta = 0.3\) that the agent then used, 96.5\% in retail, 93.6\% in airline and 90.8\% in telecom came before the speculator's next decision, when no later decision could have made them in time (from 79\% to 99.8\% by agent). In solo telecom 70\% did, and about half of the rest were used after one of the agent's own actions on the phone had left the record unchanged, across a write that Proposition 3 does not look past. Waiting has little to gain, and estimating what the second rule of Proposition 4 needs is harder than it looks. Counted as the call that came next in other agents' traces, \(n_c\) makes a speculator that saves exactly what the next-step speculator saves in retail (26.1\% of turns, against 29.6\% acting at once), is worth less than either in telecom, and trails acting at once in every domain but airline, where the two make the same lookups: per episode, 1.6 thousand tokens lower in retail (95\% CI 0.8--2.5), 0.7 in telecom (0.4--1.0) and 1.2 in solo telecom (0.2--2.1). What comes before the speculator's next decision depends on which calls the speculator itself answers, and other agents' traces cannot show that.
 
-\hypertarget{replay-and-implementation-details}{%
-\section{Replay and implementation details}\label{replay-and-implementation-details}}
+\section{Replay and implementation details}\label{replay-and-implementation-details}
 
 An earlier version of our replay skipped any recorded call already made, the agent's own repeats included, and so counted as saved the 0.2--0.9\% of turns (3.3\% for one agent) in which an agent repeated calls it had made. The numbers here use the rule of §2.2. A lookup made between two calls of one turn cannot spare the second, which the agent has already made; the replay counts such a lookup as used rather than as a detour, which happened for 6 of the 3,323 lookups in six replays we checked.
 
@@ -713,7 +692,7 @@ An earlier version of our replay skipped any recorded call already made, the age
 
 \runin{Reading the request.} \texttt{ceiling.py}'s fifth count asks the System-One model, for each argument of a read whose value the user wrote, to pick that value among the spans of what the user wrote so far: every run of one to six words that neither starts nor ends with a common word, the latest first, at most 255. The model is shown the user's words and the call about to be made, its tool and the argument's name, never the agent's value, and a turn counts when every value in it is picked right. The value is among the spans for at least 91\% of the questions in τ²-bench, τ-bench, BFCL, AgentDojo and DTap-Bench's customer service, telecom and travel, for 80--98\% in WorkBench and DTap-Bench's CRM and operating system's files, and for 18--41\% in MCPMark, whose values the agent composes. The instruction was revised once, on WorkBench multi-domain's 185 questions, where the model had picked spans with words around the value (59\% right before, 70\% after), and then fixed for every benchmark. The 8,532 questions cost about \$0.41. In DTap-Bench's travel, 59 of 74 questions have several right answers, the cities a request names, which the agent looks up one after another: one pick per call finds one of them.
 
-\runin{Deployment guards.} A flow calls only tools it read in training and that the server does not mark as writes, and an operator can narrow that to a list, since a read can still be metered or recorded as an access, and a speculative read tells the server what the agent may do next, read-only or not \citep{mohammadi2026ghost}. A flow learned from sessions pins each tool's input contract, and the proxy makes no lookup of a tool whose server now lists another. In shadow mode a flow logs what it would look up and makes nothing, and \texttt{Hoist\ promote} then lets it act only at the sites where its lookups were the agent's own. Recorded sessions can be pseudonymized for sharing, and \texttt{learn} learns the same flow from the copy; they expire after a set number of days.
+\runin{Deployment guards.} A flow calls only tools it read in training and that the server does not mark as writes, and an operator can narrow that to a list, since a read can still be metered or recorded as an access, and a speculative read tells the server what the agent may do next, read-only or not \citep{mohammadi2026ghost}. A flow learned from sessions pins each tool's input contract, and the proxy makes no lookup of a tool whose server now lists another. In shadow mode a flow logs what it would look up and makes nothing, and \texttt{hoist\ promote} then lets it act only at the sites where its lookups were the agent's own. Recorded sessions can be pseudonymized for sharing, and \texttt{learn} learns the same flow from the copy; they expire after a set number of days.
 
 \runin{The served habit.} As served, the habit has one more layer of the same form, for an episode-level group; a flow learned without intents puts every session in one group, so the layer weighs the longest context's counts once more. That only sharpens the next-step estimate, which §4.2 finds too low, not too high.
 
