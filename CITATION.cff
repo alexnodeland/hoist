@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use Hoist or its results, please cite the software and the paper."
-title: "Hoist: compile what the environment decides"
+title: "Hoist: an MCP proxy that reads ahead of your agent"
 type: software
 authors:
   - family-names: Nodeland
@@ -8,7 +8,9 @@ authors:
 repository-code: "https://github.com/alexnodeland/hoist"
 url: "https://hoist.alexnodeland.com/"
 license: MIT
-version: 0.1.0
+abstract: "Hoist learns, from an LLM agent's recorded tool calls, which reads it makes next and where their arguments come from, and serves them through an MCP proxy in the same tool result, so the agent needs fewer LLM turns."
+version: 0.2.0
+date-released: 2026-10-15
 keywords:
   - LLM agents
   - Model Context Protocol
@@ -17,7 +19,7 @@ keywords:
   - probabilistic programming
 preferred-citation:
   type: article
-  title: "Compile What the Environment Decides"
+  title: "Compile What the Environment Decides: Read-Only Speculation and Compiled Procedures for LLM Agents"
   authors:
     - family-names: Nodeland
       given-names: Alex
